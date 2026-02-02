@@ -1,12 +1,103 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "C:\\Users\\szakacs.mate\\source\\repos\\backendSzM\\",
-  "Documents": [],
+  "WorkspaceRootPath": "C:\\Users\\szakacs.mate\\source\\repos\\Vizsgaremek_SzakacsM_BarnaI\\backendSzM\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{C12CD6BB-EF85-5F5F-E806-13188BEE0A95}|backendSzM\\backendSzM.csproj|c:\\users\\szakacs.mate\\source\\repos\\vizsgaremek_szakacsm_barnai\\backendszm\\backendszm\\models\\banneduser.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C12CD6BB-EF85-5F5F-E806-13188BEE0A95}|backendSzM\\backendSzM.csproj|solutionrelative:backendszm\\models\\banneduser.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C12CD6BB-EF85-5F5F-E806-13188BEE0A95}|backendSzM\\backendSzM.csproj|c:\\users\\szakacs.mate\\source\\repos\\vizsgaremek_szakacsm_barnai\\backendszm\\backendszm\\models\\userdata.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C12CD6BB-EF85-5F5F-E806-13188BEE0A95}|backendSzM\\backendSzM.csproj|solutionrelative:backendszm\\models\\userdata.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C12CD6BB-EF85-5F5F-E806-13188BEE0A95}|backendSzM\\backendSzM.csproj|c:\\users\\szakacs.mate\\source\\repos\\vizsgaremek_szakacsm_barnai\\backendszm\\backendszm\\models\\lobby.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C12CD6BB-EF85-5F5F-E806-13188BEE0A95}|backendSzM\\backendSzM.csproj|solutionrelative:backendszm\\models\\lobby.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C12CD6BB-EF85-5F5F-E806-13188BEE0A95}|backendSzM\\backendSzM.csproj|c:\\users\\szakacs.mate\\source\\repos\\vizsgaremek_szakacsm_barnai\\backendszm\\backendszm\\models\\userauth.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C12CD6BB-EF85-5F5F-E806-13188BEE0A95}|backendSzM\\backendSzM.csproj|solutionrelative:backendszm\\models\\userauth.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C12CD6BB-EF85-5F5F-E806-13188BEE0A95}|backendSzM\\backendSzM.csproj|c:\\users\\szakacs.mate\\source\\repos\\vizsgaremek_szakacsm_barnai\\backendszm\\backendszm\\models\\lobbycon.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C12CD6BB-EF85-5F5F-E806-13188BEE0A95}|backendSzM\\backendSzM.csproj|solutionrelative:backendszm\\models\\lobbycon.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
   "DocumentGroupContainers": [
     {
       "Orientation": 0,
       "VerticalTabListWidth": 256,
-      "DocumentGroups": []
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "BannedUser.cs",
+              "DocumentMoniker": "C:\\Users\\szakacs.mate\\source\\repos\\Vizsgaremek_SzakacsM_BarnaI\\backendSzM\\backendSzM\\Models\\BannedUser.cs",
+              "RelativeDocumentMoniker": "backendSzM\\Models\\BannedUser.cs",
+              "ToolTip": "C:\\Users\\szakacs.mate\\source\\repos\\Vizsgaremek_SzakacsM_BarnaI\\backendSzM\\backendSzM\\Models\\BannedUser.cs",
+              "RelativeToolTip": "backendSzM\\Models\\BannedUser.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-02T08:09:38.008Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Lobby.cs",
+              "DocumentMoniker": "C:\\Users\\szakacs.mate\\source\\repos\\Vizsgaremek_SzakacsM_BarnaI\\backendSzM\\backendSzM\\Models\\Lobby.cs",
+              "RelativeDocumentMoniker": "backendSzM\\Models\\Lobby.cs",
+              "ToolTip": "C:\\Users\\szakacs.mate\\source\\repos\\Vizsgaremek_SzakacsM_BarnaI\\backendSzM\\backendSzM\\Models\\Lobby.cs",
+              "RelativeToolTip": "backendSzM\\Models\\Lobby.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAeAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-29T09:37:48.736Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "LobbyCon.cs",
+              "DocumentMoniker": "C:\\Users\\szakacs.mate\\source\\repos\\Vizsgaremek_SzakacsM_BarnaI\\backendSzM\\backendSzM\\Models\\LobbyCon.cs",
+              "RelativeDocumentMoniker": "backendSzM\\Models\\LobbyCon.cs",
+              "ToolTip": "C:\\Users\\szakacs.mate\\source\\repos\\Vizsgaremek_SzakacsM_BarnaI\\backendSzM\\backendSzM\\Models\\LobbyCon.cs",
+              "RelativeToolTip": "backendSzM\\Models\\LobbyCon.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-29T09:36:27.298Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "UserAuth.cs",
+              "DocumentMoniker": "C:\\Users\\szakacs.mate\\source\\repos\\Vizsgaremek_SzakacsM_BarnaI\\backendSzM\\backendSzM\\Models\\UserAuth.cs",
+              "RelativeDocumentMoniker": "backendSzM\\Models\\UserAuth.cs",
+              "ToolTip": "C:\\Users\\szakacs.mate\\source\\repos\\Vizsgaremek_SzakacsM_BarnaI\\backendSzM\\backendSzM\\Models\\UserAuth.cs",
+              "RelativeToolTip": "backendSzM\\Models\\UserAuth.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAAUAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-29T09:36:05.422Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "UserData.cs",
+              "DocumentMoniker": "C:\\Users\\szakacs.mate\\source\\repos\\Vizsgaremek_SzakacsM_BarnaI\\backendSzM\\backendSzM\\Models\\UserData.cs",
+              "RelativeDocumentMoniker": "backendSzM\\Models\\UserData.cs",
+              "ToolTip": "C:\\Users\\szakacs.mate\\source\\repos\\Vizsgaremek_SzakacsM_BarnaI\\backendSzM\\backendSzM\\Models\\UserData.cs",
+              "RelativeToolTip": "backendSzM\\Models\\UserData.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAIAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-29T09:35:41.33Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
     }
   ]
 }

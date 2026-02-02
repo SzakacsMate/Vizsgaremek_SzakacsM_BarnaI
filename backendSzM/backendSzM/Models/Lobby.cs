@@ -8,5 +8,6 @@
         public string Location { get; set; }
         public DateTime TimeDate { get; set; }
         public int PlayerLimit { get; set; }
+        public ICollection<LobbyCon>LobbyCons { get; set; }
     }
 }
