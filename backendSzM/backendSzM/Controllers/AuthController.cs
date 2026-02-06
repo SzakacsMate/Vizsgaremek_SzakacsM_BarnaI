@@ -35,7 +35,7 @@ namespace backendSzM.Controllers
         {
             var token = await authService.LoginAsync(request);
             if (token is null)
-                return BadRequest("Invalid username or password");
+                return BadRequest("Invalid username or password or gmail");
             
             return Ok(token);
         }

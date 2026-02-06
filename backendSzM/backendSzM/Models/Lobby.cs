@@ -4,13 +4,13 @@ namespace backendSzM.Models
 {
     public class Lobby
     {
-        [Key]
+        
         public Guid Id { get; set; }
-        public string Dm { get; set; }
-        public string TtType { get; set; }
-        public string Location { get; set; }
+        public string Dm { get; set; } = string.Empty;
+        public string TtType { get; set; }= string.Empty;
+        public string Location { get; set; } = string.Empty;
         public DateTime TimeDate { get; set; }
         public int PlayerLimit { get; set; }
-        public ICollection<LobbyCon>?LobbyCons { get; set; } 
+        public ICollection<LobbyCon>?LobbyCons { get; set; } = new List<LobbyCon>();
     }
 }

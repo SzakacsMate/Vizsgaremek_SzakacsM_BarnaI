@@ -4,9 +4,9 @@ namespace backendSzM.Models
 {
     public class UserAuth
     {
-        [Key]
-        public Guid UserAuthId { get; set; }
+        
+        public Guid Id { get; set; }
         public float IsAdmin { get; set; }
-        public ICollection<UserData>? UserDatas { get; set; }
+        public ICollection<UserData>? UserDatas { get; set; } = new List<UserData>();
     }
 }

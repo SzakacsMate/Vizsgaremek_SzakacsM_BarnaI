@@ -19,7 +19,7 @@ namespace backendSzM.Migrations
 
             modelBuilder.Entity("backendSzM.Models.BannedUser", b =>
                 {
-                    b.Property<Guid>("BanId")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
@@ -29,7 +29,7 @@ namespace backendSzM.Migrations
                     b.Property<int>("Warnings")
                         .HasColumnType("INTEGER");
 
-                    b.HasKey("BanId");
+                    b.HasKey("Id");
 
                     b.ToTable("BannedUsers");
                 });
@@ -60,42 +60,45 @@ namespace backendSzM.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Lobby");
+                    b.ToTable("Lobbies");
                 });
 
             modelBuilder.Entity("backendSzM.Models.LobbyCon", b =>
                 {
-                    b.Property<Guid>("LobbyConId")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
                     b.Property<Guid>("LobbyId")
                         .HasColumnType("TEXT");
 
+                    b.Property<Guid?>("UserDataId")
+                        .HasColumnType("TEXT");
+
                     b.Property<Guid>("UserId")
                         .HasColumnType("TEXT");
 
-                    b.HasKey("LobbyConId");
+                    b.HasKey("Id");
 
                     b.HasIndex("LobbyId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserDataId");
 
-                    b.ToTable("LobbyCon");
+                    b.ToTable("LobbyCons");
                 });
 
             modelBuilder.Entity("backendSzM.Models.UserAuth", b =>
                 {
-                    b.Property<Guid>("UserAuthId")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
                     b.Property<float>("IsAdmin")
                         .HasColumnType("REAL");
 
-                    b.HasKey("UserAuthId");
+                    b.HasKey("Id");
 
-                    b.ToTable("UserAuth");
+                    b.ToTable("Auths");
                 });
 
             modelBuilder.Entity("backendSzM.Models.UserData", b =>
@@ -108,6 +111,9 @@ namespace backendSzM.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<Guid>("BannedId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("BannedUserId")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Gmail")
@@ -125,11 +131,14 @@ namespace backendSzM.Migrations
                     b.Property<int>("Rep")
                         .HasColumnType("INTEGER");
 
+                    b.Property<Guid?>("UserAuthId")
+                        .HasColumnType("TEXT");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("AuthId");
+                    b.HasIndex("BannedUserId");
 
-                    b.HasIndex("BannedId");
+                    b.HasIndex("UserAuthId");
 
                     b.ToTable("Users");
                 });
@@ -144,9 +153,7 @@ namespace backendSzM.Migrations
 
                     b.HasOne("backendSzM.Models.UserData", "UserData")
                         .WithMany("LobbyCons")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("UserDataId");
 
                     b.Navigation("Lobby");
 
@@ -155,17 +162,13 @@ namespace backendSzM.Migrations
 
             modelBuilder.Entity("backendSzM.Models.UserData", b =>
                 {
-                    b.HasOne("backendSzM.Models.UserAuth", "UserAuth")
-                        .WithMany("UserDatas")
-                        .HasForeignKey("AuthId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("backendSzM.Models.BannedUser", "BannedUser")
                         .WithMany("UserDatas")
-                        .HasForeignKey("BannedId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("BannedUserId");
+
+                    b.HasOne("backendSzM.Models.UserAuth", "UserAuth")
+                        .WithMany("UserDatas")
+                        .HasForeignKey("UserAuthId");
 
                     b.Navigation("BannedUser");
 

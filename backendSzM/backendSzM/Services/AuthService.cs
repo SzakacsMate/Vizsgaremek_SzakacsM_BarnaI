@@ -17,9 +17,9 @@ namespace backendSzM.Services
         public async Task<string?> LoginAsync(UserDataDTO request)
         {
             var user = await context.Users.FirstOrDefaultAsync(u => u.Name == request.Name);
-          //  var gmail = await context.Users.FirstOrDefaultAsync(u => u.Gmail == request.Gmail);
+            var gmail = await context.Users.FirstOrDefaultAsync(u => u.Gmail == request.Gmail);
 
-            if (user is null /*|| gmail is null*/)
+            if (user is null || gmail is null)
             {
                 return null;
             }
@@ -43,7 +43,7 @@ namespace backendSzM.Services
                 .HashPassword(user, request.Password);
             user.Name = request.Name;
             user.Hash = hashedPassword;
-          //  user.Gmail = request.Gmail;
+            user.Gmail = request.Gmail;
 
             context.Users.Add(user);
             await context.SaveChangesAsync();

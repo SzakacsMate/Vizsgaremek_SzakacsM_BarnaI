@@ -12,20 +12,32 @@ namespace backendSzM.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
+                name: "Auths",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    IsAdmin = table.Column<float>(type: "REAL", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Auths", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "BannedUsers",
                 columns: table => new
                 {
-                    BanId = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
                     IsBanned = table.Column<float>(type: "REAL", nullable: false),
                     Warnings = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_BannedUsers", x => x.BanId);
+                    table.PrimaryKey("PK_BannedUsers", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Lobby",
+                name: "Lobbies",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "TEXT", nullable: false),
@@ -37,19 +49,7 @@ namespace backendSzM.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Lobby", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "UserAuth",
-                columns: table => new
-                {
-                    UserAuthId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    IsAdmin = table.Column<float>(type: "REAL", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_UserAuth", x => x.UserAuthId);
+                    table.PrimaryKey("PK_Lobbies", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -61,89 +61,89 @@ namespace backendSzM.Migrations
                     Hash = table.Column<string>(type: "TEXT", nullable: false),
                     Gmail = table.Column<string>(type: "TEXT", nullable: false),
                     Rep = table.Column<int>(type: "INTEGER", nullable: false),
+                    BannedId = table.Column<Guid>(type: "TEXT", nullable: false),
+                    BannedUserId = table.Column<Guid>(type: "TEXT", nullable: true),
                     AuthId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    BannedId = table.Column<Guid>(type: "TEXT", nullable: false)
+                    UserAuthId = table.Column<Guid>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Users", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Users_BannedUsers_BannedId",
-                        column: x => x.BannedId,
-                        principalTable: "BannedUsers",
-                        principalColumn: "BanId",
-                        onDelete: ReferentialAction.Cascade);
+                        name: "FK_Users_Auths_UserAuthId",
+                        column: x => x.UserAuthId,
+                        principalTable: "Auths",
+                        principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_Users_UserAuth_AuthId",
-                        column: x => x.AuthId,
-                        principalTable: "UserAuth",
-                        principalColumn: "UserAuthId",
-                        onDelete: ReferentialAction.Cascade);
+                        name: "FK_Users_BannedUsers_BannedUserId",
+                        column: x => x.BannedUserId,
+                        principalTable: "BannedUsers",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
-                name: "LobbyCon",
+                name: "LobbyCons",
                 columns: table => new
                 {
-                    LobbyConId = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
                     UserId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    LobbyId = table.Column<Guid>(type: "TEXT", nullable: false)
+                    LobbyId = table.Column<Guid>(type: "TEXT", nullable: false),
+                    UserDataId = table.Column<Guid>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_LobbyCon", x => x.LobbyConId);
+                    table.PrimaryKey("PK_LobbyCons", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_LobbyCon_Lobby_LobbyId",
+                        name: "FK_LobbyCons_Lobbies_LobbyId",
                         column: x => x.LobbyId,
-                        principalTable: "Lobby",
+                        principalTable: "Lobbies",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_LobbyCon_Users_UserId",
-                        column: x => x.UserId,
+                        name: "FK_LobbyCons_Users_UserDataId",
+                        column: x => x.UserDataId,
                         principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_LobbyCon_LobbyId",
-                table: "LobbyCon",
+                name: "IX_LobbyCons_LobbyId",
+                table: "LobbyCons",
                 column: "LobbyId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_LobbyCon_UserId",
-                table: "LobbyCon",
-                column: "UserId");
+                name: "IX_LobbyCons_UserDataId",
+                table: "LobbyCons",
+                column: "UserDataId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Users_AuthId",
+                name: "IX_Users_BannedUserId",
                 table: "Users",
-                column: "AuthId");
+                column: "BannedUserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Users_BannedId",
+                name: "IX_Users_UserAuthId",
                 table: "Users",
-                column: "BannedId");
+                column: "UserAuthId");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "LobbyCon");
+                name: "LobbyCons");
 
             migrationBuilder.DropTable(
-                name: "Lobby");
+                name: "Lobbies");
 
             migrationBuilder.DropTable(
                 name: "Users");
 
             migrationBuilder.DropTable(
-                name: "BannedUsers");
+                name: "Auths");
 
             migrationBuilder.DropTable(
-                name: "UserAuth");
+                name: "BannedUsers");
         }
     }
 }
