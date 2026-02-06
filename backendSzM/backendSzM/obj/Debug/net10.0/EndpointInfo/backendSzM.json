@@ -118,12 +118,8 @@
         "type": "object",
         "properties": {
           "banId": {
-            "pattern": "^-?(?:0|[1-9]\\d*)$",
-            "type": [
-              "integer",
-              "string"
-            ],
-            "format": "int32"
+            "type": "string",
+            "format": "uuid"
           },
           "isBanned": {
             "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
@@ -142,7 +138,10 @@
             "format": "int32"
           },
           "userDatas": {
-            "type": "array",
+            "type": [
+              "null",
+              "array"
+            ],
             "items": {
               "$ref": "#/components/schemas/UserData"
             }
@@ -153,12 +152,8 @@
         "type": "object",
         "properties": {
           "id": {
-            "pattern": "^-?(?:0|[1-9]\\d*)$",
-            "type": [
-              "integer",
-              "string"
-            ],
-            "format": "int32"
+            "type": "string",
+            "format": "uuid"
           },
           "dm": {
             "type": "string"
@@ -182,7 +177,10 @@
             "format": "int32"
           },
           "lobbyCons": {
-            "type": "array",
+            "type": [
+              "null",
+              "array"
+            ],
             "items": {
               "$ref": "#/components/schemas/LobbyCon"
             }
@@ -192,27 +190,37 @@
       "LobbyCon": {
         "type": "object",
         "properties": {
+          "lobbyConId": {
+            "type": "string",
+            "format": "uuid"
+          },
           "userId": {
-            "pattern": "^-?(?:0|[1-9]\\d*)$",
-            "type": [
-              "integer",
-              "string"
-            ],
-            "format": "int32"
+            "type": "string",
+            "format": "uuid"
           },
           "lobbyId": {
-            "pattern": "^-?(?:0|[1-9]\\d*)$",
-            "type": [
-              "integer",
-              "string"
-            ],
-            "format": "int32"
+            "type": "string",
+            "format": "uuid"
           },
           "userData": {
-            "$ref": "#/components/schemas/UserData"
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/UserData"
+              }
+            ]
           },
           "lobby": {
-            "$ref": "#/components/schemas/Lobby"
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/Lobby"
+              }
+            ]
           }
         }
       },
@@ -220,12 +228,8 @@
         "type": "object",
         "properties": {
           "userAuthId": {
-            "pattern": "^-?(?:0|[1-9]\\d*)$",
-            "type": [
-              "integer",
-              "string"
-            ],
-            "format": "int32"
+            "type": "string",
+            "format": "uuid"
           },
           "isAdmin": {
             "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
@@ -236,7 +240,10 @@
             "format": "float"
           },
           "userDatas": {
-            "type": "array",
+            "type": [
+              "null",
+              "array"
+            ],
             "items": {
               "$ref": "#/components/schemas/UserData"
             }
@@ -247,12 +254,8 @@
         "type": "object",
         "properties": {
           "id": {
-            "pattern": "^-?(?:0|[1-9]\\d*)$",
-            "type": [
-              "integer",
-              "string"
-            ],
-            "format": "int32"
+            "type": "string",
+            "format": "uuid"
           },
           "name": {
             "type": "string"
@@ -272,16 +275,41 @@
             "format": "int32"
           },
           "lobbyCons": {
-            "type": "array",
+            "type": [
+              "null",
+              "array"
+            ],
             "items": {
               "$ref": "#/components/schemas/LobbyCon"
             }
           },
+          "authId": {
+            "type": "string",
+            "format": "uuid"
+          },
           "userAuth": {
-            "$ref": "#/components/schemas/UserAuth"
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/UserAuth"
+              }
+            ]
+          },
+          "bannedId": {
+            "type": "string",
+            "format": "uuid"
           },
           "bannedUser": {
-            "$ref": "#/components/schemas/BannedUser"
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/BannedUser"
+              }
+            ]
           }
         }
       },
@@ -289,9 +317,6 @@
         "type": "object",
         "properties": {
           "name": {
-            "type": "string"
-          },
-          "gmail": {
             "type": "string"
           },
           "password": {

@@ -1,9 +1,12 @@
-﻿namespace backendSzM.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace backendSzM.Models
 {
     public class UserAuth
     {
-        public int UserAuthId { get; set; }
+        [Key]
+        public Guid UserAuthId { get; set; }
         public float IsAdmin { get; set; }
-        public ICollection<UserData> UserDatas { get; set; }
+        public ICollection<UserData>? UserDatas { get; set; }
     }
 }
