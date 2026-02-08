@@ -6,7 +6,7 @@ namespace backendSzM.Models
     {
         
         public Guid Id { get; set; }
-        public float IsAdmin { get; set; }
+        public string Role { get; set; } = string.Empty;
         public ICollection<UserData>? UserDatas { get; set; } = new List<UserData>();
     }
 }

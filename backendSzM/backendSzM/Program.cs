@@ -2,6 +2,9 @@ using Scalar.AspNetCore;
 using Microsoft.EntityFrameworkCore;
 using backendSzM.Data;
 using backendSzM.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +17,22 @@ builder.Services.AddOpenApi();
 builder.Services.AddDbContext<UserDataDBContext>(
     options=>options.UseSqlite(builder.Configuration.GetConnectionString("UserDatabase"))
     );
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidIssuer = builder.Configuration["Appsettings:Issuer"],
+        ValidateAudience = true,
+        ValidAudience = builder.Configuration["Appsettings:Audience"],
+        ValidateLifetime = true,
+        IssuerSigningKey = new SymmetricSecurityKey(
+            Encoding.UTF8.GetBytes(builder.Configuration["Appsettings:Token"]!)),
+        ValidateIssuerSigningKey = true,
+    }; 
+});
+
 builder.Services.AddScoped<IAuthService, AuthService>();
 
 var app = builder.Build();

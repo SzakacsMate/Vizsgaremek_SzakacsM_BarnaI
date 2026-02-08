@@ -49,12 +49,13 @@ namespace backendSzM.Services
             await context.SaveChangesAsync();
             return user;
         }
-        private string CreateToken(UserData user)
+        private string CreateToken(UserData user/*, UserAuth auth*/)
         {
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name,user.Name),
-                new Claim(ClaimTypes.NameIdentifier,user.Id.ToString())
+                new Claim(ClaimTypes.NameIdentifier,user.Id.ToString()),
+              //  new Claim(ClaimTypes.Role,auth.Role)
             };
             var key = new SymmetricSecurityKey(
                 Encoding.UTF8.GetBytes(configuration.GetValue<string>("Appsettings:Token")!));

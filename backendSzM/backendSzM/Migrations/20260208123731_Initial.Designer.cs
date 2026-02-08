@@ -11,7 +11,7 @@ using backendSzM.Data;
 namespace backendSzM.Migrations
 {
     [DbContext(typeof(UserDataDBContext))]
-    [Migration("20260206124630_Initial")]
+    [Migration("20260208123731_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -96,8 +96,9 @@ namespace backendSzM.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
-                    b.Property<float>("IsAdmin")
-                        .HasColumnType("REAL");
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
