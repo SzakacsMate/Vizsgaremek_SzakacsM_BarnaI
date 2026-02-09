@@ -49,17 +49,17 @@ namespace backendSzM.Controllers
         [HttpPost("login")]
         public async Task<ActionResult<string>> Login(UserDataDTO request)
         {
-            var user = _context.Users.FirstOrDefault();
-            if (user.Name != request.Name)
+            var user = _context.Users.FirstOrDefault(u => u.Gmail == request.Gmail && u.Name == request.Name);
+            if (user == null)
             {
-                return BadRequest();
+                return Unauthorized();
             }
-            if(new PasswordHasher<UserData>().VerifyHashedPassword(user,request.Password,request.Gmail)==PasswordVerificationResult.Failed)
+            if(new PasswordHasher<UserData>().VerifyHashedPassword(user,user.Hash,request.Password)==PasswordVerificationResult.Failed)
             {
-                return BadRequest();
+                return Unauthorized("Rossz jelszó");
             }
             string token = CreateToken(user);
-            return Ok(token);
+            return Ok(new { access_token = token });
             
         }
         private string CreateToken(UserData user) {
