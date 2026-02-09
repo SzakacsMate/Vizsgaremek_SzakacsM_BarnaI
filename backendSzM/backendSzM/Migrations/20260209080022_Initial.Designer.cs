@@ -11,7 +11,7 @@ using backendSzM.Data;
 namespace backendSzM.Migrations
 {
     [DbContext(typeof(UserDataDBContext))]
-    [Migration("20260208123731_Initial")]
+    [Migration("20260209080022_Initial")]
     partial class Initial
     {
         /// <inheritdoc />

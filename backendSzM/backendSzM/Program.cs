@@ -1,7 +1,7 @@
 using Scalar.AspNetCore;
 using Microsoft.EntityFrameworkCore;
 using backendSzM.Data;
-using backendSzM.Services;
+
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -33,7 +33,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
     }; 
 });
 
-builder.Services.AddScoped<IAuthService, AuthService>();
+
 
 var app = builder.Build();
 

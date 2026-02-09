@@ -26,6 +26,8 @@ namespace backendSzM.Models
         
         public ICollection<LobbyCon>? LobbyCons { get; set; } = new List<LobbyCon>();
 
+        
+
 
     }
 }

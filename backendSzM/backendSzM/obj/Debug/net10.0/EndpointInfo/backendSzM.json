@@ -122,6 +122,18 @@
           }
         }
       }
+    },
+    "/api/Auth/admin-only": {
+      "get": {
+        "tags": [
+          "Auth"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -243,13 +255,8 @@
             "type": "string",
             "format": "uuid"
           },
-          "isAdmin": {
-            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
-            "type": [
-              "number",
-              "string"
-            ],
-            "format": "float"
+          "role": {
+            "type": "string"
           },
           "userDatas": {
             "type": [
@@ -336,6 +343,54 @@
           },
           "password": {
             "type": "string"
+          },
+          "role": {
+            "type": "string"
+          },
+          "rep": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "warnings": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "isBanned": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+            "type": [
+              "number",
+              "string"
+            ],
+            "format": "float"
+          },
+          "dm": {
+            "type": "string"
+          },
+          "ttType": {
+            "type": "string"
+          },
+          "location": {
+            "type": "string"
+          },
+          "timeDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "playerLimit": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
           }
         }
       }
