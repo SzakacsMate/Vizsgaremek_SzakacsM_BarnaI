@@ -11,7 +11,7 @@ namespace backendSzM.Models
 
         public string Hash { get; set; } = string.Empty;
         public string Gmail { get; set; } = string.Empty;
-
+        public string Role { get; set; } = string.Empty;
         public int Rep { get; set; } = 0;
         
         
@@ -20,7 +20,7 @@ namespace backendSzM.Models
         
         
         public Guid AuthId { get; set; }
-        public UserAuth? UserAuth { get; set; }
+        public Token? Token { get; set; }
         
         
         

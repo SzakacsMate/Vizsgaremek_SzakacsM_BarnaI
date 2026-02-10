@@ -133,6 +133,9 @@
           "password": {
             "type": "string"
           },
+          "role": {
+            "type": "string"
+          },
           "rep": {
             "pattern": "^-?(?:0|[1-9]\\d*)$",
             "type": [

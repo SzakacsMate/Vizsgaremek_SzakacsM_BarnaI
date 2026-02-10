@@ -6,8 +6,8 @@ namespace backendSzM.Models
     {
         
         public Guid Id { get; set; }
-        public float IsBanned { get; set; }
-        public int Warnings { get; set; }
+        public bool IsBanned { get; set; } = false;
+        public int Warnings { get; set; } = 0;
         public ICollection<UserData>? UserDatas { get; set; } = new List<UserData>();
     }
 }

@@ -12,20 +12,6 @@ namespace backendSzM.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Auths",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    Role = table.Column<string>(type: "TEXT", nullable: false),
-                    RefreshToken = table.Column<string>(type: "TEXT", nullable: true),
-                    RefreshTokenExpiryTime = table.Column<DateTime>(type: "TEXT", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Auths", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "BannedUsers",
                 columns: table => new
                 {
@@ -55,6 +41,19 @@ namespace backendSzM.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Tokens",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    RefreshToken = table.Column<string>(type: "TEXT", nullable: true),
+                    RefreshTokenExpiryTime = table.Column<DateTime>(type: "TEXT", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Tokens", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Users",
                 columns: table => new
                 {
@@ -62,24 +61,25 @@ namespace backendSzM.Migrations
                     Name = table.Column<string>(type: "TEXT", nullable: false),
                     Hash = table.Column<string>(type: "TEXT", nullable: false),
                     Gmail = table.Column<string>(type: "TEXT", nullable: false),
+                    Role = table.Column<string>(type: "TEXT", nullable: false),
                     Rep = table.Column<int>(type: "INTEGER", nullable: false),
                     BannedId = table.Column<Guid>(type: "TEXT", nullable: false),
                     BannedUserId = table.Column<Guid>(type: "TEXT", nullable: true),
                     AuthId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    UserAuthId = table.Column<Guid>(type: "TEXT", nullable: true)
+                    TokenId = table.Column<Guid>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Users", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Users_Auths_UserAuthId",
-                        column: x => x.UserAuthId,
-                        principalTable: "Auths",
-                        principalColumn: "Id");
-                    table.ForeignKey(
                         name: "FK_Users_BannedUsers_BannedUserId",
                         column: x => x.BannedUserId,
                         principalTable: "BannedUsers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Users_Tokens_TokenId",
+                        column: x => x.TokenId,
+                        principalTable: "Tokens",
                         principalColumn: "Id");
                 });
 
@@ -124,9 +124,9 @@ namespace backendSzM.Migrations
                 column: "BannedUserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Users_UserAuthId",
+                name: "IX_Users_TokenId",
                 table: "Users",
-                column: "UserAuthId");
+                column: "TokenId");
         }
 
         /// <inheritdoc />
@@ -142,10 +142,10 @@ namespace backendSzM.Migrations
                 name: "Users");
 
             migrationBuilder.DropTable(
-                name: "Auths");
+                name: "BannedUsers");
 
             migrationBuilder.DropTable(
-                name: "BannedUsers");
+                name: "Tokens");
         }
     }
 }

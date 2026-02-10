@@ -10,7 +10,7 @@ namespace backendSzM.Models
         public string TtType { get; set; }= string.Empty;
         public string Location { get; set; } = string.Empty;
         public DateTime TimeDate { get; set; }
-        public int PlayerLimit { get; set; }
+        public int PlayerLimit { get; set; } = 0;
         public ICollection<LobbyCon>?LobbyCons { get; set; } = new List<LobbyCon>();
     }
 }

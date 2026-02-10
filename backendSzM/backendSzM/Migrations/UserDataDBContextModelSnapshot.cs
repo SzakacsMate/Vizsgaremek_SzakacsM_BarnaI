@@ -87,7 +87,7 @@ namespace backendSzM.Migrations
                     b.ToTable("LobbyCons");
                 });
 
-            modelBuilder.Entity("backendSzM.Models.UserAuth", b =>
+            modelBuilder.Entity("backendSzM.Models.Token", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -99,13 +99,9 @@ namespace backendSzM.Migrations
                     b.Property<DateTime?>("RefreshTokenExpiryTime")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Role")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
                     b.HasKey("Id");
 
-                    b.ToTable("Auths");
+                    b.ToTable("Tokens");
                 });
 
             modelBuilder.Entity("backendSzM.Models.UserData", b =>
@@ -138,14 +134,18 @@ namespace backendSzM.Migrations
                     b.Property<int>("Rep")
                         .HasColumnType("INTEGER");
 
-                    b.Property<Guid?>("UserAuthId")
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("TokenId")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
                     b.HasIndex("BannedUserId");
 
-                    b.HasIndex("UserAuthId");
+                    b.HasIndex("TokenId");
 
                     b.ToTable("Users");
                 });
@@ -173,13 +173,13 @@ namespace backendSzM.Migrations
                         .WithMany("UserDatas")
                         .HasForeignKey("BannedUserId");
 
-                    b.HasOne("backendSzM.Models.UserAuth", "UserAuth")
+                    b.HasOne("backendSzM.Models.Token", "Token")
                         .WithMany("UserDatas")
-                        .HasForeignKey("UserAuthId");
+                        .HasForeignKey("TokenId");
 
                     b.Navigation("BannedUser");
 
-                    b.Navigation("UserAuth");
+                    b.Navigation("Token");
                 });
 
             modelBuilder.Entity("backendSzM.Models.BannedUser", b =>
@@ -192,7 +192,7 @@ namespace backendSzM.Migrations
                     b.Navigation("LobbyCons");
                 });
 
-            modelBuilder.Entity("backendSzM.Models.UserAuth", b =>
+            modelBuilder.Entity("backendSzM.Models.Token", b =>
                 {
                     b.Navigation("UserDatas");
                 });

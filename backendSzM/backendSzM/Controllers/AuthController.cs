@@ -41,10 +41,25 @@ namespace backendSzM.Controllers
             ujUserData.Name=request.Name;
             ujUserData.Hash = hashedPassword;
             ujUserData.Gmail=request.Gmail;
+            ujUserData.Role=request.Role;
             _context.Users.Add(ujUserData);
             await _context.SaveChangesAsync();
             return Ok(user);
             
+        }
+        public async Task<IActionResult>GetTokens(TokenDTO request)
+        {
+            Token ujToken=new Token();
+            ujToken.RefreshToken=request.RefreshToken;
+            ujToken.RefreshTokenExpiryTime=request.RefreshTokenExpiryTime;
+            _context.Tokens.Add(ujToken);
+            ujToken.Id=request.
+            await _context.SaveChangesAsync();
+            
+        }
+        private string GenRefreshToken()
+        {
+
         }
         [HttpPost("login")]
         public async Task<ActionResult<string>> Login(UserDataDTO request)
@@ -68,7 +83,7 @@ namespace backendSzM.Controllers
             {
                 new Claim(ClaimTypes.Name,user.Name),
                 new Claim(ClaimTypes.NameIdentifier,user.Id.ToString()),
-                new Claim(ClaimTypes.Role,)
+                new Claim(ClaimTypes.Role,user.Role)
             };
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.GetValue<string>("Appsettings:Token")!));
             var creds=new SigningCredentials(key,SecurityAlgorithms.HmacSha512);
@@ -81,7 +96,8 @@ namespace backendSzM.Controllers
                 );
             return new JwtSecurityTokenHandler().WriteToken(tokenDescriptor);
         }
-        [Authorize]
+       
+        [Authorize(Roles ="User,Admin")]
         [HttpGet]
         public IActionResult AuthenticatedOnlyEndpoint()
         {
