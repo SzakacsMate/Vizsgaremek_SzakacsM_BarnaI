@@ -1,5 +1,6 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using backendSzM.Data;
@@ -59,7 +60,17 @@ namespace backendSzM.Controllers
         }
         private string GenRefreshToken()
         {
-
+            var randomN = new byte[32];
+            using var rng =RandomNumberGenerator.Create();
+            return Convert.ToBase64String(randomN);
+        }
+        private async Task<string> GenAndSaveRefreshTokenAsync(Token token)
+        {
+            var refreshToken = GenRefreshToken();
+            token.RefreshToken = refreshToken;
+            token.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
+            await _context.SaveChangesAsync();
+            return refreshToken;
         }
         [HttpPost("login")]
         public async Task<ActionResult<string>> Login(UserDataDTO request)
