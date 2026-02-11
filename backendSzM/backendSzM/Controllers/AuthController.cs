@@ -48,20 +48,22 @@ namespace backendSzM.Controllers
             return Ok(user);
             
         }
+        /*
         public async Task<IActionResult>GetTokens(TokenDTO request)
         {
             Token ujToken=new Token();
             ujToken.RefreshToken=request.RefreshToken;
             ujToken.RefreshTokenExpiryTime=request.RefreshTokenExpiryTime;
             _context.Tokens.Add(ujToken);
-            ujToken.Id=request.
+            
             await _context.SaveChangesAsync();
             
-        }
+        }*/
         private string GenRefreshToken()
         {
             var randomN = new byte[32];
             using var rng =RandomNumberGenerator.Create();
+            rng.GetBytes(randomN);
             return Convert.ToBase64String(randomN);
         }
         private async Task<string> GenAndSaveRefreshTokenAsync(Token token)
@@ -73,7 +75,7 @@ namespace backendSzM.Controllers
             return refreshToken;
         }
         [HttpPost("login")]
-        public async Task<ActionResult<string>> Login(UserDataDTO request)
+        public async Task<IActionResult> Login(UserDataDTO request)
         {
             var user = _context.Users.FirstOrDefault(u => u.Gmail == request.Gmail && u.Name == request.Name);
             if (user == null)
@@ -85,7 +87,13 @@ namespace backendSzM.Controllers
                 return Unauthorized("Rossz jelszó");
             }
             string token = CreateToken(user);
-            return Ok(new { access_token = token });
+            var tokenEnt = new Token { Id = user.Id };
+            var refresh_token = new TokenResponseDto
+            {
+                AccesToken = token,
+                RefreshToken = await GenAndSaveRefreshTokenAsync(tokenEnt)
+            };
+            return Ok(refresh_token);
             
         }
         private string CreateToken(UserData user) {
