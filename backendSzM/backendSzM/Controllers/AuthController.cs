@@ -31,7 +31,7 @@ namespace backendSzM.Controllers
         [HttpPost("register")]
         public  async Task<IActionResult> Register(UserDataDTO request)
         {
-            var user = _context.Users.FirstOrDefault();
+           // var user = _context.Users.FirstOrDefault();
             if (await _context.Users.AnyAsync(u => u.Name == request.Name))
             {
                 return BadRequest();
@@ -43,13 +43,15 @@ namespace backendSzM.Controllers
             ujUserData.Hash = hashedPassword;
             ujUserData.Gmail=request.Gmail;
             ujUserData.Role=request.Role;
+            var tokenEnt = new Token();
+            ujUserData.Token = tokenEnt;
             _context.Users.Add(ujUserData);
             await _context.SaveChangesAsync();
-            return Ok(user);
-            
+            return Ok(new { ujUserData.Id, ujUserData.Name, ujUserData.Gmail, ujUserData.Role });
+
         }
-        
-       
+
+
         private async Task<Token> ValidateRefreshTokenAsync (Guid Id,string refreskToken)
         {
         var token=await _context.Tokens.FirstOrDefaultAsync(u => u.Id == Id);
@@ -100,11 +102,18 @@ namespace backendSzM.Controllers
             {
                 return Unauthorized("Rossz jelszó");
             }
-            string token = CreateToken(user);
-            var tokenEnt = new Token { Id = user.Id };
+            string accestoken = CreateToken(user);
+            if (user.Token == null)
+            { 
+               var  newToken = new Token();
+                user.Token = newToken;
+                _context.Tokens.Add(newToken);
+                await _context.SaveChangesAsync();
+            }
+            var tokenEnt = user.Token;
             var refresh_token = new TokenResponseDto
             {
-                AccesToken = token,
+                AccesToken = accestoken,
                 RefreshToken = await GenAndSaveRefreshTokenAsync(tokenEnt)
             };
             _context.Add(tokenEnt);

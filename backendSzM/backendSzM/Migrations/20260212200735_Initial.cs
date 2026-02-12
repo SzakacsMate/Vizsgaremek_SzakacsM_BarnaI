@@ -63,9 +63,9 @@ namespace backendSzM.Migrations
                     Gmail = table.Column<string>(type: "TEXT", nullable: false),
                     Role = table.Column<string>(type: "TEXT", nullable: false),
                     Rep = table.Column<int>(type: "INTEGER", nullable: false),
-                    BannedId = table.Column<Guid>(type: "TEXT", nullable: false),
+                    BannedId = table.Column<Guid>(type: "TEXT", nullable: true),
                     BannedUserId = table.Column<Guid>(type: "TEXT", nullable: true),
-                    TokenId = table.Column<Guid>(type: "TEXT", nullable: false)
+                    TokenId = table.Column<Guid>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -79,8 +79,7 @@ namespace backendSzM.Migrations
                         name: "FK_Users_Tokens_TokenId",
                         column: x => x.TokenId,
                         principalTable: "Tokens",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -89,8 +88,8 @@ namespace backendSzM.Migrations
                 {
                     Id = table.Column<Guid>(type: "TEXT", nullable: false),
                     UserId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    LobbyId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    UserDataId = table.Column<Guid>(type: "TEXT", nullable: true)
+                    UserDataId = table.Column<Guid>(type: "TEXT", nullable: true),
+                    LobbyId = table.Column<Guid>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {

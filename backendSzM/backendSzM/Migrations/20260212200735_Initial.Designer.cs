@@ -11,7 +11,7 @@ using backendSzM.Data;
 namespace backendSzM.Migrations
 {
     [DbContext(typeof(UserDataDBContext))]
-    [Migration("20260212102900_Initial")]
+    [Migration("20260212200735_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -113,7 +113,7 @@ namespace backendSzM.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid>("BannedId")
+                    b.Property<Guid?>("BannedId")
                         .HasColumnType("TEXT");
 
                     b.Property<Guid?>("BannedUserId")
@@ -138,7 +138,7 @@ namespace backendSzM.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid>("TokenId")
+                    b.Property<Guid?>("TokenId")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
@@ -175,9 +175,7 @@ namespace backendSzM.Migrations
 
                     b.HasOne("backendSzM.Models.Token", "Token")
                         .WithMany("UserDatas")
-                        .HasForeignKey("TokenId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("TokenId");
 
                     b.Navigation("BannedUser");
 

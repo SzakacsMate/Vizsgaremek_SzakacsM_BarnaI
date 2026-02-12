@@ -4,14 +4,17 @@ using Microsoft.Extensions.Options;
 
 namespace backendSzM.Data
 {
-    public class  UserDataDBContext (DbContextOptions<UserDataDBContext> options) : DbContext(options)
+    public class  UserDataDBContext:DbContext 
     {
-        
-        public DbSet<UserData> Users { get; set; }
+        public UserDataDBContext(DbContextOptions<UserDataDBContext> options) : base(options)
+    {
+    }
+    public DbSet<UserData> Users { get; set; }
         public DbSet<BannedUser> BannedUsers { get; set; }
         public DbSet<LobbyCon> LobbyCons { get; set; }
         public DbSet<Token> Tokens { get; set; }
         public DbSet<Lobby> Lobbies { get; set; }
+
     }
         
         

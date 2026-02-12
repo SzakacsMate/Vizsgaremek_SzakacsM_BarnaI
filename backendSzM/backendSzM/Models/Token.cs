@@ -9,6 +9,7 @@ namespace backendSzM.Models
         
         public string? RefreshToken { get; set; }
         public DateTime? RefreshTokenExpiryTime { get; set; }
+      
         public ICollection<UserData>? UserDatas { get; set; } = new List<UserData>();
     }
 }

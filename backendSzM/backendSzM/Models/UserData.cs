@@ -15,11 +15,11 @@ namespace backendSzM.Models
         public int Rep { get; set; } = 0;
 
         
-        public Guid BannedId { get; set; }
+        public Guid? BannedId { get; set; }
         public BannedUser? BannedUser { get; set; }
 
         
-        public Guid TokenId { get; set; }
+        public Guid? TokenId { get; set; }
         public Token? Token { get; set; }
         
         
