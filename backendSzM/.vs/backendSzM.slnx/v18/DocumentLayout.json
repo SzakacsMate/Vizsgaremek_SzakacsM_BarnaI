@@ -7,16 +7,16 @@
       "RelativeMoniker": "D:0:0:{C12CD6BB-EF85-5F5F-E806-13188BEE0A95}|backendSzM\\backendSzM.csproj|solutionrelative:backendszm\\controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\szakacs.mate\\source\\repos\\Vizsgaremek_SzakacsM_BarnaI\\backendSzM\\backendSzM\\Migrations\\20260212102900_Initial.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:backendSzM\\Migrations\\20260212102900_Initial.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C12CD6BB-EF85-5F5F-E806-13188BEE0A95}|backendSzM\\backendSzM.csproj|c:\\users\\szakacs.mate\\source\\repos\\vizsgaremek_szakacsm_barnai\\backendszm\\backendszm\\models\\lobbycon.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C12CD6BB-EF85-5F5F-E806-13188BEE0A95}|backendSzM\\backendSzM.csproj|solutionrelative:backendszm\\models\\lobbycon.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{C12CD6BB-EF85-5F5F-E806-13188BEE0A95}|backendSzM\\backendSzM.csproj|c:\\users\\szakacs.mate\\source\\repos\\vizsgaremek_szakacsm_barnai\\backendszm\\backendszm\\models\\userdata.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{C12CD6BB-EF85-5F5F-E806-13188BEE0A95}|backendSzM\\backendSzM.csproj|solutionrelative:backendszm\\models\\userdata.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{C12CD6BB-EF85-5F5F-E806-13188BEE0A95}|backendSzM\\backendSzM.csproj|c:\\users\\szakacs.mate\\source\\repos\\vizsgaremek_szakacsm_barnai\\backendszm\\backendszm\\dtos\\tokendto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{C12CD6BB-EF85-5F5F-E806-13188BEE0A95}|backendSzM\\backendSzM.csproj|solutionrelative:backendszm\\dtos\\tokendto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{C12CD6BB-EF85-5F5F-E806-13188BEE0A95}|backendSzM\\backendSzM.csproj|c:\\users\\szakacs.mate\\source\\repos\\vizsgaremek_szakacsm_barnai\\backendszm\\backendszm\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{C12CD6BB-EF85-5F5F-E806-13188BEE0A95}|backendSzM\\backendSzM.csproj|solutionrelative:backendszm\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -31,40 +31,40 @@
             {
               "$type": "Document",
               "DocumentIndex": 1,
-              "Title": "UserData.cs",
-              "DocumentMoniker": "C:\\Users\\szakacs.mate\\source\\repos\\Vizsgaremek_SzakacsM_BarnaI\\backendSzM\\backendSzM\\Models\\UserData.cs",
-              "RelativeDocumentMoniker": "backendSzM\\Models\\UserData.cs",
-              "ToolTip": "C:\\Users\\szakacs.mate\\source\\repos\\Vizsgaremek_SzakacsM_BarnaI\\backendSzM\\backendSzM\\Models\\UserData.cs",
-              "RelativeToolTip": "backendSzM\\Models\\UserData.cs",
-              "ViewState": "AgIAAAsAAAAAAAAAAAA9wAAAAAAAAAAAAAAAAA==",
+              "Title": "20260212102900_Initial.cs",
+              "DocumentMoniker": "C:\\Users\\szakacs.mate\\source\\repos\\Vizsgaremek_SzakacsM_BarnaI\\backendSzM\\backendSzM\\Migrations\\20260212102900_Initial.cs",
+              "RelativeDocumentMoniker": "backendSzM\\Migrations\\20260212102900_Initial.cs",
+              "ToolTip": "C:\\Users\\szakacs.mate\\source\\repos\\Vizsgaremek_SzakacsM_BarnaI\\backendSzM\\backendSzM\\Migrations\\20260212102900_Initial.cs",
+              "RelativeToolTip": "backendSzM\\Migrations\\20260212102900_Initial.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-10T12:28:11.77Z",
+              "WhenOpened": "2026-02-12T10:29:00.511Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 2,
-              "Title": "TokenDTO.cs",
-              "DocumentMoniker": "C:\\Users\\szakacs.mate\\source\\repos\\Vizsgaremek_SzakacsM_BarnaI\\backendSzM\\backendSzM\\DTOs\\TokenDTO.cs",
-              "RelativeDocumentMoniker": "backendSzM\\DTOs\\TokenDTO.cs",
-              "ToolTip": "C:\\Users\\szakacs.mate\\source\\repos\\Vizsgaremek_SzakacsM_BarnaI\\backendSzM\\backendSzM\\DTOs\\TokenDTO.cs",
-              "RelativeToolTip": "backendSzM\\DTOs\\TokenDTO.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAAWAAAAAAAAAA==",
+              "Title": "LobbyCon.cs",
+              "DocumentMoniker": "C:\\Users\\szakacs.mate\\source\\repos\\Vizsgaremek_SzakacsM_BarnaI\\backendSzM\\backendSzM\\Models\\LobbyCon.cs",
+              "RelativeDocumentMoniker": "backendSzM\\Models\\LobbyCon.cs",
+              "ToolTip": "C:\\Users\\szakacs.mate\\source\\repos\\Vizsgaremek_SzakacsM_BarnaI\\backendSzM\\backendSzM\\Models\\LobbyCon.cs",
+              "RelativeToolTip": "backendSzM\\Models\\LobbyCon.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAAIAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-10T12:20:31.785Z",
+              "WhenOpened": "2026-02-12T10:28:17.979Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 3,
-              "Title": "Program.cs",
-              "DocumentMoniker": "C:\\Users\\szakacs.mate\\source\\repos\\Vizsgaremek_SzakacsM_BarnaI\\backendSzM\\backendSzM\\Program.cs",
-              "RelativeDocumentMoniker": "backendSzM\\Program.cs",
-              "ToolTip": "C:\\Users\\szakacs.mate\\source\\repos\\Vizsgaremek_SzakacsM_BarnaI\\backendSzM\\backendSzM\\Program.cs",
-              "RelativeToolTip": "backendSzM\\Program.cs",
-              "ViewState": "AgIAACEAAAAAAAAAAAAAACMAAAAkAAAAAAAAAA==",
+              "Title": "UserData.cs",
+              "DocumentMoniker": "C:\\Users\\szakacs.mate\\source\\repos\\Vizsgaremek_SzakacsM_BarnaI\\backendSzM\\backendSzM\\Models\\UserData.cs",
+              "RelativeDocumentMoniker": "backendSzM\\Models\\UserData.cs",
+              "ToolTip": "C:\\Users\\szakacs.mate\\source\\repos\\Vizsgaremek_SzakacsM_BarnaI\\backendSzM\\backendSzM\\Models\\UserData.cs",
+              "RelativeToolTip": "backendSzM\\Models\\UserData.cs",
+              "ViewState": "AgIAAAgAAAAAAAAAAAAAwBQAAAAIAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-09T12:25:43.039Z",
+              "WhenOpened": "2026-02-12T10:25:36.861Z",
               "EditorCaption": ""
             },
             {
@@ -75,7 +75,7 @@
               "RelativeDocumentMoniker": "backendSzM\\Controllers\\AuthController.cs",
               "ToolTip": "C:\\Users\\szakacs.mate\\source\\repos\\Vizsgaremek_SzakacsM_BarnaI\\backendSzM\\backendSzM\\Controllers\\AuthController.cs",
               "RelativeToolTip": "backendSzM\\Controllers\\AuthController.cs",
-              "ViewState": "AgIAACUAAAAAAAAAAAAuwDEAAAAsAAAAAAAAAA==",
+              "ViewState": "AgIAABoAAAAAAAAAAADgvy4AAAAMAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-02-09T12:04:57.648Z",
               "EditorCaption": ""

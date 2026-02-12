@@ -23,8 +23,8 @@ namespace backendSzM.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
-                    b.Property<float>("IsBanned")
-                        .HasColumnType("REAL");
+                    b.Property<bool>("IsBanned")
+                        .HasColumnType("INTEGER");
 
                     b.Property<int>("Warnings")
                         .HasColumnType("INTEGER");
@@ -110,9 +110,6 @@ namespace backendSzM.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid>("AuthId")
-                        .HasColumnType("TEXT");
-
                     b.Property<Guid>("BannedId")
                         .HasColumnType("TEXT");
 
@@ -138,7 +135,7 @@ namespace backendSzM.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid?>("TokenId")
+                    b.Property<Guid>("TokenId")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
@@ -175,7 +172,9 @@ namespace backendSzM.Migrations
 
                     b.HasOne("backendSzM.Models.Token", "Token")
                         .WithMany("UserDatas")
-                        .HasForeignKey("TokenId");
+                        .HasForeignKey("TokenId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("BannedUser");
 

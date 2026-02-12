@@ -45,6 +45,18 @@
         }
       }
     },
+    "/api/Auth": {
+      "get": {
+        "tags": [
+          "Auth"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/Auth/login": {
       "post": {
         "tags": [
@@ -77,14 +89,51 @@
         }
       }
     },
-    "/api/Auth": {
-      "get": {
+    "/api/Auth/refresh": {
+      "post": {
         "tags": [
           "Auth"
         ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefreshTokenReqDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefreshTokenReqDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefreshTokenReqDto"
+              }
+            }
+          },
+          "required": true
+        },
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenResponseDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenResponseDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenResponseDto"
+                }
+              }
+            }
           }
         }
       }
@@ -104,6 +153,36 @@
   },
   "components": {
     "schemas": {
+      "RefreshTokenReqDto": {
+        "required": [
+          "refreshToken"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "refreshToken": {
+            "type": "string"
+          }
+        }
+      },
+      "TokenResponseDto": {
+        "required": [
+          "accesToken",
+          "refreshToken"
+        ],
+        "type": "object",
+        "properties": {
+          "accesToken": {
+            "type": "string"
+          },
+          "refreshToken": {
+            "type": "string"
+          }
+        }
+      },
       "UserDataDTO": {
         "type": "object",
         "properties": {

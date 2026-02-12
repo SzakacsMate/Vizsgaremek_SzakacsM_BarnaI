@@ -7,9 +7,11 @@ namespace backendSzM.Models
     {
         
         public Guid Id { get; set; }
+
         
         public Guid UserId { get; set; }
-       
+
+        
         public Guid LobbyId { get; set; }
         public UserData? UserData { get; set; }
         public Lobby? Lobby { get; set; }

@@ -48,17 +48,16 @@ namespace backendSzM.Controllers
             return Ok(user);
             
         }
-        /*
-        public async Task<IActionResult>GetTokens(TokenDTO request)
+        
+       
+        private async Task<Token> ValidateRefreshTokenAsync (Guid Id,string refreskToken)
         {
-            Token ujToken=new Token();
-            ujToken.RefreshToken=request.RefreshToken;
-            ujToken.RefreshTokenExpiryTime=request.RefreshTokenExpiryTime;
-            _context.Tokens.Add(ujToken);
-            
-            await _context.SaveChangesAsync();
-            
-        }*/
+        var token=await _context.Tokens.FirstOrDefaultAsync(u => u.Id == Id);
+            if (token == null || token.RefreshToken!=refreskToken||token.RefreshTokenExpiryTime<=DateTime.Now) {
+                return null;
+            }
+            return token;
+        }
         private string GenRefreshToken()
         {
             var randomN = new byte[32];
@@ -73,6 +72,21 @@ namespace backendSzM.Controllers
             token.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
             await _context.SaveChangesAsync();
             return refreshToken;
+        }
+        public async Task<TokenResponseDto?>RefreshTokenAsync(RefreshTokenReqDto request)
+        {
+            var token=await ValidateRefreshTokenAsync(request.Id, request.RefreshToken);
+            if (token == null)  return null;
+            var user= await _context.Users.FirstOrDefaultAsync(x => x.Id == request.Id);
+            if (user == null) return null;
+            var newAccesToken = CreateToken(user);
+            var newRefreshToken =await GenAndSaveRefreshTokenAsync(token);
+            return new TokenResponseDto
+            {
+                AccesToken = newAccesToken,
+                RefreshToken = newRefreshToken
+            };
+            
         }
         [HttpPost("login")]
         public async Task<IActionResult> Login(UserDataDTO request)
@@ -93,8 +107,17 @@ namespace backendSzM.Controllers
                 AccesToken = token,
                 RefreshToken = await GenAndSaveRefreshTokenAsync(tokenEnt)
             };
+            _context.Add(tokenEnt);
+            await _context.SaveChangesAsync();
             return Ok(refresh_token);
             
+        }
+        [HttpPost("refresh")]
+        public async Task<ActionResult<TokenResponseDto>> RefreshToken(RefreshTokenReqDto request)
+        {
+            var result = await RefreshTokenAsync(request);
+            if (result == null||result.AccesToken is null) { return Unauthorized("Invalid refresh token"); }
+            return Ok(result);
         }
         private string CreateToken(UserData user) {
 

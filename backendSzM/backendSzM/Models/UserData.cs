@@ -13,13 +13,13 @@ namespace backendSzM.Models
         public string Gmail { get; set; } = string.Empty;
         public string Role { get; set; } = string.Empty;
         public int Rep { get; set; } = 0;
-        
+
         
         public Guid BannedId { get; set; }
         public BannedUser? BannedUser { get; set; }
+
         
-        
-        public Guid AuthId { get; set; }
+        public Guid TokenId { get; set; }
         public Token? Token { get; set; }
         
         

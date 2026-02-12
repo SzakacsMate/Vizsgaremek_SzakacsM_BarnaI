@@ -1,6 +1,32 @@
 [
   {
     "ContainingType": "backendSzM.Controllers.AuthController",
+    "Method": "RefreshTokenAsync",
+    "RelativePath": "api/Auth",
+    "HttpMethod": "",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "backendSzM.DTOs.RefreshTokenReqDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "backendSzM.DTOs.TokenResponseDto",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "backendSzM.Controllers.AuthController",
     "Method": "AuthenticatedOnlyEndpoint",
     "RelativePath": "api/Auth",
     "HttpMethod": "GET",
@@ -34,6 +60,32 @@
       }
     ],
     "ReturnTypes": []
+  },
+  {
+    "ContainingType": "backendSzM.Controllers.AuthController",
+    "Method": "RefreshToken",
+    "RelativePath": "api/Auth/refresh",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "backendSzM.DTOs.RefreshTokenReqDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "backendSzM.DTOs.TokenResponseDto",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
   },
   {
     "ContainingType": "backendSzM.Controllers.AuthController",

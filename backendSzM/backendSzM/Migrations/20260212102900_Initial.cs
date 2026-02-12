@@ -16,7 +16,7 @@ namespace backendSzM.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    IsBanned = table.Column<float>(type: "REAL", nullable: false),
+                    IsBanned = table.Column<bool>(type: "INTEGER", nullable: false),
                     Warnings = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
@@ -65,8 +65,7 @@ namespace backendSzM.Migrations
                     Rep = table.Column<int>(type: "INTEGER", nullable: false),
                     BannedId = table.Column<Guid>(type: "TEXT", nullable: false),
                     BannedUserId = table.Column<Guid>(type: "TEXT", nullable: true),
-                    AuthId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    TokenId = table.Column<Guid>(type: "TEXT", nullable: true)
+                    TokenId = table.Column<Guid>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -80,7 +79,8 @@ namespace backendSzM.Migrations
                         name: "FK_Users_Tokens_TokenId",
                         column: x => x.TokenId,
                         principalTable: "Tokens",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
