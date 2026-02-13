@@ -11,7 +11,7 @@ using backendSzM.Data;
 namespace backendSzM.Migrations
 {
     [DbContext(typeof(UserDataDBContext))]
-    [Migration("20260212200735_Initial")]
+    [Migration("20260213093502_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -102,7 +102,12 @@ namespace backendSzM.Migrations
                     b.Property<DateTime?>("RefreshTokenExpiryTime")
                         .HasColumnType("TEXT");
 
+                    b.Property<Guid?>("UserDataId")
+                        .HasColumnType("TEXT");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("UserDataId");
 
                     b.ToTable("Tokens");
                 });
@@ -167,6 +172,15 @@ namespace backendSzM.Migrations
                     b.Navigation("UserData");
                 });
 
+            modelBuilder.Entity("backendSzM.Models.Token", b =>
+                {
+                    b.HasOne("backendSzM.Models.UserData", "UserData")
+                        .WithMany()
+                        .HasForeignKey("UserDataId");
+
+                    b.Navigation("UserData");
+                });
+
             modelBuilder.Entity("backendSzM.Models.UserData", b =>
                 {
                     b.HasOne("backendSzM.Models.BannedUser", "BannedUser")
@@ -174,7 +188,7 @@ namespace backendSzM.Migrations
                         .HasForeignKey("BannedUserId");
 
                     b.HasOne("backendSzM.Models.Token", "Token")
-                        .WithMany("UserDatas")
+                        .WithMany()
                         .HasForeignKey("TokenId");
 
                     b.Navigation("BannedUser");
@@ -190,11 +204,6 @@ namespace backendSzM.Migrations
             modelBuilder.Entity("backendSzM.Models.Lobby", b =>
                 {
                     b.Navigation("LobbyCons");
-                });
-
-            modelBuilder.Entity("backendSzM.Models.Token", b =>
-                {
-                    b.Navigation("UserDatas");
                 });
 
             modelBuilder.Entity("backendSzM.Models.UserData", b =>

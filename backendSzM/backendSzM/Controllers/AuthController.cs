@@ -31,7 +31,7 @@ namespace backendSzM.Controllers
         [HttpPost("register")]
         public  async Task<IActionResult> Register(UserDataDTO request)
         {
-           // var user = _context.Users.FirstOrDefault();
+            var user = _context.Users.FirstOrDefault();
             if (await _context.Users.AnyAsync(u => u.Name == request.Name))
             {
                 return BadRequest();
@@ -43,8 +43,10 @@ namespace backendSzM.Controllers
             ujUserData.Hash = hashedPassword;
             ujUserData.Gmail=request.Gmail;
             ujUserData.Role=request.Role;
-            var tokenEnt = new Token();
-            ujUserData.Token = tokenEnt;
+            BannedUser ujBanned = new BannedUser();
+            ujBanned.Warnings = 0;
+            ujBanned.IsBanned = false;
+            _context.BannedUsers.Add(ujBanned);
             _context.Users.Add(ujUserData);
             await _context.SaveChangesAsync();
             return Ok(new { ujUserData.Id, ujUserData.Name, ujUserData.Gmail, ujUserData.Role });
@@ -52,72 +54,48 @@ namespace backendSzM.Controllers
         }
 
 
-        private async Task<Token> ValidateRefreshTokenAsync (Guid Id,string refreskToken)
-        {
-        var token=await _context.Tokens.FirstOrDefaultAsync(u => u.Id == Id);
-            if (token == null || token.RefreshToken!=refreskToken||token.RefreshTokenExpiryTime<=DateTime.Now) {
-                return null;
-            }
-            return token;
-        }
-        private string GenRefreshToken()
-        {
-            var randomN = new byte[32];
-            using var rng =RandomNumberGenerator.Create();
-            rng.GetBytes(randomN);
-            return Convert.ToBase64String(randomN);
-        }
-        private async Task<string> GenAndSaveRefreshTokenAsync(Token token)
-        {
-            var refreshToken = GenRefreshToken();
-            token.RefreshToken = refreshToken;
-            token.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
-            await _context.SaveChangesAsync();
-            return refreshToken;
-        }
-        public async Task<TokenResponseDto?>RefreshTokenAsync(RefreshTokenReqDto request)
-        {
-            var token=await ValidateRefreshTokenAsync(request.Id, request.RefreshToken);
-            if (token == null)  return null;
-            var user= await _context.Users.FirstOrDefaultAsync(x => x.Id == request.Id);
-            if (user == null) return null;
-            var newAccesToken = CreateToken(user);
-            var newRefreshToken =await GenAndSaveRefreshTokenAsync(token);
-            return new TokenResponseDto
-            {
-                AccesToken = newAccesToken,
-                RefreshToken = newRefreshToken
-            };
-            
-        }
+        
         [HttpPost("login")]
         public async Task<IActionResult> Login(UserDataDTO request)
         {
+
             var user = _context.Users.FirstOrDefault(u => u.Gmail == request.Gmail && u.Name == request.Name);
+            var CurrentBan = _context.BannedUsers.Where(x => x.Id == user.Id).FirstOrDefault();
+           
+
             if (user == null)
             {
                 return Unauthorized();
             }
-            if(new PasswordHasher<UserData>().VerifyHashedPassword(user,user.Hash,request.Password)==PasswordVerificationResult.Failed)
+            if (CurrentBan.IsBanned == true)
+            {
+                return Unauthorized("Ki vagy bannolva (womp womp)");
+            }
+            if (new PasswordHasher<UserData>().VerifyHashedPassword(user,user.Hash,request.Password)==PasswordVerificationResult.Failed)
             {
                 return Unauthorized("Rossz jelszó");
             }
-            string accestoken = CreateToken(user);
-            if (user.Token == null)
+            var CurrentToken = _context.Tokens.Where(x => x.Id ==user.Id).FirstOrDefault();
+            
+
+
+            if (CurrentToken== null)
             { 
                var  newToken = new Token();
-                user.Token = newToken;
+                newToken.Id = Guid.NewGuid();
+                newToken.UserDataId =user.Id;
+                CurrentToken = newToken;
                 _context.Tokens.Add(newToken);
                 await _context.SaveChangesAsync();
             }
-            var tokenEnt = user.Token;
+            string accestoken = CreateToken(user);
+            
             var refresh_token = new TokenResponseDto
             {
                 AccesToken = accestoken,
-                RefreshToken = await GenAndSaveRefreshTokenAsync(tokenEnt)
+                RefreshToken = await GenAndSaveRefreshTokenAsync(CurrentToken)
             };
-            _context.Add(tokenEnt);
-            await _context.SaveChangesAsync();
+          
             return Ok(refresh_token);
             
         }
@@ -159,6 +137,45 @@ namespace backendSzM.Controllers
         public IActionResult AdminOnlyEndpoint()
         {
             return Ok("You are an admin!");
+        }
+        private async Task<Token> ValidateRefreshTokenAsync(Guid Id, string refreskToken)
+        {
+            var token = await _context.Tokens.FirstOrDefaultAsync(u => u.Id == Id);
+            if (token == null || token.RefreshToken != refreskToken || token.RefreshTokenExpiryTime <= DateTime.Now)
+            {
+                return null;
+            }
+            return token;
+        }
+        private string GenRefreshToken()
+        {
+            var randomN = new byte[32];
+            using var rng = RandomNumberGenerator.Create();
+            rng.GetBytes(randomN);
+            return Convert.ToBase64String(randomN);
+        }
+        private async Task<string> GenAndSaveRefreshTokenAsync(Token token)
+        {
+            var refreshToken = GenRefreshToken();
+            token.RefreshToken = refreshToken;
+            token.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
+            await _context.SaveChangesAsync();
+            return refreshToken;
+        }
+        public async Task<TokenResponseDto?> RefreshTokenAsync(RefreshTokenReqDto request)
+        {
+            var token = await ValidateRefreshTokenAsync(request.Id, request.RefreshToken);
+            if (token == null) return null;
+            var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == request.Id);
+            if (user == null) return null;
+            var newAccesToken = CreateToken(user);
+            var newRefreshToken = await GenAndSaveRefreshTokenAsync(token);
+            return new TokenResponseDto
+            {
+                AccesToken = newAccesToken,
+                RefreshToken = newRefreshToken
+            };
+
         }
     }
 }

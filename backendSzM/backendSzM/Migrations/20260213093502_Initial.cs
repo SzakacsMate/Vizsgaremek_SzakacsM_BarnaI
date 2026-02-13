@@ -41,12 +41,33 @@ namespace backendSzM.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "LobbyCons",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    UserId = table.Column<Guid>(type: "TEXT", nullable: false),
+                    UserDataId = table.Column<Guid>(type: "TEXT", nullable: true),
+                    LobbyId = table.Column<Guid>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_LobbyCons", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_LobbyCons_Lobbies_LobbyId",
+                        column: x => x.LobbyId,
+                        principalTable: "Lobbies",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Tokens",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "TEXT", nullable: false),
                     RefreshToken = table.Column<string>(type: "TEXT", nullable: true),
-                    RefreshTokenExpiryTime = table.Column<DateTime>(type: "TEXT", nullable: true)
+                    RefreshTokenExpiryTime = table.Column<DateTime>(type: "TEXT", nullable: true),
+                    UserDataId = table.Column<Guid>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -82,31 +103,6 @@ namespace backendSzM.Migrations
                         principalColumn: "Id");
                 });
 
-            migrationBuilder.CreateTable(
-                name: "LobbyCons",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    UserId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    UserDataId = table.Column<Guid>(type: "TEXT", nullable: true),
-                    LobbyId = table.Column<Guid>(type: "TEXT", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_LobbyCons", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_LobbyCons_Lobbies_LobbyId",
-                        column: x => x.LobbyId,
-                        principalTable: "Lobbies",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_LobbyCons_Users_UserDataId",
-                        column: x => x.UserDataId,
-                        principalTable: "Users",
-                        principalColumn: "Id");
-                });
-
             migrationBuilder.CreateIndex(
                 name: "IX_LobbyCons_LobbyId",
                 table: "LobbyCons",
@@ -118,6 +114,11 @@ namespace backendSzM.Migrations
                 column: "UserDataId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Tokens_UserDataId",
+                table: "Tokens",
+                column: "UserDataId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Users_BannedUserId",
                 table: "Users",
                 column: "BannedUserId");
@@ -126,11 +127,29 @@ namespace backendSzM.Migrations
                 name: "IX_Users_TokenId",
                 table: "Users",
                 column: "TokenId");
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_LobbyCons_Users_UserDataId",
+                table: "LobbyCons",
+                column: "UserDataId",
+                principalTable: "Users",
+                principalColumn: "Id");
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_Tokens_Users_UserDataId",
+                table: "Tokens",
+                column: "UserDataId",
+                principalTable: "Users",
+                principalColumn: "Id");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropForeignKey(
+                name: "FK_Tokens_Users_UserDataId",
+                table: "Tokens");
+
             migrationBuilder.DropTable(
                 name: "LobbyCons");
 
