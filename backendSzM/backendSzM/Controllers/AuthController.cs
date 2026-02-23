@@ -116,13 +116,29 @@ namespace backendSzM.Controllers
             newLobbyCon.Id=Guid.NewGuid();
             newLobbyCon.UserDataId = user.Id;
             newLobbyCon.LobbyId=ujLobby.Id;
-            Console.WriteLine(ujLobby.Id);
+            
             _context.Lobbies.Add(ujLobby);
             await _context.SaveChangesAsync();
             _context.LobbyCons.Add(newLobbyCon);
             await _context.SaveChangesAsync();
             return Ok(new());
         }
+        [HttpPost("AddPlayer")]
+        public async Task<IActionResult> AddPlayer(JoinLobbyDTO request)
+        {
+            var user = _context.Users.FirstOrDefault(x => x.Id == request.PlayerId);
+            var lobby=_context.Lobbies.FirstOrDefault(x=>x.Id == request.LobbyId);
+            LobbyCon newLobbyCon = new LobbyCon();
+            newLobbyCon.Id = Guid.NewGuid();
+            newLobbyCon.UserDataId = user.Id;
+            newLobbyCon.LobbyId = lobby.Id;
+            _context.LobbyCons.Add(newLobbyCon);
+            await _context.SaveChangesAsync();
+            return Ok(new());
+        }
+
+       
+
         [HttpDelete("{Id}")]
         public async Task<ActionResult> DeleteJelolt(Guid Id)
         {

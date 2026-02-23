@@ -109,6 +109,38 @@
         }
       }
     },
+    "/api/Auth/AddPlayer": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/JoinLobbyDTO"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/JoinLobbyDTO"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/JoinLobbyDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/Auth/{Id}": {
       "delete": {
         "tags": [
@@ -208,6 +240,19 @@
   },
   "components": {
     "schemas": {
+      "JoinLobbyDTO": {
+        "type": "object",
+        "properties": {
+          "lobbyId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "playerId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      },
       "LobbyDTO": {
         "type": "object",
         "properties": {

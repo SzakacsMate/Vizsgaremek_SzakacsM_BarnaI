@@ -14,9 +14,7 @@ namespace backendSzM.Models
         public string Role { get; set; } = string.Empty;
         public int Rep { get; set; } = 0;
         public int Warnings { get; set; } = 0;
-
-        public Guid? BannedId { get; set; }
-        public BannedUser? BannedUser { get; set; }
+ 
 
         [ForeignKey(nameof(Token))]
         public Guid? TokenId { get; set; }
