@@ -32,9 +32,14 @@ namespace backendSzM.Controllers
         public  async Task<IActionResult> Register(UserDataDTO request)
         {
             var user = _context.Users.FirstOrDefault();
+            var banned=_context.BannedUsers.FirstOrDefault(x=>x.BannedGmail==request.Gmail);
             if (await _context.Users.AnyAsync(u => u.Name == request.Name))
             {
-                return BadRequest();
+                return BadRequest("Már van ilyen felhasználó");
+            }
+            if(banned!=null)
+            {
+                return Unauthorized("Ez a Gmail ki van bannolva");
             }
             UserData ujUserData=new UserData();
             var hashedPassword=new PasswordHasher<UserData>()
@@ -94,15 +99,27 @@ namespace backendSzM.Controllers
         [HttpPost("Create Lobby")]
         public async Task<IActionResult> CreateLobby(LobbyDTO request)
         {
-            var user = _context.Users.FirstOrDefault();
-            
+            var user = _context.Users.FirstOrDefault(x=>x.Name==request.Dm);
+
+            if (user == null)
+            {
+              return BadRequest("Nincs ilyen felhasználó");
+            }
             Lobby ujLobby = new Lobby();
+            ujLobby.Id = Guid.NewGuid();
             ujLobby.Dm = user.Name;
             ujLobby.Location = request.Location;
             ujLobby.TimeDate = request.TimeDate;
             ujLobby.PlayerLimit = request.PlayerLimit;
             ujLobby.TtType = request.TtType;
+            LobbyCon newLobbyCon = new LobbyCon();
+            newLobbyCon.Id=Guid.NewGuid();
+            newLobbyCon.UserDataId = user.Id;
+            newLobbyCon.LobbyId=ujLobby.Id;
+            Console.WriteLine(ujLobby.Id);
             _context.Lobbies.Add(ujLobby);
+            await _context.SaveChangesAsync();
+            _context.LobbyCons.Add(newLobbyCon);
             await _context.SaveChangesAsync();
             return Ok(new());
         }
@@ -116,6 +133,10 @@ namespace backendSzM.Controllers
             {
                 return NotFound();
             }
+            BannedUser ujBanned = new BannedUser();
+            ujBanned.Id = Guid.NewGuid();
+            ujBanned.BannedGmail = torlendoJelolt.Gmail;
+            _context.BannedUsers.Add(ujBanned);
             _context.Users.Remove(torlendoJelolt);
             _context.Tokens.Remove(torlendoJeloltToken);
             await _context.SaveChangesAsync();

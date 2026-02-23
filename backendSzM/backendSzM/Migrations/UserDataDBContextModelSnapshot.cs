@@ -70,10 +70,7 @@ namespace backendSzM.Migrations
                     b.Property<Guid>("LobbyId")
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid?>("UserDataId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<Guid>("UserId")
+                    b.Property<Guid>("UserDataId")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
@@ -163,7 +160,9 @@ namespace backendSzM.Migrations
 
                     b.HasOne("backendSzM.Models.UserData", "UserData")
                         .WithMany("LobbyCons")
-                        .HasForeignKey("UserDataId");
+                        .HasForeignKey("UserDataId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Lobby");
 

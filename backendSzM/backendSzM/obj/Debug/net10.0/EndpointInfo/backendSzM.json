@@ -211,6 +211,9 @@
       "LobbyDTO": {
         "type": "object",
         "properties": {
+          "dm": {
+            "type": "string"
+          },
           "ttType": {
             "type": "string"
           },

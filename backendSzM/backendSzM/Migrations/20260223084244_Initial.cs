@@ -44,8 +44,7 @@ namespace backendSzM.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    UserId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    UserDataId = table.Column<Guid>(type: "TEXT", nullable: true),
+                    UserDataId = table.Column<Guid>(type: "TEXT", nullable: false),
                     LobbyId = table.Column<Guid>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
@@ -133,7 +132,8 @@ namespace backendSzM.Migrations
                 table: "LobbyCons",
                 column: "UserDataId",
                 principalTable: "Users",
-                principalColumn: "Id");
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade);
 
             migrationBuilder.AddForeignKey(
                 name: "FK_Tokens_Users_UserDataId",

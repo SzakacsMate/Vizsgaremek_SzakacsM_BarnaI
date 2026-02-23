@@ -11,7 +11,7 @@ using backendSzM.Data;
 namespace backendSzM.Migrations
 {
     [DbContext(typeof(UserDataDBContext))]
-    [Migration("20260222150227_Initial")]
+    [Migration("20260223084244_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -73,10 +73,7 @@ namespace backendSzM.Migrations
                     b.Property<Guid>("LobbyId")
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid?>("UserDataId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<Guid>("UserId")
+                    b.Property<Guid>("UserDataId")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
@@ -166,7 +163,9 @@ namespace backendSzM.Migrations
 
                     b.HasOne("backendSzM.Models.UserData", "UserData")
                         .WithMany("LobbyCons")
-                        .HasForeignKey("UserDataId");
+                        .HasForeignKey("UserDataId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Lobby");
 
