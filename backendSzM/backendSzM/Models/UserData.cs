@@ -21,9 +21,12 @@ namespace backendSzM.Models
         [ForeignKey(nameof(Token))]
         public Guid? TokenId { get; set; }
         public Token? Token { get; set; }
-        
-        
-        
+        /*
+        public Guid KommentId { get; set; }
+        public Komment? Komment { get; set; }*/
+
+
+
         public ICollection<LobbyCon>? LobbyCons { get; set; } = new List<LobbyCon>();
 
         

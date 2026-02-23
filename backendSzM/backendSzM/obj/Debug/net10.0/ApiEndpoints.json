@@ -37,12 +37,44 @@
   },
   {
     "ContainingType": "backendSzM.Controllers.AuthController",
+    "Method": "DeleteJelolt",
+    "RelativePath": "api/Auth/{Id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "Id",
+        "Type": "System.Guid",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "backendSzM.Controllers.AuthController",
     "Method": "AdminOnlyEndpoint",
     "RelativePath": "api/Auth/admin-only",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
     "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "backendSzM.Controllers.AuthController",
+    "Method": "CreateLobby",
+    "RelativePath": "api/Auth/Create Lobby",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "backendSzM.DTOs.LobbyDTO",
+        "IsRequired": true
+      }
+    ],
     "ReturnTypes": []
   },
   {

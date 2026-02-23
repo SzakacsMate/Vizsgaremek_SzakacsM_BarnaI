@@ -16,8 +16,7 @@ namespace backendSzM.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    IsBanned = table.Column<bool>(type: "INTEGER", nullable: false),
-                    Warnings = table.Column<int>(type: "INTEGER", nullable: false)
+                    BannedGmail = table.Column<string>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -84,6 +83,7 @@ namespace backendSzM.Migrations
                     Gmail = table.Column<string>(type: "TEXT", nullable: false),
                     Role = table.Column<string>(type: "TEXT", nullable: false),
                     Rep = table.Column<int>(type: "INTEGER", nullable: false),
+                    Warnings = table.Column<int>(type: "INTEGER", nullable: false),
                     BannedId = table.Column<Guid>(type: "TEXT", nullable: true),
                     BannedUserId = table.Column<Guid>(type: "TEXT", nullable: true),
                     TokenId = table.Column<Guid>(type: "TEXT", nullable: true)

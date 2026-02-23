@@ -77,6 +77,61 @@
         }
       }
     },
+    "/api/Auth/Create Lobby": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LobbyDTO"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LobbyDTO"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/LobbyDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Auth/{Id}": {
+      "delete": {
+        "tags": [
+          "Auth"
+        ],
+        "parameters": [
+          {
+            "name": "Id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/Auth/refresh": {
       "post": {
         "tags": [
@@ -153,6 +208,29 @@
   },
   "components": {
     "schemas": {
+      "LobbyDTO": {
+        "type": "object",
+        "properties": {
+          "ttType": {
+            "type": "string"
+          },
+          "location": {
+            "type": "string"
+          },
+          "timeDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "playerLimit": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          }
+        }
+      },
       "RefreshTokenReqDto": {
         "required": [
           "refreshToken"

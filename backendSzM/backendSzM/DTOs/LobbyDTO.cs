@@ -2,7 +2,7 @@
 {
     public class LobbyDTO
     {
-        public string Dm { get; set; } =string.Empty;
+        
         public string TtType { get; set; } =string.Empty; 
         public string Location { get; set; }=string.Empty;
         public DateTime TimeDate { get; set; }

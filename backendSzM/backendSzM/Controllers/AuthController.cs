@@ -43,10 +43,6 @@ namespace backendSzM.Controllers
             ujUserData.Hash = hashedPassword;
             ujUserData.Gmail=request.Gmail;
             ujUserData.Role=request.Role;
-            BannedUser ujBanned = new BannedUser();
-            ujBanned.Warnings = 0;
-            ujBanned.IsBanned = false;
-            _context.BannedUsers.Add(ujBanned);
             _context.Users.Add(ujUserData);
             await _context.SaveChangesAsync();
             return Ok(new { ujUserData.Id, ujUserData.Name, ujUserData.Gmail, ujUserData.Role });
@@ -60,16 +56,12 @@ namespace backendSzM.Controllers
         {
 
             var user = _context.Users.FirstOrDefault(u => u.Gmail == request.Gmail && u.Name == request.Name);
-            var CurrentBan = _context.BannedUsers.Where(x => x.Id == user.Id).FirstOrDefault();
+            
            
 
             if (user == null)
             {
                 return Unauthorized();
-            }
-            if (CurrentBan.IsBanned == true)
-            {
-                return Unauthorized("Ki vagy bannolva (womp womp)");
             }
             if (new PasswordHasher<UserData>().VerifyHashedPassword(user,user.Hash,request.Password)==PasswordVerificationResult.Failed)
             {
@@ -98,6 +90,36 @@ namespace backendSzM.Controllers
           
             return Ok(refresh_token);
             
+        }
+        [HttpPost("Create Lobby")]
+        public async Task<IActionResult> CreateLobby(LobbyDTO request)
+        {
+            var user = _context.Users.FirstOrDefault();
+            
+            Lobby ujLobby = new Lobby();
+            ujLobby.Dm = user.Name;
+            ujLobby.Location = request.Location;
+            ujLobby.TimeDate = request.TimeDate;
+            ujLobby.PlayerLimit = request.PlayerLimit;
+            ujLobby.TtType = request.TtType;
+            _context.Lobbies.Add(ujLobby);
+            await _context.SaveChangesAsync();
+            return Ok(new());
+        }
+        [HttpDelete("{Id}")]
+        public async Task<ActionResult> DeleteJelolt(Guid Id)
+        {
+            var torlendoJelolt = _context?.Users.Where(x=>x.Id==Id).FirstOrDefault();
+            var torlendoJeloltToken = _context?.Tokens.Where(x => x.UserDataId ==Id).FirstOrDefault();
+
+            if (torlendoJelolt == null)
+            {
+                return NotFound();
+            }
+            _context.Users.Remove(torlendoJelolt);
+            _context.Tokens.Remove(torlendoJeloltToken);
+            await _context.SaveChangesAsync();
+            return Ok();
         }
         [HttpPost("refresh")]
         public async Task<ActionResult<TokenResponseDto>> RefreshToken(RefreshTokenReqDto request)
