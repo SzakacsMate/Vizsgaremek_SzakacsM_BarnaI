@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "2S6c4gL0YvU=",
+  "dgSpecHash": "TJttC/G+fgw=",
   "success": true,
   "projectFilePath": "C:\\Users\\szakacs.mate\\source\\repos\\Vizsgaremek_SzakacsM_BarnaI\\backendSzM\\backendSzM\\backendSzM.csproj",
   "expectedPackageFiles": [
@@ -23,16 +23,7 @@
     "C:\\Users\\szakacs.mate\\.nuget\\packages\\microsoft.entityframeworkcore.sqlite\\10.0.2\\microsoft.entityframeworkcore.sqlite.10.0.2.nupkg.sha512",
     "C:\\Users\\szakacs.mate\\.nuget\\packages\\microsoft.entityframeworkcore.sqlite.core\\10.0.2\\microsoft.entityframeworkcore.sqlite.core.10.0.2.nupkg.sha512",
     "C:\\Users\\szakacs.mate\\.nuget\\packages\\microsoft.entityframeworkcore.tools\\10.0.2\\microsoft.entityframeworkcore.tools.10.0.2.nupkg.sha512",
-    "C:\\Users\\szakacs.mate\\.nuget\\packages\\microsoft.extensions.caching.abstractions\\10.0.2\\microsoft.extensions.caching.abstractions.10.0.2.nupkg.sha512",
-    "C:\\Users\\szakacs.mate\\.nuget\\packages\\microsoft.extensions.caching.memory\\10.0.2\\microsoft.extensions.caching.memory.10.0.2.nupkg.sha512",
-    "C:\\Users\\szakacs.mate\\.nuget\\packages\\microsoft.extensions.configuration.abstractions\\10.0.2\\microsoft.extensions.configuration.abstractions.10.0.2.nupkg.sha512",
-    "C:\\Users\\szakacs.mate\\.nuget\\packages\\microsoft.extensions.dependencyinjection\\10.0.2\\microsoft.extensions.dependencyinjection.10.0.2.nupkg.sha512",
-    "C:\\Users\\szakacs.mate\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\10.0.2\\microsoft.extensions.dependencyinjection.abstractions.10.0.2.nupkg.sha512",
     "C:\\Users\\szakacs.mate\\.nuget\\packages\\microsoft.extensions.dependencymodel\\10.0.2\\microsoft.extensions.dependencymodel.10.0.2.nupkg.sha512",
-    "C:\\Users\\szakacs.mate\\.nuget\\packages\\microsoft.extensions.logging\\10.0.2\\microsoft.extensions.logging.10.0.2.nupkg.sha512",
-    "C:\\Users\\szakacs.mate\\.nuget\\packages\\microsoft.extensions.logging.abstractions\\10.0.2\\microsoft.extensions.logging.abstractions.10.0.2.nupkg.sha512",
-    "C:\\Users\\szakacs.mate\\.nuget\\packages\\microsoft.extensions.options\\10.0.2\\microsoft.extensions.options.10.0.2.nupkg.sha512",
-    "C:\\Users\\szakacs.mate\\.nuget\\packages\\microsoft.extensions.primitives\\10.0.2\\microsoft.extensions.primitives.10.0.2.nupkg.sha512",
     "C:\\Users\\szakacs.mate\\.nuget\\packages\\microsoft.identitymodel.abstractions\\8.15.0\\microsoft.identitymodel.abstractions.8.15.0.nupkg.sha512",
     "C:\\Users\\szakacs.mate\\.nuget\\packages\\microsoft.identitymodel.jsonwebtokens\\8.15.0\\microsoft.identitymodel.jsonwebtokens.8.15.0.nupkg.sha512",
     "C:\\Users\\szakacs.mate\\.nuget\\packages\\microsoft.identitymodel.logging\\8.15.0\\microsoft.identitymodel.logging.8.15.0.nupkg.sha512",
@@ -55,9 +46,7 @@
     "C:\\Users\\szakacs.mate\\.nuget\\packages\\system.composition.hosting\\9.0.0\\system.composition.hosting.9.0.0.nupkg.sha512",
     "C:\\Users\\szakacs.mate\\.nuget\\packages\\system.composition.runtime\\9.0.0\\system.composition.runtime.9.0.0.nupkg.sha512",
     "C:\\Users\\szakacs.mate\\.nuget\\packages\\system.composition.typedparts\\9.0.0\\system.composition.typedparts.9.0.0.nupkg.sha512",
-    "C:\\Users\\szakacs.mate\\.nuget\\packages\\system.identitymodel.tokens.jwt\\8.15.0\\system.identitymodel.tokens.jwt.8.15.0.nupkg.sha512",
-    "C:\\Users\\szakacs.mate\\.nuget\\packages\\system.memory\\4.5.3\\system.memory.4.5.3.nupkg.sha512",
-    "C:\\Users\\szakacs.mate\\.nuget\\packages\\system.text.json\\8.0.5\\system.text.json.8.0.5.nupkg.sha512"
+    "C:\\Users\\szakacs.mate\\.nuget\\packages\\system.identitymodel.tokens.jwt\\8.15.0\\system.identitymodel.tokens.jwt.8.15.0.nupkg.sha512"
   ],
   "logs": []
 }

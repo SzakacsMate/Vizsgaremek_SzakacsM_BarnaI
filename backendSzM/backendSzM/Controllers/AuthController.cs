@@ -47,7 +47,7 @@ namespace backendSzM.Controllers
             ujUserData.Name=request.Name;
             ujUserData.Hash = hashedPassword;
             ujUserData.Gmail=request.Gmail;
-            ujUserData.Role="User";
+            ujUserData.Role=request.Role;
             ujUserData.Rep = 0;
             _context.Users.Add(ujUserData);
             await _context.SaveChangesAsync();
@@ -98,10 +98,10 @@ namespace backendSzM.Controllers
             
         }
         [HttpPatch("Change Role")]
-        public async Task<IActionResult>ChangeRole(RoleDTO role,Guid Id)
+        public async Task<IActionResult>ChangeRole(RoleDTO role,Guid Id,Guid Id2)
         {
             var changedUser = _context.Users.FirstOrDefault(x => x.Id ==Id);
-            var roleChanger = _context.Users.FirstOrDefault(x=>x.Id ==Id&& role.Role=="Admin");
+            var roleChanger = _context.Users.FirstOrDefault(x=>x.Id ==Id2&& role.Role=="Admin");
             if (changedUser == null)
             {
                 return BadRequest("Nincs ilyen felhasználó");
@@ -161,7 +161,16 @@ namespace backendSzM.Controllers
             return Ok(new());
         }
 
-       
+        [HttpPost("WriteComment")]
+        public async Task<IActionResult>Comment(KommentDTO request)
+        {
+            Komment ujKomment=new Komment();
+            ujKomment.KommentSzoveg=request.KommentSzoveg;
+
+            _context.Komments.Add(ujKomment);
+            await _context.SaveChangesAsync();
+            return Ok(new());   
+        }
 
         [HttpDelete("{Id}")]
         public async Task<ActionResult> DeleteJelolt(Guid Id)
@@ -203,7 +212,7 @@ namespace backendSzM.Controllers
                 issuer:_configuration.GetValue<string>("Appsettings:Issuer"),
                 audience: _configuration.GetValue<string>("Appsettings:Audience"),
                 claims:claims,
-                expires:DateTime.UtcNow.AddDays(1),
+                expires:DateTime.UtcNow.AddMinutes(5),
                 signingCredentials:creds
                 );
             return new JwtSecurityTokenHandler().WriteToken(tokenDescriptor);
@@ -241,7 +250,7 @@ namespace backendSzM.Controllers
         {
             var refreshToken = GenRefreshToken();
             token.RefreshToken = refreshToken;
-            token.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
+            token.RefreshTokenExpiryTime = DateTime.UtcNow.AddMinutes(10);
             await _context.SaveChangesAsync();
             return refreshToken;
         }

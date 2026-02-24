@@ -90,6 +90,14 @@
               "type": "string",
               "format": "uuid"
             }
+          },
+          {
+            "name": "Id2",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
           }
         ],
         "requestBody": {
@@ -171,6 +179,38 @@
             "application/*+json": {
               "schema": {
                 "$ref": "#/components/schemas/JoinLobbyDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Auth/WriteComment": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/KommentDTO"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/KommentDTO"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/KommentDTO"
               }
             }
           },
@@ -295,6 +335,20 @@
           }
         }
       },
+      "KommentDTO": {
+        "type": "object",
+        "properties": {
+          "kommentSzoveg": {
+            "type": "string"
+          },
+          "kommentalo": {
+            "type": "string"
+          },
+          "fogado": {
+            "type": "string"
+          }
+        }
+      },
       "LobbyDTO": {
         "type": "object",
         "properties": {
@@ -380,6 +434,9 @@
             "type": "string"
           },
           "password": {
+            "type": "string"
+          },
+          "role": {
             "type": "string"
           }
         }

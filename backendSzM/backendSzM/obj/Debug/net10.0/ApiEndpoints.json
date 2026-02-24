@@ -94,6 +94,11 @@
         "Name": "Id",
         "Type": "System.Guid",
         "IsRequired": false
+      },
+      {
+        "Name": "Id2",
+        "Type": "System.Guid",
+        "IsRequired": false
       }
     ],
     "ReturnTypes": []
@@ -167,6 +172,22 @@
       {
         "Name": "request",
         "Type": "backendSzM.DTOs.UserDataDTO",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "backendSzM.Controllers.AuthController",
+    "Method": "Comment",
+    "RelativePath": "api/Auth/WriteComment",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "backendSzM.DTOs.KommentDTO",
         "IsRequired": true
       }
     ],
