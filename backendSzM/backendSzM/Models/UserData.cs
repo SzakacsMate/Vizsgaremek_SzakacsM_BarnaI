@@ -11,7 +11,7 @@ namespace backendSzM.Models
 
         public string Hash { get; set; } = string.Empty;
         public string Gmail { get; set; } = string.Empty;
-        public string Role { get; set; } = string.Empty;
+        public string Role { get; set; } = "User";
         public int Rep { get; set; } = 0;
         public int Warnings { get; set; } = 0;
  
@@ -19,9 +19,9 @@ namespace backendSzM.Models
         [ForeignKey(nameof(Token))]
         public Guid? TokenId { get; set; }
         public Token? Token { get; set; }
-        /*
-        public Guid KommentId { get; set; }
-        public Komment? Komment { get; set; }*/
+        
+        
+        public ICollection<Komment>? Komments { get; set; } = new List<Komment>();
 
 
 

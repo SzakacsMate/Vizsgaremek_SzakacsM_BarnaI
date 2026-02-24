@@ -8,5 +8,7 @@
         
         public DateTime TimeDate { get; set; } = new DateTime();
         public int PlayerLimit { get; set; } = 0;
+        public string Image { get; set; } = string.Empty;
+
     }
 }

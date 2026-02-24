@@ -1,4 +1,6 @@
-﻿namespace backendSzM.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace backendSzM.Models
 {
     public class Komment
     {
@@ -6,6 +8,8 @@
         public string KommentSzoveg { get; set; } = string.Empty;
         public string Kommentalo { get; set; } = string.Empty;
         public string Fogado { get; set; } = string.Empty;
-       // public ICollection<UserData>? UserDatas { get; set; } = new List<UserData>();
+        [ForeignKey(nameof(userData))]
+        public Guid UserId { get; set; }
+        public UserData? userData { get; set; }
     }
 }

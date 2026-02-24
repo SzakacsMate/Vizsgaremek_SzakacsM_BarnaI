@@ -77,6 +77,48 @@
         }
       }
     },
+    "/api/Auth/Change Role": {
+      "patch": {
+        "tags": [
+          "Auth"
+        ],
+        "parameters": [
+          {
+            "name": "Id",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RoleDTO"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RoleDTO"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/RoleDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/Auth/Create Lobby": {
       "post": {
         "tags": [
@@ -276,6 +318,9 @@
               "string"
             ],
             "format": "int32"
+          },
+          "image": {
+            "type": "string"
           }
         }
       },
@@ -290,6 +335,22 @@
             "format": "uuid"
           },
           "refreshToken": {
+            "type": "string"
+          }
+        }
+      },
+      "RoleDTO": {
+        "type": "object",
+        "properties": {
+          "changedUser": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "roleChanger": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "role": {
             "type": "string"
           }
         }
@@ -320,17 +381,6 @@
           },
           "password": {
             "type": "string"
-          },
-          "role": {
-            "type": "string"
-          },
-          "rep": {
-            "pattern": "^-?(?:0|[1-9]\\d*)$",
-            "type": [
-              "integer",
-              "string"
-            ],
-            "format": "int32"
           }
         }
       }

@@ -11,7 +11,7 @@ using backendSzM.Data;
 namespace backendSzM.Migrations
 {
     [DbContext(typeof(UserDataDBContext))]
-    [Migration("20260223084244_Initial")]
+    [Migration("20260224094752_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -35,6 +35,34 @@ namespace backendSzM.Migrations
                     b.ToTable("BannedUsers");
                 });
 
+            modelBuilder.Entity("backendSzM.Models.Komment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Fogado")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("KommentSzoveg")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Kommentalo")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Komments");
+                });
+
             modelBuilder.Entity("backendSzM.Models.Lobby", b =>
                 {
                     b.Property<Guid>("Id")
@@ -42,6 +70,10 @@ namespace backendSzM.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Dm")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Image")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
@@ -113,12 +145,6 @@ namespace backendSzM.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid?>("BannedId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<Guid?>("BannedUserId")
-                        .HasColumnType("TEXT");
-
                     b.Property<string>("Gmail")
                         .IsRequired()
                         .HasColumnType("TEXT");
@@ -146,11 +172,20 @@ namespace backendSzM.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("BannedUserId");
-
                     b.HasIndex("TokenId");
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("backendSzM.Models.Komment", b =>
+                {
+                    b.HasOne("backendSzM.Models.UserData", "userData")
+                        .WithMany("Komments")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("userData");
                 });
 
             modelBuilder.Entity("backendSzM.Models.LobbyCon", b =>
@@ -183,15 +218,9 @@ namespace backendSzM.Migrations
 
             modelBuilder.Entity("backendSzM.Models.UserData", b =>
                 {
-                    b.HasOne("backendSzM.Models.BannedUser", "BannedUser")
-                        .WithMany()
-                        .HasForeignKey("BannedUserId");
-
                     b.HasOne("backendSzM.Models.Token", "Token")
                         .WithMany()
                         .HasForeignKey("TokenId");
-
-                    b.Navigation("BannedUser");
 
                     b.Navigation("Token");
                 });
@@ -203,6 +232,8 @@ namespace backendSzM.Migrations
 
             modelBuilder.Entity("backendSzM.Models.UserData", b =>
                 {
+                    b.Navigation("Komments");
+
                     b.Navigation("LobbyCons");
                 });
 #pragma warning restore 612, 618

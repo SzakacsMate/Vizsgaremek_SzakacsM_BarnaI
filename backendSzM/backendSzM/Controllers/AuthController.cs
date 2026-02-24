@@ -47,10 +47,11 @@ namespace backendSzM.Controllers
             ujUserData.Name=request.Name;
             ujUserData.Hash = hashedPassword;
             ujUserData.Gmail=request.Gmail;
-            ujUserData.Role=request.Role;
+            ujUserData.Role="User";
+            ujUserData.Rep = 0;
             _context.Users.Add(ujUserData);
             await _context.SaveChangesAsync();
-            return Ok(new { ujUserData.Id, ujUserData.Name, ujUserData.Gmail, ujUserData.Role });
+            return Ok(new { ujUserData.Id, ujUserData.Name, ujUserData.Gmail, ujUserData.Role,ujUserData.Rep });
 
         }
 
@@ -96,6 +97,24 @@ namespace backendSzM.Controllers
             return Ok(refresh_token);
             
         }
+        [HttpPatch("Change Role")]
+        public async Task<IActionResult>ChangeRole(RoleDTO role,Guid Id)
+        {
+            var changedUser = _context.Users.FirstOrDefault(x => x.Id ==Id);
+            var roleChanger = _context.Users.FirstOrDefault(x=>x.Id ==Id&& role.Role=="Admin");
+            if (changedUser == null)
+            {
+                return BadRequest("Nincs ilyen felhasználó");
+            }
+            if (roleChanger.Role != "Admin")
+            {
+                return Unauthorized("Ehhez nincs jogod!");
+            }
+            changedUser.Role = role.Role;
+            _context.Users.Update(changedUser);
+            await _context.SaveChangesAsync();
+            return Ok();
+        }
         [HttpPost("Create Lobby")]
         public async Task<IActionResult> CreateLobby(LobbyDTO request)
         {
@@ -112,6 +131,11 @@ namespace backendSzM.Controllers
             ujLobby.TimeDate = request.TimeDate;
             ujLobby.PlayerLimit = request.PlayerLimit;
             ujLobby.TtType = request.TtType;
+            ujLobby.Image = request.Image;
+            if (ujLobby.Image == null)
+            {
+                ujLobby.Image = "N/A";
+            }
             LobbyCon newLobbyCon = new LobbyCon();
             newLobbyCon.Id=Guid.NewGuid();
             newLobbyCon.UserDataId = user.Id;

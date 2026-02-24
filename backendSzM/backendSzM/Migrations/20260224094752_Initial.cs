@@ -32,11 +32,27 @@ namespace backendSzM.Migrations
                     TtType = table.Column<string>(type: "TEXT", nullable: false),
                     Location = table.Column<string>(type: "TEXT", nullable: false),
                     TimeDate = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    PlayerLimit = table.Column<int>(type: "INTEGER", nullable: false)
+                    PlayerLimit = table.Column<int>(type: "INTEGER", nullable: false),
+                    Image = table.Column<string>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Lobbies", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Komments",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    KommentSzoveg = table.Column<string>(type: "TEXT", nullable: false),
+                    Kommentalo = table.Column<string>(type: "TEXT", nullable: false),
+                    Fogado = table.Column<string>(type: "TEXT", nullable: false),
+                    UserId = table.Column<Guid>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Komments", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -83,24 +99,22 @@ namespace backendSzM.Migrations
                     Role = table.Column<string>(type: "TEXT", nullable: false),
                     Rep = table.Column<int>(type: "INTEGER", nullable: false),
                     Warnings = table.Column<int>(type: "INTEGER", nullable: false),
-                    BannedId = table.Column<Guid>(type: "TEXT", nullable: true),
-                    BannedUserId = table.Column<Guid>(type: "TEXT", nullable: true),
                     TokenId = table.Column<Guid>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Users", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Users_BannedUsers_BannedUserId",
-                        column: x => x.BannedUserId,
-                        principalTable: "BannedUsers",
-                        principalColumn: "Id");
-                    table.ForeignKey(
                         name: "FK_Users_Tokens_TokenId",
                         column: x => x.TokenId,
                         principalTable: "Tokens",
                         principalColumn: "Id");
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Komments_UserId",
+                table: "Komments",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_LobbyCons_LobbyId",
@@ -118,14 +132,17 @@ namespace backendSzM.Migrations
                 column: "UserDataId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Users_BannedUserId",
-                table: "Users",
-                column: "BannedUserId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Users_TokenId",
                 table: "Users",
                 column: "TokenId");
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_Komments_Users_UserId",
+                table: "Komments",
+                column: "UserId",
+                principalTable: "Users",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade);
 
             migrationBuilder.AddForeignKey(
                 name: "FK_LobbyCons_Users_UserDataId",
@@ -151,6 +168,12 @@ namespace backendSzM.Migrations
                 table: "Tokens");
 
             migrationBuilder.DropTable(
+                name: "BannedUsers");
+
+            migrationBuilder.DropTable(
+                name: "Komments");
+
+            migrationBuilder.DropTable(
                 name: "LobbyCons");
 
             migrationBuilder.DropTable(
@@ -158,9 +181,6 @@ namespace backendSzM.Migrations
 
             migrationBuilder.DropTable(
                 name: "Users");
-
-            migrationBuilder.DropTable(
-                name: "BannedUsers");
 
             migrationBuilder.DropTable(
                 name: "Tokens");
