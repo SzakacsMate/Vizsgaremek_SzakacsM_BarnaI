@@ -132,6 +132,16 @@
         "tags": [
           "Auth"
         ],
+        "parameters": [
+          {
+            "name": "Id",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
         "requestBody": {
           "content": {
             "application/json": {
@@ -147,6 +157,38 @@
             "application/*+json": {
               "schema": {
                 "$ref": "#/components/schemas/LobbyDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Auth/AddLocation": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LocationDTO"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LocationDTO"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/LocationDTO"
               }
             }
           },
@@ -358,9 +400,6 @@
           "ttType": {
             "type": "string"
           },
-          "location": {
-            "type": "string"
-          },
           "timeDate": {
             "type": "string",
             "format": "date-time"
@@ -374,6 +413,20 @@
             "format": "int32"
           },
           "image": {
+            "type": "string"
+          }
+        }
+      },
+      "LocationDTO": {
+        "type": "object",
+        "properties": {
+          "locationName": {
+            "type": "string"
+          },
+          "adress": {
+            "type": "string"
+          },
+          "description": {
             "type": "string"
           }
         }

@@ -44,6 +44,7 @@ namespace backendSzM.Controllers
             UserData ujUserData=new UserData();
             var hashedPassword=new PasswordHasher<UserData>()
                 .HashPassword(ujUserData,request.Password);
+            ujUserData.Id=Guid.NewGuid();
             ujUserData.Name=request.Name;
             ujUserData.Hash = hashedPassword;
             ujUserData.Gmail=request.Gmail;
@@ -116,9 +117,11 @@ namespace backendSzM.Controllers
             return Ok();
         }
         [HttpPost("Create Lobby")]
-        public async Task<IActionResult> CreateLobby(LobbyDTO request)
+        public async Task<IActionResult> CreateLobby(LobbyDTO request,Guid Id)
         {
             var user = _context.Users.FirstOrDefault(x=>x.Name==request.Dm);
+            var locationId=_context?.Locations.FirstOrDefault(x=>x.Id==Id);
+            var location=locationId.LocationName;
 
             if (user == null)
             {
@@ -127,11 +130,11 @@ namespace backendSzM.Controllers
             Lobby ujLobby = new Lobby();
             ujLobby.Id = Guid.NewGuid();
             ujLobby.Dm = user.Name;
-            ujLobby.Location = request.Location;
             ujLobby.TimeDate = request.TimeDate;
             ujLobby.PlayerLimit = request.PlayerLimit;
             ujLobby.TtType = request.TtType;
             ujLobby.Image = request.Image;
+            ujLobby.locationName = location;
             if (ujLobby.Image == null)
             {
                 ujLobby.Image = "N/A";
@@ -147,6 +150,20 @@ namespace backendSzM.Controllers
             await _context.SaveChangesAsync();
             return Ok(new());
         }
+        [HttpPost("AddLocation")]
+        
+            public async Task<IActionResult> AddLocation(LocationDTO request)
+            {
+                Location ujLocation = new Location();
+                ujLocation.Id = Guid.NewGuid();
+                ujLocation.LocationName = request.LocationName;
+                ujLocation.Adress = request.Adress;
+                ujLocation.Description = request.Description;
+            _context.Locations.Add(ujLocation);
+                await _context.SaveChangesAsync();
+                return Ok(new());
+            }
+        
         [HttpPost("AddPlayer")]
         public async Task<IActionResult> AddPlayer(JoinLobbyDTO request)
         {
@@ -164,7 +181,14 @@ namespace backendSzM.Controllers
         [HttpPost("WriteComment")]
         public async Task<IActionResult>Comment(KommentDTO request)
         {
+            var kommentelo=_context.Users.FirstOrDefault(x => x.Name == request.Kommentalo);
+            var fogado=_context?.Users.FirstOrDefault(x => x.Name == request.Fogado);
+            if(fogado == null)
+                return BadRequest("Nincs ilyen fogadó");
             Komment ujKomment=new Komment();
+            ujKomment.Id=Guid.NewGuid();
+            ujKomment.Fogado=fogado.Name;
+            ujKomment.Kommentalo=kommentelo.Name;
             ujKomment.KommentSzoveg=request.KommentSzoveg;
 
             _context.Komments.Add(ujKomment);

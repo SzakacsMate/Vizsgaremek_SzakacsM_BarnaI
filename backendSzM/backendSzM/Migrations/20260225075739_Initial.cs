@@ -30,7 +30,7 @@ namespace backendSzM.Migrations
                     Id = table.Column<Guid>(type: "TEXT", nullable: false),
                     Dm = table.Column<string>(type: "TEXT", nullable: false),
                     TtType = table.Column<string>(type: "TEXT", nullable: false),
-                    Location = table.Column<string>(type: "TEXT", nullable: false),
+                    locationName = table.Column<string>(type: "TEXT", nullable: false),
                     TimeDate = table.Column<DateTime>(type: "TEXT", nullable: false),
                     PlayerLimit = table.Column<int>(type: "INTEGER", nullable: false),
                     Image = table.Column<string>(type: "TEXT", nullable: false)
@@ -38,6 +38,26 @@ namespace backendSzM.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Lobbies", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Locations",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    LocationName = table.Column<string>(type: "TEXT", nullable: false),
+                    Adress = table.Column<string>(type: "TEXT", nullable: false),
+                    Description = table.Column<string>(type: "TEXT", nullable: false),
+                    LobbyId = table.Column<Guid>(type: "TEXT", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Locations", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Locations_Lobbies_LobbyId",
+                        column: x => x.LobbyId,
+                        principalTable: "Lobbies",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -127,6 +147,11 @@ namespace backendSzM.Migrations
                 column: "UserDataId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Locations_LobbyId",
+                table: "Locations",
+                column: "LobbyId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Tokens_UserDataId",
                 table: "Tokens",
                 column: "UserDataId");
@@ -175,6 +200,9 @@ namespace backendSzM.Migrations
 
             migrationBuilder.DropTable(
                 name: "LobbyCons");
+
+            migrationBuilder.DropTable(
+                name: "Locations");
 
             migrationBuilder.DropTable(
                 name: "Lobbies");

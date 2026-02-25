@@ -15,7 +15,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("backendSzM")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f0129b4e12abbb0eaffd38a522da17420480a7a9")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c85a5526e23e5cf367af40c94c27a31839d639a2")]
 [assembly: System.Reflection.AssemblyProductAttribute("backendSzM")]
 [assembly: System.Reflection.AssemblyTitleAttribute("backendSzM")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

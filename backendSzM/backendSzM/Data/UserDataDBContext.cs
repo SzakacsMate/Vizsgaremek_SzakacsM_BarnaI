@@ -15,6 +15,7 @@ namespace backendSzM.Data
         public DbSet<Token> Tokens { get; set; }
         public DbSet<Lobby> Lobbies { get; set; }
         public DbSet<Komment> Komments { get; set; }
+        public DbSet<Location> Locations { get; set; }
 
         }
         

@@ -53,6 +53,22 @@
   },
   {
     "ContainingType": "backendSzM.Controllers.AuthController",
+    "Method": "AddLocation",
+    "RelativePath": "api/Auth/AddLocation",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "backendSzM.DTOs.LocationDTO",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "backendSzM.Controllers.AuthController",
     "Method": "AddPlayer",
     "RelativePath": "api/Auth/AddPlayer",
     "HttpMethod": "POST",
@@ -115,6 +131,11 @@
         "Name": "request",
         "Type": "backendSzM.DTOs.LobbyDTO",
         "IsRequired": true
+      },
+      {
+        "Name": "Id",
+        "Type": "System.Guid",
+        "IsRequired": false
       }
     ],
     "ReturnTypes": []

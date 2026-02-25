@@ -10,6 +10,7 @@ namespace backendSzM.Models
         
         public string? RefreshToken { get; set; }
         public DateTime? RefreshTokenExpiryTime { get; set; }
+        
         [ForeignKey(nameof(UserData))]
         public Guid? UserDataId { get; set; }
         public UserData? UserData { get; set; }
