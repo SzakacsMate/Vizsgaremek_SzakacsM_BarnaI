@@ -37,7 +37,7 @@
   },
   {
     "ContainingType": "backendSzM.Controllers.AuthController",
-    "Method": "DeleteJelolt",
+    "Method": "DeleteUser",
     "RelativePath": "api/Auth/{Id}",
     "HttpMethod": "DELETE",
     "IsController": true,
@@ -121,6 +121,27 @@
   },
   {
     "ContainingType": "backendSzM.Controllers.AuthController",
+    "Method": "ChangeRoleNoAdmin",
+    "RelativePath": "api/Auth/Change Role Rendszergazda",
+    "HttpMethod": "PATCH",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "role",
+        "Type": "backendSzM.DTOs.RoleNoAdminDTO",
+        "IsRequired": true
+      },
+      {
+        "Name": "Id",
+        "Type": "System.Guid",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "backendSzM.Controllers.AuthController",
     "Method": "CreateLobby",
     "RelativePath": "api/Auth/Create Lobby",
     "HttpMethod": "POST",
@@ -136,6 +157,22 @@
         "Name": "Id",
         "Type": "System.Guid",
         "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "backendSzM.Controllers.AuthController",
+    "Method": "DeleteLocation",
+    "RelativePath": "api/Auth/DeleteLocation/{Id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "Id",
+        "Type": "System.Guid",
+        "IsRequired": true
       }
     ],
     "ReturnTypes": []

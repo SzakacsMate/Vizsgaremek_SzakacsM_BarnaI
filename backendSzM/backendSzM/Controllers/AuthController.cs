@@ -48,7 +48,7 @@ namespace backendSzM.Controllers
             ujUserData.Name=request.Name;
             ujUserData.Hash = hashedPassword;
             ujUserData.Gmail=request.Gmail;
-            ujUserData.Role=request.Role;
+            ujUserData.Role="User";
             ujUserData.Rep = 0;
             _context.Users.Add(ujUserData);
             await _context.SaveChangesAsync();
@@ -119,6 +119,21 @@ namespace backendSzM.Controllers
             await _context.SaveChangesAsync();
             return Ok();
         }
+        [HttpPatch("Change Role Rendszergazda")]
+        public async Task<IActionResult> ChangeRoleNoAdmin(RoleNoAdminDTO role, Guid Id)
+        {
+            var changedUser = _context.Users.FirstOrDefault(x => x.Id == Id);
+            
+            if (changedUser == null)
+            {
+                return BadRequest("Nincs ilyen felhasználó");
+            }
+           
+            changedUser.Role = role.Role;
+            _context.Users.Update(changedUser);
+            await _context.SaveChangesAsync();
+            return Ok();
+        }
         [HttpPost("Create Lobby")]
         public async Task<IActionResult> CreateLobby(LobbyDTO request,Guid Id)
         {
@@ -138,6 +153,7 @@ namespace backendSzM.Controllers
             ujLobby.TtType = request.TtType;
             ujLobby.Image = request.Image;
             ujLobby.locationName = location;
+            ujLobby.LocationId= locationId.Id;
             if (ujLobby.Image == null)
             {
                 ujLobby.Image = "N/A";
@@ -181,7 +197,7 @@ namespace backendSzM.Controllers
             return Ok(new());
         }
 
-        [HttpPost("WriteComment")]
+        [HttpPost("WriteComment")]//Foreign key error 19 konkrét Idkkal működne
         public async Task<IActionResult>Comment(KommentDTO request)
         {
             var kommentelo=_context.Users.FirstOrDefault(x => x.Name == request.Kommentalo);
@@ -200,21 +216,37 @@ namespace backendSzM.Controllers
         }
 
         [HttpDelete("{Id}")]
-        public async Task<ActionResult> DeleteJelolt(Guid Id)
+        public async Task<IActionResult> DeleteUser(Guid Id)
         {
-            var torlendoJelolt = _context?.Users.Where(x=>x.Id==Id).FirstOrDefault();
-            var torlendoJeloltToken = _context?.Tokens.Where(x => x.UserDataId ==Id).FirstOrDefault();
+            var torlendoUser = _context?.Users.Where(x=>x.Id==Id).FirstOrDefault();
+            var torlendoUserToken = _context?.Tokens.Where(x => x.UserDataId ==Id).FirstOrDefault();
 
-            if (torlendoJelolt == null)
+            if (torlendoUser == null)
             {
                 return NotFound();
             }
             BannedUser ujBanned = new BannedUser();
             ujBanned.Id = Guid.NewGuid();
-            ujBanned.BannedGmail = torlendoJelolt.Gmail;
+            ujBanned.BannedGmail = torlendoUser.Gmail;
             _context.BannedUsers.Add(ujBanned);
-            _context.Users.Remove(torlendoJelolt);
-            _context.Tokens.Remove(torlendoJeloltToken);
+            _context.Users.Remove(torlendoUser);
+            _context.Tokens.Remove(torlendoUserToken);
+            await _context.SaveChangesAsync();
+            return Ok();
+        }
+        [HttpDelete("DeleteLocation/{Id}")]
+        public async Task<IActionResult> DeleteLocation(Guid Id)
+        {
+            var torlendoJelolt = _context?.Locations.Where(x => x.Id == Id).FirstOrDefault();
+            var torlendoLobbies = _context?.Lobbies.Where(x => x.LocationId == Id).FirstOrDefault();
+
+            if (torlendoJelolt == null)
+            {
+                return NotFound();
+            }
+            
+            _context.Locations.Remove(torlendoJelolt);
+            _context.Lobbies.Remove(torlendoLobbies);
             await _context.SaveChangesAsync();
             return Ok();
         }
