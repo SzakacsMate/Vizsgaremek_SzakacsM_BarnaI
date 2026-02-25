@@ -74,6 +74,9 @@ namespace backendSzM.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<Guid?>("LocationId")
+                        .HasColumnType("TEXT");
+
                     b.Property<int>("PlayerLimit")
                         .HasColumnType("INTEGER");
 
@@ -89,6 +92,8 @@ namespace backendSzM.Migrations
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("LocationId");
 
                     b.ToTable("Lobbies");
                 });
@@ -128,16 +133,11 @@ namespace backendSzM.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid?>("LobbyId")
-                        .HasColumnType("TEXT");
-
                     b.Property<string>("LocationName")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("LobbyId");
 
                     b.ToTable("Locations");
                 });
@@ -146,6 +146,10 @@ namespace backendSzM.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("AccesToken")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("RefreshToken")
@@ -213,6 +217,15 @@ namespace backendSzM.Migrations
                     b.Navigation("userData");
                 });
 
+            modelBuilder.Entity("backendSzM.Models.Lobby", b =>
+                {
+                    b.HasOne("backendSzM.Models.Location", "Location")
+                        .WithMany("Lobbies")
+                        .HasForeignKey("LocationId");
+
+                    b.Navigation("Location");
+                });
+
             modelBuilder.Entity("backendSzM.Models.LobbyCon", b =>
                 {
                     b.HasOne("backendSzM.Models.Lobby", "Lobby")
@@ -230,15 +243,6 @@ namespace backendSzM.Migrations
                     b.Navigation("Lobby");
 
                     b.Navigation("UserData");
-                });
-
-            modelBuilder.Entity("backendSzM.Models.Location", b =>
-                {
-                    b.HasOne("backendSzM.Models.Lobby", "Lobby")
-                        .WithMany("Locations")
-                        .HasForeignKey("LobbyId");
-
-                    b.Navigation("Lobby");
                 });
 
             modelBuilder.Entity("backendSzM.Models.Token", b =>
@@ -262,8 +266,11 @@ namespace backendSzM.Migrations
             modelBuilder.Entity("backendSzM.Models.Lobby", b =>
                 {
                     b.Navigation("LobbyCons");
+                });
 
-                    b.Navigation("Locations");
+            modelBuilder.Entity("backendSzM.Models.Location", b =>
+                {
+                    b.Navigation("Lobbies");
                 });
 
             modelBuilder.Entity("backendSzM.Models.UserData", b =>

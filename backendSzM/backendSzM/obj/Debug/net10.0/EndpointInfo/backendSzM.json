@@ -319,17 +319,17 @@
             "content": {
               "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/TokenResponseDto"
+                  "$ref": "#/components/schemas/TokenDTO"
                 }
               },
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/TokenResponseDto"
+                  "$ref": "#/components/schemas/TokenDTO"
                 }
               },
               "text/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/TokenResponseDto"
+                  "$ref": "#/components/schemas/TokenDTO"
                 }
               }
             }
@@ -462,18 +462,27 @@
           }
         }
       },
-      "TokenResponseDto": {
-        "required": [
-          "accesToken",
-          "refreshToken"
-        ],
+      "TokenDTO": {
         "type": "object",
         "properties": {
-          "accesToken": {
-            "type": "string"
-          },
           "refreshToken": {
-            "type": "string"
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "accesToken": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "refreshTokenExpiryTime": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
           }
         }
       },

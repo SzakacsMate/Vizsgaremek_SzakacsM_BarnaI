@@ -74,7 +74,7 @@ namespace backendSzM.Controllers
             {
                 return Unauthorized("Rossz jelszó");
             }
-            var CurrentToken = _context.Tokens.Where(x => x.Id ==user.Id).FirstOrDefault();
+            var CurrentToken = _context.Tokens.FirstOrDefault(x => x.Id ==user.Id);
             
 
 
@@ -83,14 +83,17 @@ namespace backendSzM.Controllers
                var  newToken = new Token();
                 newToken.Id = Guid.NewGuid();
                 newToken.UserDataId =user.Id;
+                newToken.AccesToken = CreateToken(user);
                 CurrentToken = newToken;
                 _context.Tokens.Add(newToken);
                 await _context.SaveChangesAsync();
             }
             string accestoken = CreateToken(user);
-            
-            var refresh_token = new TokenResponseDto
+            //var newToken2 = new Token();
+
+            var refresh_token = new TokenDTO
             {
+
                 AccesToken = accestoken,
                 RefreshToken = await GenAndSaveRefreshTokenAsync(CurrentToken)
             };
@@ -216,11 +219,26 @@ namespace backendSzM.Controllers
             return Ok();
         }
         [HttpPost("refresh")]
-        public async Task<ActionResult<TokenResponseDto>> RefreshToken(RefreshTokenReqDto request)
+        public async Task<ActionResult<TokenDTO>> RefreshToken(RefreshTokenReqDto request)
         {
             var result = await RefreshTokenAsync(request);
             if (result == null||result.AccesToken is null) { return Unauthorized("Invalid refresh token"); }
             return Ok(result);
+        }
+        private string GenRefreshToken()
+        {
+            var randomN = new byte[32];
+            using var rng = RandomNumberGenerator.Create();
+            rng.GetBytes(randomN);
+            return Convert.ToBase64String(randomN);
+        }
+        private async Task<string> GenAndSaveRefreshTokenAsync(Token token)
+        {
+            var refreshToken = GenRefreshToken();
+            token.RefreshToken = refreshToken;
+            token.RefreshTokenExpiryTime = DateTime.UtcNow.AddMinutes(10);
+            await _context.SaveChangesAsync();
+            return refreshToken;
         }
         private string CreateToken(UserData user) {
 
@@ -241,19 +259,8 @@ namespace backendSzM.Controllers
                 );
             return new JwtSecurityTokenHandler().WriteToken(tokenDescriptor);
         }
-       
-        [Authorize(Roles ="User,Admin")]
-        [HttpGet]
-        public IActionResult AuthenticatedOnlyEndpoint()
-        {
-            return Ok("You are authenticated!");
-        }
-        [Authorize(Roles ="Admin")]
-        [HttpGet("admin-only")]
-        public IActionResult AdminOnlyEndpoint()
-        {
-            return Ok("You are an admin!");
-        }
+
+        
         private async Task<Token> ValidateRefreshTokenAsync(Guid Id, string refreskToken)
         {
             var token = await _context.Tokens.FirstOrDefaultAsync(u => u.Id == Id);
@@ -263,22 +270,9 @@ namespace backendSzM.Controllers
             }
             return token;
         }
-        private string GenRefreshToken()
-        {
-            var randomN = new byte[32];
-            using var rng = RandomNumberGenerator.Create();
-            rng.GetBytes(randomN);
-            return Convert.ToBase64String(randomN);
-        }
-        private async Task<string> GenAndSaveRefreshTokenAsync(Token token)
-        {
-            var refreshToken = GenRefreshToken();
-            token.RefreshToken = refreshToken;
-            token.RefreshTokenExpiryTime = DateTime.UtcNow.AddMinutes(10);
-            await _context.SaveChangesAsync();
-            return refreshToken;
-        }
-        public async Task<TokenResponseDto?> RefreshTokenAsync(RefreshTokenReqDto request)
+        
+        
+        public async Task<TokenDTO?> RefreshTokenAsync(RefreshTokenReqDto request)
         {
             var token = await ValidateRefreshTokenAsync(request.Id, request.RefreshToken);
             if (token == null) return null;
@@ -286,12 +280,24 @@ namespace backendSzM.Controllers
             if (user == null) return null;
             var newAccesToken = CreateToken(user);
             var newRefreshToken = await GenAndSaveRefreshTokenAsync(token);
-            return new TokenResponseDto
+            return new TokenDTO
             {
                 AccesToken = newAccesToken,
                 RefreshToken = newRefreshToken
             };
 
+        }
+        [Authorize(Roles = "User,Admin")]
+        [HttpGet]
+        public IActionResult AuthenticatedOnlyEndpoint()
+        {
+            return Ok("You are authenticated!");
+        }
+        [Authorize(Roles = "Admin")]
+        [HttpGet("admin-only")]
+        public IActionResult AdminOnlyEndpoint()
+        {
+            return Ok("You are an admin!");
         }
     }
 }

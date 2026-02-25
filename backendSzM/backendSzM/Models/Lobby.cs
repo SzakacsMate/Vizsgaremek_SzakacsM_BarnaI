@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace backendSzM.Models
 {
@@ -14,6 +15,8 @@ namespace backendSzM.Models
         public int PlayerLimit { get; set; } = 0;
         public string Image { get; set; } = string.Empty;
         public ICollection<LobbyCon>?LobbyCons { get; set; } = new List<LobbyCon>();
-        public ICollection<Location>? Locations { get; set; } = new List<Location>();
+        [ForeignKey(nameof(Location))]
+        public Guid? LocationId { get; set; }
+        public Location? Location { get; set; }
     }
 }
