@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using backendSzM.Data;
 
@@ -10,9 +11,11 @@ using backendSzM.Data;
 namespace backendSzM.Migrations
 {
     [DbContext(typeof(UserDataDBContext))]
-    partial class UserDataDBContextModelSnapshot : ModelSnapshot
+    [Migration("20260226080131_Mod1")]
+    partial class Mod1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.2");
@@ -188,9 +191,6 @@ namespace backendSzM.Migrations
                     b.Property<string>("Hash")
                         .IsRequired()
                         .HasColumnType("TEXT");
-
-                    b.Property<bool>("IsSuspended")
-                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Name")
                         .IsRequired()

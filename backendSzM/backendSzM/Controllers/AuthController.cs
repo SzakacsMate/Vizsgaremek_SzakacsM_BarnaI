@@ -28,7 +28,7 @@ namespace backendSzM.Controllers
             _configuration = configuration;
         }
         
-        [HttpPost("register")]
+        [HttpPost("register")]//működik
         public  async Task<IActionResult> Register(UserDataDTO request)
         {
             var user = _context.Users.FirstOrDefault();
@@ -50,9 +50,11 @@ namespace backendSzM.Controllers
             ujUserData.Gmail=request.Gmail;
             ujUserData.Role="User";
             ujUserData.Rep = 0;
+            ujUserData.ProfileI = "";
+            ujUserData.IsSuspended = false;
             _context.Users.Add(ujUserData);
             await _context.SaveChangesAsync();
-            return Ok(new { ujUserData.Id, ujUserData.Name, ujUserData.Gmail, ujUserData.Role,ujUserData.Rep });
+            return Ok(new { ujUserData.Id, ujUserData.Name, ujUserData.Gmail, ujUserData.Role,ujUserData.Rep,ujUserData.ProfileI,ujUserData.IsSuspended });
 
         }
 
@@ -64,7 +66,10 @@ namespace backendSzM.Controllers
 
             var user = _context.Users.FirstOrDefault(u => u.Gmail == request.Gmail && u.Name == request.Name);
             
-           
+           if (user.IsSuspended==true)
+            {
+                return Unauthorized("Ez a felhasználó fel van függesztve!");
+            }
 
             if (user == null)
             {
@@ -74,7 +79,7 @@ namespace backendSzM.Controllers
             {
                 return Unauthorized("Rossz jelszó");
             }
-            var CurrentToken = _context.Tokens.FirstOrDefault(x => x.Id ==user.Id);
+            var CurrentToken = _context.Tokens.FirstOrDefault(x => x.UserDataId ==user.Id);
             
 
 
@@ -134,7 +139,39 @@ namespace backendSzM.Controllers
             await _context.SaveChangesAsync();
             return Ok();
         }
-        [HttpPost("Create Lobby")]
+        [HttpPatch("Suspend User")]
+        public async Task<IActionResult> SuspendUser(Guid Id)
+        {
+            var suspendedUser = _context.Users.FirstOrDefault(x => x.Id == Id);
+            
+            if (suspendedUser == null)
+            {
+                return BadRequest("Nincs ilyen felhasználó");
+            }
+            if (suspendedUser.Warnings %3==0)
+            {
+                return BadRequest("Ez a felhasználónak nincs elég warningja");
+            }
+            suspendedUser.IsSuspended = true;
+            _context.Users.Update(suspendedUser);
+            await _context.SaveChangesAsync();
+            return Ok();
+        }
+        [HttpPatch("Give Warning")]
+        public async Task<IActionResult> GiveWarning(Guid Id)
+        {
+            var warnedUser = _context.Users.FirstOrDefault(x => x.Id == Id);
+            
+            if (warnedUser == null)
+            {
+                return BadRequest("Nincs ilyen felhasználó");
+            }
+            warnedUser.Warnings += 1;
+            _context.Users.Update(warnedUser);
+            await _context.SaveChangesAsync();
+            return Ok();
+        }
+        [HttpPost("Create Lobby")]//működik
         public async Task<IActionResult> CreateLobby(LobbyDTO request,Guid Id)
         {
             var user = _context.Users.FirstOrDefault(x=>x.Name==request.Dm);
@@ -145,31 +182,38 @@ namespace backendSzM.Controllers
             {
               return BadRequest("Nincs ilyen felhasználó");
             }
+            
             Lobby ujLobby = new Lobby();
             ujLobby.Id = Guid.NewGuid();
             ujLobby.Dm = user.Name;
-            ujLobby.TimeDate = request.TimeDate;
+            ujLobby.StartDate = request.StartDate;
+            ujLobby.EndDate= request.EndDate;   
             ujLobby.PlayerLimit = request.PlayerLimit;
             ujLobby.TtType = request.TtType;
-            ujLobby.Image = request.Image;
+            
             ujLobby.locationName = location;
             ujLobby.LocationId= locationId.Id;
-            if (ujLobby.Image == null)
-            {
-                ujLobby.Image = "N/A";
-            }
+            
             LobbyCon newLobbyCon = new LobbyCon();
             newLobbyCon.Id=Guid.NewGuid();
             newLobbyCon.UserDataId = user.Id;
             newLobbyCon.LobbyId=ujLobby.Id;
             
+            var reserved=_context.Lobbies.FirstOrDefault(x=>x.StartDate==request.StartDate && x.LocationId==locationId.Id &&x.EndDate==request.EndDate||x.StartDate<request.StartDate  && x.EndDate>request.StartDate );
+            if (reserved != null) 
+            {
+                return BadRequest("Ezen a helyen és időpontban már van egy foglalt lobby!");
+            }
+            
+
+
             _context.Lobbies.Add(ujLobby);
             await _context.SaveChangesAsync();
             _context.LobbyCons.Add(newLobbyCon);
             await _context.SaveChangesAsync();
             return Ok(new());
         }
-        [HttpPost("AddLocation")]
+        [HttpPost("AddLocation")]//működik
         
             public async Task<IActionResult> AddLocation(LocationDTO request)
             {
@@ -178,12 +222,17 @@ namespace backendSzM.Controllers
                 ujLocation.LocationName = request.LocationName;
                 ujLocation.Adress = request.Adress;
                 ujLocation.Description = request.Description;
+                ujLocation.Image= request.Image;
+            if (ujLocation.Image == null)
+            {
+                ujLocation.Image = "N/A";
+            }
             _context.Locations.Add(ujLocation);
                 await _context.SaveChangesAsync();
                 return Ok(new());
             }
         
-        [HttpPost("AddPlayer")]
+        [HttpPost("AddPlayer")]//
         public async Task<IActionResult> AddPlayer(JoinLobbyDTO request)
         {
             var user = _context.Users.FirstOrDefault(x => x.Id == request.PlayerId);
@@ -215,7 +264,7 @@ namespace backendSzM.Controllers
             return Ok(new());   
         }
 
-        [HttpDelete("{Id}")]
+        [HttpDelete("{Id}")]//
         public async Task<IActionResult> DeleteUser(Guid Id)
         {
             var torlendoUser = _context?.Users.Where(x=>x.Id==Id).FirstOrDefault();
@@ -234,7 +283,7 @@ namespace backendSzM.Controllers
             await _context.SaveChangesAsync();
             return Ok();
         }
-        [HttpDelete("DeleteLocation/{Id}")]
+        [HttpDelete("DeleteLocation/{Id}")]//működik
         public async Task<IActionResult> DeleteLocation(Guid Id)
         {
             var torlendoJelolt = _context?.Locations.Where(x => x.Id == Id).FirstOrDefault();
@@ -250,9 +299,63 @@ namespace backendSzM.Controllers
             await _context.SaveChangesAsync();
             return Ok();
         }
+        [HttpGet("GetLocations")]//működik
+        public async Task<ActionResult<List<LocationDTO>>> GetLocations()
+        {
+            var locations = await _context.Locations.Select(x => new{x.LocationName,x.Adress,x.Description,x.Image }).ToListAsync();
+            if (locations == null)
+            {
+                return NotFound();
+            }
+            return Ok(locations);
+        }
+        [HttpGet("GetAllLobbies")]//működik
+        public async Task<ActionResult<List<LobbyDTO>>> GetAllLobbies()
+        {
+            var lobbies = await _context.Lobbies.Select(x => new{x.Dm,x.locationName,x.TtType,x.StartDate,x.EndDate,x.PlayerLimit }).ToListAsync();
+            if (lobbies == null)
+            {
+                return NotFound();
+            }
+            return Ok(lobbies);
+        }
+        /*
+        [HttpGet("GetLobbies you're in")]
+        public async Task<ActionResult<List<Location>>> GetLobbiesIn(Guid Id)
+        {
+            var user=_context.Users.FirstOrDefault(x=> x.Id == Id);
+            
+            var lobbies = await _context.Lobbies.FirstOrDefault(x=>x.).ToListAsync();
+            if (lobbies == null)
+            {
+                return NotFound();
+            }
+            return Ok(lobbies);
+        }*/
+        [HttpGet("GetUserName")]
+        public async Task<ActionResult<List<UserData>>> GetUserName(Guid id)
+        {
+            var jeloltek = _context.Users.FirstOrDefault(x => x.Id == id);
+            if (jeloltek == null)
+            {
+                return NotFound();
+            }
+            return Ok(jeloltek.Name);
+        }
+        [HttpGet("GetUserImage")]
+        public async Task<ActionResult<List<UserData>>> GetUserImage(Guid id)
+        {
+            var jeloltek = _context.Users.FirstOrDefault(x => x.Id == id);
+            if (jeloltek == null)
+            {
+                return NotFound();
+            }
+            return Ok(jeloltek.ProfileI);
+        }
         [HttpPost("refresh")]
         public async Task<ActionResult<TokenDTO>> RefreshToken(RefreshTokenReqDto request)
         {
+            
             var result = await RefreshTokenAsync(request);
             if (result == null||result.AccesToken is null) { return Unauthorized("Invalid refresh token"); }
             return Ok(result);
@@ -268,7 +371,7 @@ namespace backendSzM.Controllers
         {
             var refreshToken = GenRefreshToken();
             token.RefreshToken = refreshToken;
-            token.RefreshTokenExpiryTime = DateTime.UtcNow.AddMinutes(10);
+            token.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(1);
             await _context.SaveChangesAsync();
             return refreshToken;
         }
@@ -286,7 +389,7 @@ namespace backendSzM.Controllers
                 issuer:_configuration.GetValue<string>("Appsettings:Issuer"),
                 audience: _configuration.GetValue<string>("Appsettings:Audience"),
                 claims:claims,
-                expires:DateTime.UtcNow.AddMinutes(5),
+                expires:DateTime.UtcNow.AddDays(1),
                 signingCredentials:creds
                 );
             return new JwtSecurityTokenHandler().WriteToken(tokenDescriptor);
@@ -295,8 +398,8 @@ namespace backendSzM.Controllers
         
         private async Task<Token> ValidateRefreshTokenAsync(Guid Id, string refreskToken)
         {
-            var token = await _context.Tokens.FirstOrDefaultAsync(u => u.Id == Id);
-            if (token == null || token.RefreshToken != refreskToken || token.RefreshTokenExpiryTime <= DateTime.Now)
+            var token = await _context.Tokens.FirstOrDefaultAsync(u => u.UserDataId== Id);
+            if (token == null || token.RefreshToken != refreskToken || token.RefreshTokenExpiryTime <= DateTime.UtcNow)
             {
                 return null;
             }
