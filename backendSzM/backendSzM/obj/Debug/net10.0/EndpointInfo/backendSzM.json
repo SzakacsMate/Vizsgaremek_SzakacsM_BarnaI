@@ -191,8 +191,8 @@
         }
       }
     },
-    "/api/Auth/Create Lobby": {
-      "post": {
+    "/api/Auth/Give Warning": {
+      "patch": {
         "tags": [
           "Auth"
         ],
@@ -206,58 +206,6 @@
             }
           }
         ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/LobbyDTO"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/LobbyDTO"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/LobbyDTO"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/api/Auth/AddLocation": {
-      "post": {
-        "tags": [
-          "Auth"
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/LocationDTO"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/LocationDTO"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/LocationDTO"
-              }
-            }
-          },
-          "required": true
-        },
         "responses": {
           "200": {
             "description": "OK"
@@ -375,130 +323,6 @@
         }
       }
     },
-    "/api/Auth/GetLocations": {
-      "get": {
-        "tags": [
-          "Auth"
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/LocationDTO"
-                  }
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/LocationDTO"
-                  }
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/LocationDTO"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/Auth/GetAllLobbies": {
-      "get": {
-        "tags": [
-          "Auth"
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/LobbyDTO"
-                  }
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/LobbyDTO"
-                  }
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/LobbyDTO"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/Auth/GetUserName": {
-      "get": {
-        "tags": [
-          "Auth"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "query",
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/UserData"
-                  }
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/UserData"
-                  }
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/UserData"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/api/Auth/GetUserImage": {
       "get": {
         "tags": [
@@ -596,7 +420,7 @@
         }
       }
     },
-    "/api/Auth": {
+    "/api/Auth/CurrentUser": {
       "get": {
         "tags": [
           "Auth"
@@ -604,6 +428,173 @@
         "responses": {
           "200": {
             "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Auth/AddLocation": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LocationDTO"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LocationDTO"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/LocationDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Auth/Create Lobby": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "parameters": [
+          {
+            "name": "Id",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LobbyDTO"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LobbyDTO"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/LobbyDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/CurrentUserDTO"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CurrentUserDTO"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CurrentUserDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Auth/GetLocations": {
+      "get": {
+        "tags": [
+          "Auth"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/LocationDTO"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/LocationDTO"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/LocationDTO"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Auth/GetAllLobbies": {
+      "get": {
+        "tags": [
+          "Auth"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/LobbyDTO"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/LobbyDTO"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/LobbyDTO"
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -623,6 +614,23 @@
   },
   "components": {
     "schemas": {
+      "CurrentUserDTO": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string"
+          },
+          "imageUrl": {
+            "type": "string"
+          }
+        }
+      },
       "JoinLobbyDTO": {
         "type": "object",
         "properties": {
@@ -785,9 +793,6 @@
       "LobbyDTO": {
         "type": "object",
         "properties": {
-          "dm": {
-            "type": "string"
-          },
           "ttType": {
             "type": "string"
           },

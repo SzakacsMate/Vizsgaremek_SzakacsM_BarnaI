@@ -27,16 +27,6 @@
   },
   {
     "ContainingType": "backendSzM.Controllers.AuthController",
-    "Method": "AuthenticatedOnlyEndpoint",
-    "RelativePath": "api/Auth",
-    "HttpMethod": "GET",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "backendSzM.Controllers.AuthController",
     "Method": "DeleteUser",
     "RelativePath": "api/Auth/{Id}",
     "HttpMethod": "DELETE",
@@ -159,6 +149,26 @@
         "IsRequired": false
       }
     ],
+    "ReturnTypes": [
+      {
+        "Type": "backendSzM.DTOs.CurrentUserDTO",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "backendSzM.Controllers.AuthController",
+    "Method": "AuthenthicatedUser",
+    "RelativePath": "api/Auth/CurrentUser",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
     "ReturnTypes": []
   },
   {
@@ -245,29 +255,19 @@
   },
   {
     "ContainingType": "backendSzM.Controllers.AuthController",
-    "Method": "GetUserName",
-    "RelativePath": "api/Auth/GetUserName",
-    "HttpMethod": "GET",
+    "Method": "GiveWarning",
+    "RelativePath": "api/Auth/Give Warning",
+    "HttpMethod": "PATCH",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
-        "Name": "id",
+        "Name": "Id",
         "Type": "System.Guid",
         "IsRequired": false
       }
     ],
-    "ReturnTypes": [
-      {
-        "Type": "System.Collections.Generic.List\u00601[[backendSzM.Models.UserData, backendSzM, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
-        "MediaTypes": [
-          "text/plain",
-          "application/json",
-          "text/json"
-        ],
-        "StatusCode": 200
-      }
-    ]
+    "ReturnTypes": []
   },
   {
     "ContainingType": "backendSzM.Controllers.AuthController",
