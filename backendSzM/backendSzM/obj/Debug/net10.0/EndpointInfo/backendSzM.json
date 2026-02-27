@@ -77,142 +77,6 @@
         }
       }
     },
-    "/api/Auth/Change Role": {
-      "patch": {
-        "tags": [
-          "Auth"
-        ],
-        "parameters": [
-          {
-            "name": "Id",
-            "in": "query",
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          },
-          {
-            "name": "Id2",
-            "in": "query",
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/RoleDTO"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/RoleDTO"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/RoleDTO"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/api/Auth/Change Role Rendszergazda": {
-      "patch": {
-        "tags": [
-          "Auth"
-        ],
-        "parameters": [
-          {
-            "name": "Id",
-            "in": "query",
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/RoleNoAdminDTO"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/RoleNoAdminDTO"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/RoleNoAdminDTO"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/api/Auth/Suspend User": {
-      "patch": {
-        "tags": [
-          "Auth"
-        ],
-        "parameters": [
-          {
-            "name": "Id",
-            "in": "query",
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/api/Auth/Give Warning": {
-      "patch": {
-        "tags": [
-          "Auth"
-        ],
-        "parameters": [
-          {
-            "name": "Id",
-            "in": "query",
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
     "/api/Auth/AddPlayer": {
       "post": {
         "tags": [
@@ -245,98 +109,10 @@
         }
       }
     },
-    "/api/Auth/WriteComment": {
-      "post": {
-        "tags": [
-          "Auth"
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/KommentDTO"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/KommentDTO"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/KommentDTO"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/api/Auth/{Id}": {
-      "delete": {
-        "tags": [
-          "Auth"
-        ],
-        "parameters": [
-          {
-            "name": "Id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/api/Auth/DeleteLocation/{Id}": {
-      "delete": {
-        "tags": [
-          "Auth"
-        ],
-        "parameters": [
-          {
-            "name": "Id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/api/Auth/GetUserImage": {
+    "/api/Auth/GetLobbies you're in": {
       "get": {
         "tags": [
           "Auth"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "query",
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
         ],
         "responses": {
           "200": {
@@ -346,7 +122,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/UserData"
+                    "$ref": "#/components/schemas/LobbyInfoDTO"
                   }
                 }
               },
@@ -354,7 +130,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/UserData"
+                    "$ref": "#/components/schemas/LobbyInfoDTO"
                   }
                 }
               },
@@ -362,7 +138,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/UserData"
+                    "$ref": "#/components/schemas/LobbyInfoDTO"
                   }
                 }
               }
@@ -452,6 +228,61 @@
             "application/*+json": {
               "schema": {
                 "$ref": "#/components/schemas/LocationDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Auth/DeleteLocation/{Id}": {
+      "delete": {
+        "tags": [
+          "Auth"
+        ],
+        "parameters": [
+          {
+            "name": "Id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Auth/WriteComment": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/KommentDTO"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/KommentDTO"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/KommentDTO"
               }
             }
           },
@@ -610,6 +441,132 @@
           }
         }
       }
+    },
+    "/api/Auth/Suspend User": {
+      "patch": {
+        "tags": [
+          "Auth"
+        ],
+        "parameters": [
+          {
+            "name": "Id",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Auth/Give Warning": {
+      "patch": {
+        "tags": [
+          "Auth"
+        ],
+        "parameters": [
+          {
+            "name": "Id",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Auth/{Id}": {
+      "delete": {
+        "tags": [
+          "Auth"
+        ],
+        "parameters": [
+          {
+            "name": "Id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Auth/Change Role": {
+      "patch": {
+        "tags": [
+          "Auth"
+        ],
+        "parameters": [
+          {
+            "name": "Id",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RoleDTO"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RoleDTO"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/RoleDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/CurrentUserDTO"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CurrentUserDTO"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CurrentUserDTO"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -644,38 +601,6 @@
           }
         }
       },
-      "Komment": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "kommentSzoveg": {
-            "type": "string"
-          },
-          "kommentalo": {
-            "type": "string"
-          },
-          "fogado": {
-            "type": "string"
-          },
-          "userId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "userData": {
-            "oneOf": [
-              {
-                "type": "null"
-              },
-              {
-                "$ref": "#/components/schemas/UserData"
-              }
-            ]
-          }
-        }
-      },
       "KommentDTO": {
         "type": "object",
         "properties": {
@@ -687,106 +612,6 @@
           },
           "fogado": {
             "type": "string"
-          }
-        }
-      },
-      "Lobby": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "dm": {
-            "type": "string"
-          },
-          "ttType": {
-            "type": "string"
-          },
-          "locationName": {
-            "type": "string"
-          },
-          "startDate": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "endDate": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "playerLimit": {
-            "pattern": "^-?(?:0|[1-9]\\d*)$",
-            "type": [
-              "integer",
-              "string"
-            ],
-            "format": "int32"
-          },
-          "image": {
-            "type": "string"
-          },
-          "lobbyCons": {
-            "type": [
-              "null",
-              "array"
-            ],
-            "items": {
-              "$ref": "#/components/schemas/LobbyCon"
-            }
-          },
-          "locationId": {
-            "type": [
-              "null",
-              "string"
-            ],
-            "format": "uuid"
-          },
-          "location": {
-            "oneOf": [
-              {
-                "type": "null"
-              },
-              {
-                "$ref": "#/components/schemas/Location"
-              }
-            ]
-          }
-        }
-      },
-      "LobbyCon": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "userDataId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "userData": {
-            "oneOf": [
-              {
-                "type": "null"
-              },
-              {
-                "$ref": "#/components/schemas/UserData"
-              }
-            ]
-          },
-          "lobbyId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "lobby": {
-            "oneOf": [
-              {
-                "type": "null"
-              },
-              {
-                "$ref": "#/components/schemas/Lobby"
-              }
-            ]
           }
         }
       },
@@ -814,33 +639,33 @@
           }
         }
       },
-      "Location": {
+      "LobbyInfoDTO": {
         "type": "object",
         "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
+          "dm": {
+            "type": "string"
           },
           "locationName": {
             "type": "string"
           },
-          "adress": {
+          "ttType": {
             "type": "string"
           },
-          "description": {
-            "type": "string"
+          "startDate": {
+            "type": "string",
+            "format": "date-time"
           },
-          "image": {
-            "type": "string"
+          "endDate": {
+            "type": "string",
+            "format": "date-time"
           },
-          "lobbies": {
+          "playerLimit": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
             "type": [
-              "null",
-              "array"
+              "integer",
+              "string"
             ],
-            "items": {
-              "$ref": "#/components/schemas/Lobby"
-            }
+            "format": "int32"
           }
         }
       },
@@ -892,60 +717,6 @@
           }
         }
       },
-      "RoleNoAdminDTO": {
-        "type": "object",
-        "properties": {
-          "changedUser": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "role": {
-            "type": "string"
-          }
-        }
-      },
-      "Token": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "refreshToken": {
-            "type": [
-              "null",
-              "string"
-            ]
-          },
-          "refreshTokenExpiryTime": {
-            "type": [
-              "null",
-              "string"
-            ],
-            "format": "date-time"
-          },
-          "accesToken": {
-            "type": "string"
-          },
-          "userDataId": {
-            "type": [
-              "null",
-              "string"
-            ],
-            "format": "uuid"
-          },
-          "userData": {
-            "oneOf": [
-              {
-                "type": "null"
-              },
-              {
-                "$ref": "#/components/schemas/UserData"
-              }
-            ]
-          }
-        }
-      },
       "TokenDTO": {
         "type": "object",
         "properties": {
@@ -967,84 +738,6 @@
               "string"
             ],
             "format": "date-time"
-          }
-        }
-      },
-      "UserData": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "name": {
-            "type": "string"
-          },
-          "hash": {
-            "type": "string"
-          },
-          "gmail": {
-            "type": "string"
-          },
-          "role": {
-            "type": "string"
-          },
-          "rep": {
-            "pattern": "^-?(?:0|[1-9]\\d*)$",
-            "type": [
-              "integer",
-              "string"
-            ],
-            "format": "int32"
-          },
-          "warnings": {
-            "pattern": "^-?(?:0|[1-9]\\d*)$",
-            "type": [
-              "integer",
-              "string"
-            ],
-            "format": "int32"
-          },
-          "profileI": {
-            "type": "string"
-          },
-          "isSuspended": {
-            "type": "boolean"
-          },
-          "tokenId": {
-            "type": [
-              "null",
-              "string"
-            ],
-            "format": "uuid"
-          },
-          "token": {
-            "oneOf": [
-              {
-                "type": "null"
-              },
-              {
-                "$ref": "#/components/schemas/Token"
-              }
-            ]
-          },
-          "komments": {
-            "type": [
-              "null",
-              "array"
-            ],
-            "items": {
-              "$ref": "#/components/schemas/Komment"
-            }
-          },
-          "lobbyCons": {
-            "type": [
-              "null",
-              "array"
-            ],
-            "items": {
-              "$ref": "#/components/schemas/LobbyCon"
-            }
           }
         }
       },

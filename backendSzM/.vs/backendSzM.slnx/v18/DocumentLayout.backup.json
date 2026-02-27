@@ -7,6 +7,10 @@
       "RelativeMoniker": "D:0:0:{C12CD6BB-EF85-5F5F-E806-13188BEE0A95}|backendSzM\\backendSzM.csproj|solutionrelative:backendszm\\controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
+      "AbsoluteMoniker": "D:0:0:{C12CD6BB-EF85-5F5F-E806-13188BEE0A95}|backendSzM\\backendSzM.csproj|c:\\users\\szakacs.mate\\source\\repos\\vizsgaremek_szakacsm_barnai\\backendszm\\backendszm\\dtos\\lobbyinfodto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C12CD6BB-EF85-5F5F-E806-13188BEE0A95}|backendSzM\\backendSzM.csproj|solutionrelative:backendszm\\dtos\\lobbyinfodto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{C12CD6BB-EF85-5F5F-E806-13188BEE0A95}|backendSzM\\backendSzM.csproj|c:\\users\\szakacs.mate\\source\\repos\\vizsgaremek_szakacsm_barnai\\backendszm\\backendszm\\dtos\\lobbydto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{C12CD6BB-EF85-5F5F-E806-13188BEE0A95}|backendSzM\\backendSzM.csproj|solutionrelative:backendszm\\dtos\\lobbydto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
@@ -70,11 +74,11 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 4,
+          "SelectedChildIndex": 5,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 4,
               "Title": "UserDataDBContext.cs",
               "DocumentMoniker": "C:\\Users\\szakacs.mate\\source\\repos\\Vizsgaremek_SzakacsM_BarnaI\\backendSzM\\backendSzM\\Data\\UserDataDBContext.cs",
               "RelativeDocumentMoniker": "backendSzM\\Data\\UserDataDBContext.cs",
@@ -83,12 +87,24 @@
               "ViewState": "AgIAAAMAAAAAAAAAAAAAAA4AAAAYAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-02-13T09:50:55.615Z",
-              "IsPinned": true,
+              "IsPinned": true
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "LobbyInfoDTO.cs",
+              "DocumentMoniker": "C:\\Users\\szakacs.mate\\source\\repos\\Vizsgaremek_SzakacsM_BarnaI\\backendSzM\\backendSzM\\DTOs\\LobbyInfoDTO.cs",
+              "RelativeDocumentMoniker": "backendSzM\\DTOs\\LobbyInfoDTO.cs",
+              "ToolTip": "C:\\Users\\szakacs.mate\\source\\repos\\Vizsgaremek_SzakacsM_BarnaI\\backendSzM\\backendSzM\\DTOs\\LobbyInfoDTO.cs",
+              "RelativeToolTip": "backendSzM\\DTOs\\LobbyInfoDTO.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAsAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-27T12:41:27.188Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 9,
+              "DocumentIndex": 10,
               "Title": "LocationDTO.cs",
               "DocumentMoniker": "C:\\Users\\szakacs.mate\\source\\repos\\Vizsgaremek_SzakacsM_BarnaI\\backendSzM\\backendSzM\\DTOs\\LocationDTO.cs",
               "RelativeDocumentMoniker": "backendSzM\\DTOs\\LocationDTO.cs",
@@ -100,7 +116,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 9,
               "Title": "Location.cs",
               "DocumentMoniker": "C:\\Users\\szakacs.mate\\source\\repos\\Vizsgaremek_SzakacsM_BarnaI\\backendSzM\\backendSzM\\Models\\Location.cs",
               "RelativeDocumentMoniker": "backendSzM\\Models\\Location.cs",
@@ -112,7 +128,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 8,
               "Title": "LobbyCon.cs",
               "DocumentMoniker": "C:\\Users\\szakacs.mate\\source\\repos\\Vizsgaremek_SzakacsM_BarnaI\\backendSzM\\backendSzM\\Models\\LobbyCon.cs",
               "RelativeDocumentMoniker": "backendSzM\\Models\\LobbyCon.cs",
@@ -130,14 +146,14 @@
               "RelativeDocumentMoniker": "backendSzM\\Controllers\\AuthController.cs",
               "ToolTip": "C:\\Users\\szakacs.mate\\source\\repos\\Vizsgaremek_SzakacsM_BarnaI\\backendSzM\\backendSzM\\Controllers\\AuthController.cs",
               "RelativeToolTip": "backendSzM\\Controllers\\AuthController.cs",
-              "ViewState": "AgIAAKkBAAAAAAAAAAAAwMABAAApAAAAAAAAAA==",
+              "ViewState": "AgIAAIcAAAAAAAAAAAAAwIsAAAApAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-02-09T12:04:57.648Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 6,
               "Title": "UserData.cs",
               "DocumentMoniker": "C:\\Users\\szakacs.mate\\source\\repos\\Vizsgaremek_SzakacsM_BarnaI\\backendSzM\\backendSzM\\Models\\UserData.cs",
               "RelativeDocumentMoniker": "backendSzM\\Models\\UserData.cs",
@@ -149,7 +165,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 5,
               "Title": "Lobby.cs",
               "DocumentMoniker": "C:\\Users\\szakacs.mate\\source\\repos\\Vizsgaremek_SzakacsM_BarnaI\\backendSzM\\backendSzM\\Models\\Lobby.cs",
               "RelativeDocumentMoniker": "backendSzM\\Models\\Lobby.cs",
@@ -161,7 +177,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 2,
               "Title": "LobbyDTO.cs",
               "DocumentMoniker": "C:\\Users\\szakacs.mate\\source\\repos\\Vizsgaremek_SzakacsM_BarnaI\\backendSzM\\backendSzM\\DTOs\\LobbyDTO.cs",
               "RelativeDocumentMoniker": "backendSzM\\DTOs\\LobbyDTO.cs",
@@ -169,12 +185,11 @@
               "RelativeToolTip": "backendSzM\\DTOs\\LobbyDTO.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAAHAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-23T07:08:07.727Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-02-23T07:08:07.727Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 3,
               "Title": "CurrentUserDTO.cs",
               "DocumentMoniker": "C:\\Users\\szakacs.mate\\source\\repos\\Vizsgaremek_SzakacsM_BarnaI\\backendSzM\\backendSzM\\DTOs\\CurrentUserDTO.cs",
               "RelativeDocumentMoniker": "backendSzM\\DTOs\\CurrentUserDTO.cs",
@@ -182,12 +197,11 @@
               "RelativeToolTip": "backendSzM\\DTOs\\CurrentUserDTO.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAAeAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-27T07:02:35.163Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-02-27T07:02:35.163Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 7,
               "Title": "RefreshTokenReqDto.cs",
               "DocumentMoniker": "C:\\Users\\szakacs.mate\\source\\repos\\Vizsgaremek_SzakacsM_BarnaI\\backendSzM\\backendSzM\\DTOs\\RefreshTokenReqDto.cs",
               "RelativeDocumentMoniker": "backendSzM\\DTOs\\RefreshTokenReqDto.cs",
@@ -199,7 +213,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 10,
+              "DocumentIndex": 11,
               "Title": "Token.cs",
               "DocumentMoniker": "C:\\Users\\szakacs.mate\\source\\repos\\Vizsgaremek_SzakacsM_BarnaI\\backendSzM\\backendSzM\\Models\\Token.cs",
               "RelativeDocumentMoniker": "backendSzM\\Models\\Token.cs",
@@ -211,7 +225,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 11,
+              "DocumentIndex": 12,
               "Title": "TokenDTO.cs",
               "DocumentMoniker": "C:\\Users\\szakacs.mate\\source\\repos\\Vizsgaremek_SzakacsM_BarnaI\\backendSzM\\backendSzM\\DTOs\\TokenDTO.cs",
               "RelativeDocumentMoniker": "backendSzM\\DTOs\\TokenDTO.cs",
@@ -223,7 +237,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 12,
+              "DocumentIndex": 13,
               "Title": "UserDataDTO.cs",
               "DocumentMoniker": "C:\\Users\\szakacs.mate\\source\\repos\\Vizsgaremek_SzakacsM_BarnaI\\backendSzM\\backendSzM\\DTOs\\UserDataDTO.cs",
               "RelativeDocumentMoniker": "backendSzM\\DTOs\\UserDataDTO.cs",
@@ -235,7 +249,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 13,
+              "DocumentIndex": 14,
               "Title": "BannedUser.cs",
               "DocumentMoniker": "C:\\Users\\szakacs.mate\\source\\repos\\Vizsgaremek_SzakacsM_BarnaI\\backendSzM\\backendSzM\\Models\\BannedUser.cs",
               "RelativeDocumentMoniker": "backendSzM\\Models\\BannedUser.cs",
@@ -247,7 +261,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 14,
+              "DocumentIndex": 15,
               "Title": "JoinLobbyDTO.cs",
               "DocumentMoniker": "C:\\Users\\szakacs.mate\\source\\repos\\Vizsgaremek_SzakacsM_BarnaI\\backendSzM\\backendSzM\\DTOs\\JoinLobbyDTO.cs",
               "RelativeDocumentMoniker": "backendSzM\\DTOs\\JoinLobbyDTO.cs",

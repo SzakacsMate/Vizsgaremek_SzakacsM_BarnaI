@@ -100,35 +100,19 @@
         "Name": "Id",
         "Type": "System.Guid",
         "IsRequired": false
-      },
-      {
-        "Name": "Id2",
-        "Type": "System.Guid",
-        "IsRequired": false
       }
     ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "backendSzM.Controllers.AuthController",
-    "Method": "ChangeRoleNoAdmin",
-    "RelativePath": "api/Auth/Change Role Rendszergazda",
-    "HttpMethod": "PATCH",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
+    "ReturnTypes": [
       {
-        "Name": "role",
-        "Type": "backendSzM.DTOs.RoleNoAdminDTO",
-        "IsRequired": true
-      },
-      {
-        "Name": "Id",
-        "Type": "System.Guid",
-        "IsRequired": false
+        "Type": "backendSzM.DTOs.CurrentUserDTO",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
       }
-    ],
-    "ReturnTypes": []
+    ]
   },
   {
     "ContainingType": "backendSzM.Controllers.AuthController",
@@ -209,15 +193,15 @@
   },
   {
     "ContainingType": "backendSzM.Controllers.AuthController",
-    "Method": "GetLocations",
-    "RelativePath": "api/Auth/GetLocations",
+    "Method": "GetLobbiesIn",
+    "RelativePath": "api/Auth/GetLobbies you\u0027re in",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
     "Parameters": [],
     "ReturnTypes": [
       {
-        "Type": "System.Collections.Generic.List\u00601[[backendSzM.DTOs.LocationDTO, backendSzM, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "Type": "System.Collections.Generic.List\u00601[[backendSzM.DTOs.LobbyInfoDTO, backendSzM, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
         "MediaTypes": [
           "text/plain",
           "application/json",
@@ -229,21 +213,15 @@
   },
   {
     "ContainingType": "backendSzM.Controllers.AuthController",
-    "Method": "GetUserImage",
-    "RelativePath": "api/Auth/GetUserImage",
+    "Method": "GetLocations",
+    "RelativePath": "api/Auth/GetLocations",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
-    "Parameters": [
-      {
-        "Name": "id",
-        "Type": "System.Guid",
-        "IsRequired": false
-      }
-    ],
+    "Parameters": [],
     "ReturnTypes": [
       {
-        "Type": "System.Collections.Generic.List\u00601[[backendSzM.Models.UserData, backendSzM, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "Type": "System.Collections.Generic.List\u00601[[backendSzM.DTOs.LocationDTO, backendSzM, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
         "MediaTypes": [
           "text/plain",
           "application/json",

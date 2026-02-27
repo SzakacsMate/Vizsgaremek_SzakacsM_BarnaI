@@ -122,22 +122,40 @@ namespace backendSzM.Controllers
             return Ok(new());
         }
 
-        
-       /*
+
+        [Authorize(Roles = "User,Admin")]
         [HttpGet("GetLobbies you're in")]
-        public async Task<ActionResult<List<Location>>> GetLobbiesIn(Guid Id)
+        public async Task<ActionResult<List<LobbyInfoDTO>>> GetLobbiesIn()
         {
-            var user=_context.Users.FirstOrDefault(x=> x.Id == Id);
-            
-            var lobbies = await _context.Lobbies.FirstOrDefault(x=>x.).ToListAsync();
-            if (lobbies == null)
-            {
+            var idClaim = User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!Guid.TryParse(idClaim, out var userId))
+                return Unauthorized(); 
+
+            var user = await _context.Users.FindAsync(userId);
+            if (user == null)
+                return NotFound("User not found");
+
+            var lobbies = await _context.LobbyCons
+                .Where(lc => lc.UserDataId == userId)
+                .Include(lc => lc.Lobby) 
+                .Where(lc => lc.Lobby != null)
+                .Select(lc => new LobbyInfoDTO
+                {
+                    Dm = lc.Lobby!.Dm,
+                    LocationName = lc.Lobby.locationName,
+                    TtType = lc.Lobby.TtType,
+                    StartDate = lc.Lobby.StartDate,
+                    EndDate = lc.Lobby.EndDate,
+                    PlayerLimit = lc.Lobby.PlayerLimit
+                })
+                .ToListAsync();
+
+            if (!lobbies.Any())
                 return NotFound();
-            }
+
             return Ok(lobbies);
-        }*/
-     
-        [HttpPost("refresh")]
+        }
+            [HttpPost("refresh")]
         public async Task<ActionResult<TokenDTO>> RefreshToken(RefreshTokenReqDto request)
         {
             
@@ -315,7 +333,7 @@ namespace backendSzM.Controllers
             newLobbyCon.UserDataId = user.Id;
             newLobbyCon.LobbyId = ujLobby.Id;
 
-            var reserved = _context.Lobbies.FirstOrDefault(x => x.StartDate == request.StartDate && x.LocationId == locationId.Id && x.EndDate == request.EndDate || x.StartDate < request.StartDate && x.EndDate > request.StartDate);
+            var reserved = _context.Lobbies.FirstOrDefault(x => x.StartDate == request.StartDate && x.LocationId == locationId.Id && x.EndDate == request.EndDate || request.StartDate<x.StartDate && request.StartDate<x.EndDate && x.LocationId == locationId.Id/*||request.EndDate>x.StartDate&&request.EndDate<x.EndDate && x.LocationId == locationId.Id*/);
             if (reserved != null)
             {
                 return BadRequest("Ezen a helyen és időpontban már van egy foglalt lobby!");
@@ -351,6 +369,17 @@ namespace backendSzM.Controllers
             }
             return Ok(lobbies);
         }
+        /*
+        [HttpGet("GetLocation")]//
+        public async Task<ActionResult<LocationDTO>> GetLocation()
+        {
+            var locations = await _context.Locations.Select(x => );
+            if (locations == null)
+            {
+                return NotFound();
+            }
+            return Ok(locations);
+        }*/
         [Authorize(Roles = "Admin")]
         [HttpGet("admin-only")]
         public IActionResult AdminOnlyEndpoint()
