@@ -128,7 +128,7 @@ namespace backendSzM.Controllers
         public async Task<ActionResult<List<LobbyInfoDTO>>> GetLobbiesIn()
         {
             var idClaim = User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (!Guid.TryParse(idClaim, out var userId))
+            if (string.IsNullOrEmpty(idClaim) || !Guid.TryParse(idClaim, out var userId))
                 return Unauthorized(); 
 
             var user = await _context.Users.FindAsync(userId);
@@ -141,7 +141,7 @@ namespace backendSzM.Controllers
                 .Where(lc => lc.Lobby != null)
                 .Select(lc => new LobbyInfoDTO
                 {
-                    Dm = lc.Lobby!.Dm,
+                    Dm = lc.Lobby.Dm,
                     LocationName = lc.Lobby.locationName,
                     TtType = lc.Lobby.TtType,
                     StartDate = lc.Lobby.StartDate,
@@ -150,8 +150,7 @@ namespace backendSzM.Controllers
                 })
                 .ToListAsync();
 
-            if (!lobbies.Any())
-                return NotFound();
+            
 
             return Ok(lobbies);
         }
@@ -285,7 +284,7 @@ namespace backendSzM.Controllers
             await _context.SaveChangesAsync();
             return Ok();
         }
-        [Authorize(Roles = "User,Admin")]
+       // [Authorize(Roles = "User,Admin")]
         [HttpPost("WriteComment")]//Foreign key error 19 konkrét Idkkal működne
         public async Task<IActionResult> Comment(KommentDTO request)
         {
@@ -298,6 +297,9 @@ namespace backendSzM.Controllers
             ujKomment.Fogado = fogado.Name;
             ujKomment.Kommentalo = kommentelo.Name;
             ujKomment.KommentSzoveg = request.KommentSzoveg;
+            ujKomment.FogadoId = fogado.Id;
+            ujKomment.KommentaloId = kommentelo.Id;
+
 
             _context.Komments.Add(ujKomment);
             await _context.SaveChangesAsync();
@@ -332,8 +334,11 @@ namespace backendSzM.Controllers
             newLobbyCon.Id = Guid.NewGuid();
             newLobbyCon.UserDataId = user.Id;
             newLobbyCon.LobbyId = ujLobby.Id;
-
-            var reserved = _context.Lobbies.FirstOrDefault(x => x.StartDate == request.StartDate && x.LocationId == locationId.Id && x.EndDate == request.EndDate || request.StartDate<x.StartDate && request.StartDate<x.EndDate && x.LocationId == locationId.Id/*||request.EndDate>x.StartDate&&request.EndDate<x.EndDate && x.LocationId == locationId.Id*/);
+            if (locationId == null)
+            {
+                return BadRequest("Nincs ilyen helyszín");
+            }
+            var reserved = await _context.Lobbies.FirstOrDefaultAsync(x =>x.LocationId == locationId.Id &&x.StartDate <= request.EndDate &&request.StartDate <= x.EndDate); 
             if (reserved != null)
             {
                 return BadRequest("Ezen a helyen és időpontban már van egy foglalt lobby!");
@@ -369,17 +374,17 @@ namespace backendSzM.Controllers
             }
             return Ok(lobbies);
         }
-        /*
+        
         [HttpGet("GetLocation")]//
-        public async Task<ActionResult<LocationDTO>> GetLocation()
+        public async Task<ActionResult<LocationDTO>> GetLocation(Guid Id)
         {
-            var locations = await _context.Locations.Select(x => );
+            var locations =  _context.Locations.Select(x => new { x.LocationName, x.Adress, x.Description, x.Image });
             if (locations == null)
             {
                 return NotFound();
             }
             return Ok(locations);
-        }*/
+        }
         [Authorize(Roles = "Admin")]
         [HttpGet("admin-only")]
         public IActionResult AdminOnlyEndpoint()

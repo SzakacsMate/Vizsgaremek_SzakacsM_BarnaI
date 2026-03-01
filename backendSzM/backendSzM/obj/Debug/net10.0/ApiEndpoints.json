@@ -213,6 +213,32 @@
   },
   {
     "ContainingType": "backendSzM.Controllers.AuthController",
+    "Method": "GetLocation",
+    "RelativePath": "api/Auth/GetLocation",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "Id",
+        "Type": "System.Guid",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "backendSzM.DTOs.LocationDTO",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "backendSzM.Controllers.AuthController",
     "Method": "GetLocations",
     "RelativePath": "api/Auth/GetLocations",
     "HttpMethod": "GET",

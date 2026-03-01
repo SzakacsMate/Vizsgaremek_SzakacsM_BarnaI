@@ -2,6 +2,7 @@
 {
     public class LocationDTO
     {
+        public Guid Id { get; set; }
         public string LocationName { get; set; } = string.Empty;
         public string Adress { get; set; } = string.Empty;
 
