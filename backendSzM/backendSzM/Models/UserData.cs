@@ -22,7 +22,7 @@ namespace backendSzM.Models
         public Token? Token { get; set; }
         
         
-        public ICollection<Komment>? Komments { get; set; } = new List<Komment>();
+        public ICollection<KommentCon>? Komments { get; set; } = new List<KommentCon>();
 
 
 

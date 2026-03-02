@@ -123,37 +123,7 @@ namespace backendSzM.Controllers
         }
 
 
-        [Authorize(Roles = "User,Admin")]
-        [HttpGet("GetLobbies you're in")]
-        public async Task<ActionResult<List<LobbyInfoDTO>>> GetLobbiesIn()
-        {
-            var idClaim = User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (string.IsNullOrEmpty(idClaim) || !Guid.TryParse(idClaim, out var userId))
-                return Unauthorized(); 
-
-            var user = await _context.Users.FindAsync(userId);
-            if (user == null)
-                return NotFound("User not found");
-
-            var lobbies = await _context.LobbyCons
-                .Where(lc => lc.UserDataId == userId)
-                .Include(lc => lc.Lobby) 
-                .Where(lc => lc.Lobby != null)
-                .Select(lc => new LobbyInfoDTO
-                {
-                    Dm = lc.Lobby.Dm,
-                    LocationName = lc.Lobby.locationName,
-                    TtType = lc.Lobby.TtType,
-                    StartDate = lc.Lobby.StartDate,
-                    EndDate = lc.Lobby.EndDate,
-                    PlayerLimit = lc.Lobby.PlayerLimit
-                })
-                .ToListAsync();
-
-            
-
-            return Ok(lobbies);
-        }
+        
             [HttpPost("refresh")]
         public async Task<ActionResult<TokenDTO>> RefreshToken(RefreshTokenReqDto request)
         {
@@ -173,7 +143,7 @@ namespace backendSzM.Controllers
         {
             var refreshToken = GenRefreshToken();
             token.RefreshToken = refreshToken;
-            token.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(1);
+            token.RefreshTokenExpiryTime = DateTime.UtcNow.AddMinutes(1);
             await _context.SaveChangesAsync();
             return refreshToken;
         }
@@ -231,7 +201,7 @@ namespace backendSzM.Controllers
             var name= User?.FindFirst(ClaimTypes.Name)?.Value;
             if (name == null)
             {
-                return Unauthorized();
+                return Unauthorized("Womp");
             }
             var id = User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             var currentUser = _context?.Users.FirstOrDefault(x=>x.Name== name);
@@ -284,6 +254,38 @@ namespace backendSzM.Controllers
             await _context.SaveChangesAsync();
             return Ok();
         }
+        [Authorize(Roles = "User,Admin")]
+        [HttpGet("GetLobbies you're in")]
+        public async Task<ActionResult<List<LobbyInfoDTO>>> GetLobbiesIn()
+        {
+            var idClaim = User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(idClaim) || !Guid.TryParse(idClaim, out var userId))
+                return Unauthorized("womp womp");
+
+            var user = await _context.Users.FindAsync(userId);
+            if (user == null)
+                return NotFound("User not found");
+
+            var lobbies = await _context.LobbyCons
+                .Where(lc => lc.UserDataId == userId)
+                .Include(lc => lc.Lobby)
+                .Where(lc => lc.Lobby != null)
+                .Select(lc => new LobbyInfoDTO
+                {
+                    Dm = lc.Lobby.Dm,
+                    LocationName = lc.Lobby.locationName,
+                    TtType = lc.Lobby.TtType,
+                    StartDate = lc.Lobby.StartDate,
+                    EndDate = lc.Lobby.EndDate,
+                    PlayerLimit = lc.Lobby.PlayerLimit
+                })
+                .ToListAsync();
+
+
+
+            return Ok(lobbies);
+        }
+        
        // [Authorize(Roles = "User,Admin")]
         [HttpPost("WriteComment")]//Foreign key error 19 konkrét Idkkal működne
         public async Task<IActionResult> Comment(KommentDTO request)
@@ -299,8 +301,12 @@ namespace backendSzM.Controllers
             ujKomment.KommentSzoveg = request.KommentSzoveg;
             ujKomment.FogadoId = fogado.Id;
             ujKomment.KommentaloId = kommentelo.Id;
-
-
+            
+            KommentCon newKomment = new KommentCon();
+            newKomment.Id = Guid.NewGuid();
+            newKomment.UserDataId = Guid.NewGuid();
+            newKomment.komment=ujKomment.Id;
+            _context.KommentCons.Add(newKomment);
             _context.Komments.Add(ujKomment);
             await _context.SaveChangesAsync();
             return Ok(new());
@@ -384,6 +390,12 @@ namespace backendSzM.Controllers
                 return NotFound();
             }
             return Ok(locations);
+        }
+        [Authorize(Roles = "User,Admin")]
+        [HttpGet("Authorization")]
+        public IActionResult AuthorizedEndpoint()
+        {
+            return Ok("You are an admin!");
         }
         [Authorize(Roles = "Admin")]
         [HttpGet("admin-only")]

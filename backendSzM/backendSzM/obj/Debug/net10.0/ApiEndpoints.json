@@ -85,6 +85,16 @@
   },
   {
     "ContainingType": "backendSzM.Controllers.AuthController",
+    "Method": "AuthorizedEndpoint",
+    "RelativePath": "api/Auth/Authorization",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "backendSzM.Controllers.AuthController",
     "Method": "ChangeRole",
     "RelativePath": "api/Auth/Change Role",
     "HttpMethod": "PATCH",

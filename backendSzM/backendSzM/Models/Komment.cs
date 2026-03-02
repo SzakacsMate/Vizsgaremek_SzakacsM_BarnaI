@@ -10,11 +10,8 @@ namespace backendSzM.Models
 
         public string Fogado { get; set; } = string.Empty;
         public Guid KommentaloId { get; set; }
-        [ForeignKey(nameof(KommentaloId))]
-        public UserData? KommentaloUser { get; set; }
-
         public Guid FogadoId { get; set; }
-        [ForeignKey(nameof(FogadoId))]
-        public UserData? FogadoUser { get; set; }
+        public ICollection<KommentCon>? Komments { get; set; } = new List<KommentCon>();
+        
     }
 }
