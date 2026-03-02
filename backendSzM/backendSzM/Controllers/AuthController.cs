@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using System.Collections.Generic;
 using System.Data;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
@@ -143,7 +144,7 @@ namespace backendSzM.Controllers
         {
             var refreshToken = GenRefreshToken();
             token.RefreshToken = refreshToken;
-            token.RefreshTokenExpiryTime = DateTime.UtcNow.AddMinutes(1);
+            token.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(1);
             await _context.SaveChangesAsync();
             return refreshToken;
         }
@@ -196,7 +197,7 @@ namespace backendSzM.Controllers
         }
         [Authorize(Roles = "User,Admin")]
         [HttpGet("CurrentUser")]
-        public async Task<ActionResult> AuthenthicatedUser()
+        public async Task<ActionResult<CurrentUserDTO>> AuthenthicatedUser()
         {
             var name= User?.FindFirst(ClaimTypes.Name)?.Value;
             if (name == null)
@@ -221,7 +222,7 @@ namespace backendSzM.Controllers
         [Authorize(Roles = "User,Admin")]
         [HttpPost("AddLocation")]//működik
 
-        public async Task<IActionResult> AddLocation(LocationDTO request)
+        public async Task<ActionResult<CurrentUserDTO>> AddLocation(LocationDTO request)
         {
             Location ujLocation = new Location();
             ujLocation.Id = Guid.NewGuid();
@@ -238,24 +239,77 @@ namespace backendSzM.Controllers
             return Ok(new());
         }
         [Authorize(Roles = "User,Admin")]
-        [HttpDelete("DeleteLocation/{Id}")]//működik
-        public async Task<IActionResult> DeleteLocation(Guid Id)
+        [HttpDelete("DeleteLocation/{Id}")]
+        public async Task<ActionResult<CurrentUserDTO>> DeleteLocation(Guid Id)
         {
-            var torlendoJelolt = _context?.Locations.Where(x => x.Id == Id).FirstOrDefault();
+            var torlendoLocation = _context?.Locations.Where(x => x.Id == Id).FirstOrDefault();
             var torlendoLobbies = _context?.Lobbies.Where(x => x.LocationId == Id).FirstOrDefault();
 
-            if (torlendoJelolt == null)
+            if (torlendoLocation == null)
             {
                 return NotFound();
             }
 
-            _context.Locations.Remove(torlendoJelolt);
+            _context.Locations.Remove(torlendoLocation);
+            _context.Lobbies.Remove(torlendoLobbies);
+            await _context.SaveChangesAsync();
+            return Ok();
+        }
+        [HttpDelete("DeleteLobby/{Id}")]
+        public async Task<ActionResult<CurrentUserDTO>> DeleteLobby(Guid Id)
+        {
+            var torlendoLobbyCon = _context?.LobbyCons.Where(x => x.LobbyId == Id).FirstOrDefault();
+            var torlendoLobbies = _context?.Lobbies.Where(x => x.Id == Id).FirstOrDefault();
+
+            if (torlendoLobbies == null)
+            {
+                return NotFound();
+            }
+
+            _context.LobbyCons.Remove(torlendoLobbyCon);
+            _context.Lobbies.Remove(torlendoLobbies);
+            await _context.SaveChangesAsync();
+            return Ok();
+        }
+        [HttpDelete("DeleteComment/{Id}")]
+        public async Task<ActionResult<CurrentUserDTO>> DeleteComment(Guid Id)
+        {
+            var torlendoKommentCon = _context?.KommentCons.Where(x => x.komment == Id).FirstOrDefault();
+            var torlendoKomment = _context?.Komments.Where(x => x.Id == Id).FirstOrDefault();
+
+            if (torlendoKomment == null)
+            {
+                return NotFound();
+            }
+
+            _context.KommentCons.Remove(torlendoKommentCon);
+            _context.Komments.Remove(torlendoKomment);
+            await _context.SaveChangesAsync();
+            return Ok();
+        }
+        [HttpDelete("RemovePlayerFromLobby/{Id}")]
+        public async Task<ActionResult<CurrentUserDTO>> RemovePlayer(Guid Id)
+        {
+            var idClaim = User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var torlendoLobbyCon = _context?.LobbyCons.Where(x => x.LobbyId == Id).FirstOrDefault();
+            var torlendoLobbies = _context?.Lobbies.Where(x => x.Id == Id).FirstOrDefault();
+
+            if (torlendoLobbies == null)
+            {
+                return NotFound();
+            }
+            if (torlendoLobbies.Dm!=idClaim)
+            {
+                return Unauthorized("Nem te vagy a DM");
+            }
+
+            _context.LobbyCons.Remove(torlendoLobbyCon);
             _context.Lobbies.Remove(torlendoLobbies);
             await _context.SaveChangesAsync();
             return Ok();
         }
         [Authorize(Roles = "User,Admin")]
-        [HttpGet("GetLobbies you're in")]
+        [HttpGet("GetLobbies_youre_in")]
         public async Task<ActionResult<List<LobbyInfoDTO>>> GetLobbiesIn()
         {
             var idClaim = User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -285,8 +339,30 @@ namespace backendSzM.Controllers
 
             return Ok(lobbies);
         }
-        
-       // [Authorize(Roles = "User,Admin")]
+        [HttpPatch("ChangeUserData")]//
+        public async Task<ActionResult<CurrentUserDTO>> ChangeUserData(ProfileDTO profile)
+        {
+            var currentId = User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var Changeduser = _context.Users.FirstOrDefault(x=>x.Id.ToString()==currentId);
+            Changeduser.Name=profile.Name;
+            Changeduser.Hash=profile.Password;
+            Changeduser.ProfileI=profile.ProfileI;
+            _context.Users.Update(Changeduser);
+            await _context.SaveChangesAsync();
+            return Ok();
+        }/*
+        [HttpPatch("Add/RemoveRep")]//
+        public async Task<ActionResult<CurrentUserDTO>> AddRep(RepDTO rep)
+        {
+            var currentId = User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var Changeduser = _context.Users.FirstOrDefault(x => x.Id.ToString() == currentId);
+            
+            _context.Users.Update(Changeduser);
+            await _context.SaveChangesAsync();
+            return Ok();
+        }*/
+
+        // [Authorize(Roles = "User,Admin")]
         [HttpPost("WriteComment")]//Foreign key error 19 konkrét Idkkal működne
         public async Task<IActionResult> Comment(KommentDTO request)
         {
@@ -312,7 +388,7 @@ namespace backendSzM.Controllers
             return Ok(new());
         }
         [Authorize(Roles = "User,Admin")]
-        [HttpPost("Create Lobby")]//működik
+        [HttpPost("CreateLobby")]//működik
         public async Task<ActionResult<CurrentUserDTO>> CreateLobby(LobbyDTO request, Guid Id)
         {
             var name = User?.FindFirst(ClaimTypes.Name)?.Value;
@@ -404,7 +480,7 @@ namespace backendSzM.Controllers
             return Ok("You are an admin!");
         }
         [Authorize(Roles = "Admin")]
-        [HttpPatch("Suspend User")]//
+        [HttpPatch("SuspendUser")]//
         public async Task<IActionResult> SuspendUser(Guid Id)
         {
             var suspendedUser = _context.Users.FirstOrDefault(x => x.Id == Id);
@@ -423,7 +499,7 @@ namespace backendSzM.Controllers
             return Ok();
         }
         [Authorize(Roles = "Admin")]
-        [HttpPatch("Give Warning")]//
+        [HttpPatch("GiveWarning")]//
         public async Task<IActionResult> GiveWarning(Guid Id)
         {
             var warnedUser = _context.Users.FirstOrDefault(x => x.Id == Id);
@@ -457,7 +533,7 @@ namespace backendSzM.Controllers
             await _context.SaveChangesAsync();
             return Ok();
         }
-        [HttpPatch("Change Role")]//
+        [HttpPatch("ChangeRole")]//
         public async Task<ActionResult<CurrentUserDTO>> ChangeRole(RoleDTO role, Guid Id)
         {
             var currentId = User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;

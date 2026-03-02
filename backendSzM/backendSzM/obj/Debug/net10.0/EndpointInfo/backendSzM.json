@@ -165,7 +165,24 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/CurrentUserDTO"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CurrentUserDTO"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CurrentUserDTO"
+                }
+              }
+            }
           }
         }
       }
@@ -225,7 +242,53 @@
         }
       }
     },
-    "/api/Auth/GetLobbies you're in": {
+    "/api/Auth/DeleteLobby/{Id}": {
+      "delete": {
+        "tags": [
+          "Auth"
+        ],
+        "parameters": [
+          {
+            "name": "Id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Auth/RemovePlayerFromLobby/{Id}": {
+      "delete": {
+        "tags": [
+          "Auth"
+        ],
+        "parameters": [
+          {
+            "name": "Id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Auth/GetLobbies_youre_in": {
       "get": {
         "tags": [
           "Auth"
@@ -295,7 +358,7 @@
         }
       }
     },
-    "/api/Auth/Create Lobby": {
+    "/api/Auth/CreateLobby": {
       "post": {
         "tags": [
           "Auth"
@@ -493,7 +556,7 @@
         }
       }
     },
-    "/api/Auth/Suspend User": {
+    "/api/Auth/SuspendUser": {
       "patch": {
         "tags": [
           "Auth"
@@ -515,7 +578,7 @@
         }
       }
     },
-    "/api/Auth/Give Warning": {
+    "/api/Auth/GiveWarning": {
       "patch": {
         "tags": [
           "Auth"
@@ -560,7 +623,7 @@
         }
       }
     },
-    "/api/Auth/Change Role": {
+    "/api/Auth/ChangeRole": {
       "patch": {
         "tags": [
           "Auth"

@@ -96,7 +96,7 @@
   {
     "ContainingType": "backendSzM.Controllers.AuthController",
     "Method": "ChangeRole",
-    "RelativePath": "api/Auth/Change Role",
+    "RelativePath": "api/Auth/ChangeRole",
     "HttpMethod": "PATCH",
     "IsController": true,
     "Order": 0,
@@ -127,7 +127,7 @@
   {
     "ContainingType": "backendSzM.Controllers.AuthController",
     "Method": "CreateLobby",
-    "RelativePath": "api/Auth/Create Lobby",
+    "RelativePath": "api/Auth/CreateLobby",
     "HttpMethod": "POST",
     "IsController": true,
     "Order": 0,
@@ -163,6 +163,32 @@
     "IsController": true,
     "Order": 0,
     "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "backendSzM.DTOs.CurrentUserDTO",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "backendSzM.Controllers.AuthController",
+    "Method": "DeleteLobby",
+    "RelativePath": "api/Auth/DeleteLobby/{Id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "Id",
+        "Type": "System.Guid",
+        "IsRequired": true
+      }
+    ],
     "ReturnTypes": []
   },
   {
@@ -204,7 +230,7 @@
   {
     "ContainingType": "backendSzM.Controllers.AuthController",
     "Method": "GetLobbiesIn",
-    "RelativePath": "api/Auth/GetLobbies you\u0027re in",
+    "RelativePath": "api/Auth/GetLobbies_youre_in",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
@@ -270,7 +296,7 @@
   {
     "ContainingType": "backendSzM.Controllers.AuthController",
     "Method": "GiveWarning",
-    "RelativePath": "api/Auth/Give Warning",
+    "RelativePath": "api/Auth/GiveWarning",
     "HttpMethod": "PATCH",
     "IsController": true,
     "Order": 0,
@@ -343,8 +369,24 @@
   },
   {
     "ContainingType": "backendSzM.Controllers.AuthController",
+    "Method": "RemovePlayer",
+    "RelativePath": "api/Auth/RemovePlayerFromLobby/{Id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "Id",
+        "Type": "System.Guid",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "backendSzM.Controllers.AuthController",
     "Method": "SuspendUser",
-    "RelativePath": "api/Auth/Suspend User",
+    "RelativePath": "api/Auth/SuspendUser",
     "HttpMethod": "PATCH",
     "IsController": true,
     "Order": 0,
