@@ -112,7 +112,17 @@
         "IsRequired": true
       }
     ],
-    "ReturnTypes": []
+    "ReturnTypes": [
+      {
+        "Type": "backendSzM.DTOs.TokenDTO",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
   },
   {
     "ContainingType": "backendSzM.Controllers.AuthController",
@@ -232,7 +242,7 @@
     "Parameters": [],
     "ReturnTypes": [
       {
-        "Type": "backendSzM.DTOs.CurrentUserDTO",
+        "Type": "backendSzM.DTOs.TokenDTO",
         "MediaTypes": [
           "text/plain",
           "application/json",

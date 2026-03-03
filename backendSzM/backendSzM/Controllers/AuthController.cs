@@ -132,7 +132,7 @@ namespace backendSzM.Controllers
             
         }  
         [HttpPost("AddPlayer")]//
-        public async Task<IActionResult> AddPlayer(JoinLobbyDTO request)
+        public async Task<ActionResult<TokenDTO>> AddPlayer(JoinLobbyDTO request)
         {
             var user = _context.Users.FirstOrDefault(x => x.Id == request.PlayerId);
             var lobby=_context.Lobbies.FirstOrDefault(x=>x.Id == request.LobbyId);
@@ -184,7 +184,7 @@ namespace backendSzM.Controllers
                 issuer:_configuration.GetValue<string>("Appsettings:Issuer"),
                 audience: _configuration.GetValue<string>("Appsettings:Audience"),
                 claims:claims,
-                expires:DateTime.UtcNow.AddDays(1),
+                expires:DateTime.UtcNow.Add(_accessTokenLifetime),
                 signingCredentials:creds
                 );
             return new JwtSecurityTokenHandler().WriteToken(tokenDescriptor);
@@ -200,8 +200,26 @@ namespace backendSzM.Controllers
             }
             return token;
         }
-        
-        
+        private async Task<ActionResult> ValidateAccesToken()
+        {
+            var idclaim = User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(idclaim) || !Guid.TryParse(idclaim, out var userId))
+                return Unauthorized();
+            var tokenRow = await _context.Tokens.FirstOrDefaultAsync(t => t.UserDataId == userId);
+            if (tokenRow == null)
+                return Unauthorized("No token record");
+            if (tokenRow.AccessTokenExpiryTime.HasValue && tokenRow.AccessTokenExpiryTime <= DateTime.UtcNow)
+                return Unauthorized("Access token expired");
+            var authHeader = Request.Headers["Authorization"].FirstOrDefault();
+            if (!string.IsNullOrEmpty(authHeader) && authHeader.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
+            {
+                var presented = authHeader.Substring("Bearer ".Length).Trim();
+                if (!string.IsNullOrEmpty(tokenRow.AccesToken) && !string.Equals(tokenRow.AccesToken, presented, StringComparison.Ordinal))
+                    return Unauthorized("Token mismatch");
+            }
+            return null;
+        }
+
         public async Task<TokenDTO?> RefreshTokenAsync(RefreshTokenReqDto request)
         {
             var token = await ValidateRefreshTokenAsync(request.Id, request.RefreshToken);
@@ -225,8 +243,14 @@ namespace backendSzM.Controllers
         }
         [Authorize(Roles = "User,Admin")]
         [HttpGet("CurrentUser")]
-        public async Task<ActionResult<CurrentUserDTO>> AuthenthicatedUser()
+        public async Task<ActionResult<TokenDTO>> AuthenthicatedUser()
         {
+           var check=await ValidateAccesToken();
+            if (check != null)
+            {
+                return check;
+            }
+
             var name= User?.FindFirst(ClaimTypes.Name)?.Value;
             if (name == null)
             {

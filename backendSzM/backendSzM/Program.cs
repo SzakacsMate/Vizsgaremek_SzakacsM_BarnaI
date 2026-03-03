@@ -27,6 +27,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
         ValidateAudience = true,
         ValidAudience = builder.Configuration["Appsettings:Audience"],
         ValidateLifetime = true,
+        ClockSkew = TimeSpan.Zero,
         IssuerSigningKey = new SymmetricSecurityKey(
             Encoding.UTF8.GetBytes(builder.Configuration["Appsettings:Token"]!)),
         ValidateIssuerSigningKey = true,
