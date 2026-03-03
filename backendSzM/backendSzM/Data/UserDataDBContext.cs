@@ -4,24 +4,43 @@ using Microsoft.Extensions.Options;
 
 namespace backendSzM.Data
 {
-    public class  UserDataDBContext:DbContext 
+    public class UserDataDBContext : DbContext
     {
         public UserDataDBContext(DbContextOptions<UserDataDBContext> options) : base(options)
-    {
-    }
-    public DbSet<UserData> Users { get; set; }
+
+
+        {
+        }
+        public DbSet<UserData> Users { get; set; }
         public DbSet<BannedUser> BannedUsers { get; set; }
         public DbSet<LobbyCon> LobbyCons { get; set; }
         public DbSet<Token> Tokens { get; set; }
         public DbSet<Lobby> Lobbies { get; set; }
         public DbSet<Komment> Komments { get; set; }
-        public DbSet<KommentCon> KommentCons { get; set; }
         public DbSet<Location> Locations { get; set; }
 
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Komment>()
+        .HasOne(k => k.FogadoUser)
+        .WithMany(u => u.Komments)
+        .HasForeignKey(k => k.FogadoUserId)
+        .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Komment>()
+                .HasOne(k => k.KommenteloUser)
+                .WithMany() 
+                .HasForeignKey(k => k.KommentaloUserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            base.OnModelCreating(modelBuilder);
         }
-        
-        
-        
+
+
+
+
+    }
       
     }
 

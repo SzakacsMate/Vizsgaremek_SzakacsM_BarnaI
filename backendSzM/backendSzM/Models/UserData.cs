@@ -22,8 +22,8 @@ namespace backendSzM.Models
         public Token? Token { get; set; }
         
         
-        public ICollection<KommentCon>? Komments { get; set; } = new List<KommentCon>();
-
+       
+        public ICollection<Komment>? Komments { get; set; } = new List<Komment>();
 
 
         public ICollection<LobbyCon>? LobbyCons { get; set; } = new List<LobbyCon>();

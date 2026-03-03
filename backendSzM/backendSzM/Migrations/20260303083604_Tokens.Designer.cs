@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using backendSzM.Data;
 
@@ -10,9 +11,11 @@ using backendSzM.Data;
 namespace backendSzM.Migrations
 {
     [DbContext(typeof(UserDataDBContext))]
-    partial class UserDataDBContextModelSnapshot : ModelSnapshot
+    [Migration("20260303083604_Tokens")]
+    partial class Tokens
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.2");
@@ -153,6 +156,7 @@ namespace backendSzM.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("AccesToken")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime?>("AccessTokenExpiryTime")
@@ -222,15 +226,15 @@ namespace backendSzM.Migrations
             modelBuilder.Entity("backendSzM.Models.Komment", b =>
                 {
                     b.HasOne("backendSzM.Models.UserData", "FogadoUser")
-                        .WithMany("Komments")
+                        .WithMany()
                         .HasForeignKey("FogadoUserId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("backendSzM.Models.UserData", "KommenteloUser")
                         .WithMany()
                         .HasForeignKey("KommentaloUserId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("FogadoUser");
@@ -296,8 +300,6 @@ namespace backendSzM.Migrations
 
             modelBuilder.Entity("backendSzM.Models.UserData", b =>
                 {
-                    b.Navigation("Komments");
-
                     b.Navigation("LobbyCons");
                 });
 #pragma warning restore 612, 618

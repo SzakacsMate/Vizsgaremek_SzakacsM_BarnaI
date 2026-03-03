@@ -6,12 +6,17 @@ namespace backendSzM.Models
     {
         public Guid Id { get; set; }
         public string KommentSzoveg { get; set; } = string.Empty;
-        public string Kommentalo { get; set; } = string.Empty;
-
-        public string Fogado { get; set; } = string.Empty;
-        public Guid KommentaloId { get; set; }
-        public Guid FogadoId { get; set; }
-        public ICollection<KommentCon>? Komments { get; set; } = new List<KommentCon>();
+       
         
+        [ForeignKey(nameof(KommenteloUser))]
+        public Guid KommentaloUserId { get; set; }
+        public UserData? KommenteloUser { get; set; }
+
+
+        [ForeignKey(nameof(FogadoUser))]
+        public Guid FogadoUserId { get; set; }
+        public UserData? FogadoUser { get; set; }
+
+
     }
 }

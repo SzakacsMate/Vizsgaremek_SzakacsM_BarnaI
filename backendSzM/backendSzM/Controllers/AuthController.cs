@@ -25,6 +25,9 @@ namespace backendSzM.Controllers
     {
        private readonly UserDataDBContext _context;
         private readonly IConfiguration _configuration;
+        private readonly TimeSpan _accessTokenLifetime = TimeSpan.FromMinutes(15);
+        private readonly TimeSpan _refreshTokenLifetime = TimeSpan.FromDays(7);
+
         public AuthController(UserDataDBContext context, IConfiguration configuration)
         {
             _context = context;
@@ -83,27 +86,46 @@ namespace backendSzM.Controllers
                 return Unauthorized("Rossz jelszó");
             }
             var CurrentToken = _context.Tokens.FirstOrDefault(x => x.UserDataId ==user.Id);
-            
+            var accessToken = CreateToken(user);
+            var accessExpiry = DateTime.UtcNow.Add(_accessTokenLifetime);
+
 
 
             if (CurrentToken== null)
             { 
-               var  newToken = new Token();
-                newToken.Id = Guid.NewGuid();
-                newToken.UserDataId =user.Id;
-                newToken.AccesToken = CreateToken(user);
-                CurrentToken = newToken;
+               var  newToken = new Token
+                    {
+                   Id = Guid.NewGuid(),
+                   UserDataId = user.Id,
+                   AccesToken= accessToken,
+                   AccessTokenExpiryTime = accessExpiry
+
+
+               };
+                
+                
+                
                 _context.Tokens.Add(newToken);
-                await _context.SaveChangesAsync();
+                CurrentToken = newToken;
             }
-            string accestoken = CreateToken(user);
-            
+            else
+            {
+                CurrentToken.AccesToken = accessToken;
+                CurrentToken.AccessTokenExpiryTime = accessExpiry;
+                _context.Tokens.Update(CurrentToken);
+            }
+            await _context.SaveChangesAsync();
+             
+
 
             var refresh_token = new TokenDTO
             {
 
-                AccesToken = accestoken,
-                RefreshToken = await GenAndSaveRefreshTokenAsync(CurrentToken)
+                AccesToken = accessToken,
+                AccessTokenExpiryTime = CurrentToken.AccessTokenExpiryTime,
+                RefreshToken = await GenAndSaveRefreshTokenAsync(CurrentToken),
+                RefreshTokenExpiryTime = CurrentToken.RefreshTokenExpiryTime
+
             };
           
             return Ok(refresh_token);
@@ -125,7 +147,7 @@ namespace backendSzM.Controllers
 
 
         
-            [HttpPost("refresh")]
+        [HttpPost("refresh")]
         public async Task<ActionResult<TokenDTO>> RefreshToken(RefreshTokenReqDto request)
         {
             
@@ -144,7 +166,7 @@ namespace backendSzM.Controllers
         {
             var refreshToken = GenRefreshToken();
             token.RefreshToken = refreshToken;
-            token.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(1);
+            token.RefreshTokenExpiryTime = DateTime.UtcNow.AddMinutes(1);
             await _context.SaveChangesAsync();
             return refreshToken;
         }
@@ -187,11 +209,17 @@ namespace backendSzM.Controllers
             var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == request.Id);
             if (user == null) return null;
             var newAccesToken = CreateToken(user);
+            token.AccesToken = newAccesToken;
+            token.AccessTokenExpiryTime = DateTime.UtcNow.Add(_accessTokenLifetime);
+
             var newRefreshToken = await GenAndSaveRefreshTokenAsync(token);
             return new TokenDTO
             {
                 AccesToken = newAccesToken,
-                RefreshToken = newRefreshToken
+                AccessTokenExpiryTime = token.AccessTokenExpiryTime,
+                RefreshToken = newRefreshToken,
+                RefreshTokenExpiryTime = token.RefreshTokenExpiryTime
+
             };
 
         }
@@ -274,7 +302,6 @@ namespace backendSzM.Controllers
         [HttpDelete("DeleteComment/{Id}")]
         public async Task<ActionResult<CurrentUserDTO>> DeleteComment(Guid Id)
         {
-            var torlendoKommentCon = _context?.KommentCons.Where(x => x.komment == Id).FirstOrDefault();
             var torlendoKomment = _context?.Komments.Where(x => x.Id == Id).FirstOrDefault();
 
             if (torlendoKomment == null)
@@ -282,7 +309,7 @@ namespace backendSzM.Controllers
                 return NotFound();
             }
 
-            _context.KommentCons.Remove(torlendoKommentCon);
+            
             _context.Komments.Remove(torlendoKomment);
             await _context.SaveChangesAsync();
             return Ok();
@@ -350,20 +377,33 @@ namespace backendSzM.Controllers
             _context.Users.Update(Changeduser);
             await _context.SaveChangesAsync();
             return Ok();
-        }/*
+        }
         [HttpPatch("Add/RemoveRep")]//
-        public async Task<ActionResult<CurrentUserDTO>> AddRep(RepDTO rep)
+        public async Task<ActionResult<CurrentUserDTO>> AddRep(RepDTO rep,Guid id)
         {
+            var kapoUser = _context.Users.FirstOrDefault(x => x.Id == id);
             var currentId = User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             var Changeduser = _context.Users.FirstOrDefault(x => x.Id.ToString() == currentId);
-            
+            if(rep.Rep=="Add")
+            {
+                kapoUser.Rep += 1;
+            }
+            else if(rep.Rep=="Remove")
+            {
+                kapoUser.Rep -= 1;
+            }
+            else
+            {
+                return BadRequest("Invalid Rep action");
+            }
             _context.Users.Update(Changeduser);
             await _context.SaveChangesAsync();
             return Ok();
-        }*/
+        }
 
-        // [Authorize(Roles = "User,Admin")]
-        [HttpPost("WriteComment")]//Foreign key error 19 konkrét Idkkal működne
+         [Authorize(Roles = "User,Admin")]
+        
+        [HttpPost("WriteComment")]
         public async Task<IActionResult> Comment(KommentDTO request)
         {
             var kommentelo = _context.Users.FirstOrDefault(x => x.Name == request.Kommentalo);
@@ -372,17 +412,9 @@ namespace backendSzM.Controllers
                 return BadRequest("Nincs ilyen fogadó");
             Komment ujKomment = new Komment();
             ujKomment.Id = Guid.NewGuid();
-            ujKomment.Fogado = fogado.Name;
-            ujKomment.Kommentalo = kommentelo.Name;
             ujKomment.KommentSzoveg = request.KommentSzoveg;
-            ujKomment.FogadoId = fogado.Id;
-            ujKomment.KommentaloId = kommentelo.Id;
-            
-            KommentCon newKomment = new KommentCon();
-            newKomment.Id = Guid.NewGuid();
-            newKomment.UserDataId = Guid.NewGuid();
-            newKomment.komment=ujKomment.Id;
-            _context.KommentCons.Add(newKomment);
+            ujKomment.KommentaloUserId = kommentelo.Id;
+            ujKomment.FogadoUserId = fogado.Id;
             _context.Komments.Add(ujKomment);
             await _context.SaveChangesAsync();
             return Ok(new());
@@ -471,7 +503,7 @@ namespace backendSzM.Controllers
         [HttpGet("Authorization")]
         public IActionResult AuthorizedEndpoint()
         {
-            return Ok("You are an admin!");
+            return Ok("You are authorized!");
         }
         [Authorize(Roles = "Admin")]
         [HttpGet("admin-only")]
