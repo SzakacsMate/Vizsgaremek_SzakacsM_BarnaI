@@ -1,10 +1,10 @@
-using Scalar.AspNetCore;
-using Microsoft.EntityFrameworkCore;
-using backendSzM.Data;
-
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
 using System.Text;
+using backendSzM.Data;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,6 +31,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
         IssuerSigningKey = new SymmetricSecurityKey(
             Encoding.UTF8.GetBytes(builder.Configuration["Appsettings:Token"]!)),
         ValidateIssuerSigningKey = true,
+        RoleClaimType = ClaimTypes.Role,
+        NameClaimType = ClaimTypes.Name
     }; 
 });
 

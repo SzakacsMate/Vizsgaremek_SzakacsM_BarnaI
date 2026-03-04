@@ -2,6 +2,6 @@
 {
     public class RepDTO
     {
-        public string Rep {  get; set; } = string.Empty;
+        public int Rep {  get; set; }=0;
     }
 }
