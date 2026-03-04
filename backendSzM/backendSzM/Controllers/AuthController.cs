@@ -210,13 +210,13 @@ namespace backendSzM.Controllers
                 return Unauthorized("No token record");
             if (tokenRow.AccessTokenExpiryTime.HasValue && tokenRow.AccessTokenExpiryTime <= DateTime.UtcNow)
                 return Unauthorized("Access token expired");
-            var authHeader = Request.Headers["Authorization"].FirstOrDefault();
+            /*var authHeader = Request.Headers["Authorization"].FirstOrDefault();
             if (!string.IsNullOrEmpty(authHeader) && authHeader.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
             {
                 var presented = authHeader.Substring("Bearer ".Length).Trim();
                 if (!string.IsNullOrEmpty(tokenRow.AccesToken) && !string.Equals(tokenRow.AccesToken, presented, StringComparison.Ordinal))
                     return Unauthorized("Token mismatch");
-            }
+            }*/
             return null;
         }
 
@@ -254,7 +254,7 @@ namespace backendSzM.Controllers
             var name= User?.FindFirst(ClaimTypes.Name)?.Value;
             if (name == null)
             {
-                return Unauthorized("Womp");
+                return Unauthorized("Nincs ilyen felhasználó");
             }
             var id = User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             var currentUser = _context?.Users.FirstOrDefault(x=>x.Name== name);
@@ -272,10 +272,14 @@ namespace backendSzM.Controllers
             return Ok(resp);
         }
         [Authorize(Roles = "User,Admin")]
-        [HttpPost("AddLocation")]//működik
-
+        [HttpPost("AddLocation")]//
         public async Task<ActionResult<CurrentUserDTO>> AddLocation(LocationDTO request)
         {
+            var check = await ValidateAccesToken();
+            if (check != null)
+            {
+                return check;
+            }
             Location ujLocation = new Location();
             ujLocation.Id = Guid.NewGuid();
             ujLocation.LocationName = request.LocationName;
@@ -294,6 +298,11 @@ namespace backendSzM.Controllers
         [HttpDelete("DeleteLocation/{Id}")]
         public async Task<ActionResult<CurrentUserDTO>> DeleteLocation(Guid Id)
         {
+            var check = await ValidateAccesToken();
+            if (check != null)
+            {
+                return check;
+            }
             var torlendoLocation = _context?.Locations.Where(x => x.Id == Id).FirstOrDefault();
             var torlendoLobbies = _context?.Lobbies.Where(x => x.LocationId == Id).FirstOrDefault();
 
@@ -307,9 +316,15 @@ namespace backendSzM.Controllers
             await _context.SaveChangesAsync();
             return Ok();
         }
+        [Authorize(Roles = "User,Admin")]//Dm és admin törölhet lobbyt, de csak a sajátját
         [HttpDelete("DeleteLobby/{Id}")]
         public async Task<ActionResult<CurrentUserDTO>> DeleteLobby(Guid Id)
         {
+            var check = await ValidateAccesToken();
+            if (check != null)
+            {
+                return check;
+            }
             var torlendoLobbyCon = _context?.LobbyCons.Where(x => x.LobbyId == Id).FirstOrDefault();
             var torlendoLobbies = _context?.Lobbies.Where(x => x.Id == Id).FirstOrDefault();
 
@@ -323,9 +338,15 @@ namespace backendSzM.Controllers
             await _context.SaveChangesAsync();
             return Ok();
         }
+        [Authorize(Roles = "User,Admin")]
         [HttpDelete("DeleteComment/{Id}")]
         public async Task<ActionResult<CurrentUserDTO>> DeleteComment(Guid Id)
         {
+            var check = await ValidateAccesToken();
+            if (check != null)
+            {
+                return check;
+            }
             var torlendoKomment = _context?.Komments.Where(x => x.Id == Id).FirstOrDefault();
 
             if (torlendoKomment == null)
@@ -338,13 +359,19 @@ namespace backendSzM.Controllers
             await _context.SaveChangesAsync();
             return Ok();
         }
+        [Authorize(Roles = "User,Admin")]
         [HttpDelete("RemovePlayerFromLobby/{Id}")]
         public async Task<ActionResult<CurrentUserDTO>> RemovePlayer(Guid Id)
         {
+            var check = await ValidateAccesToken();
+            if (check != null)
+            {
+                return check;
+            }
             var idClaim = User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             var torlendoLobbyCon = _context?.LobbyCons.Where(x => x.LobbyId == Id).FirstOrDefault();
             var torlendoLobbies = _context?.Lobbies.Where(x => x.Id == Id).FirstOrDefault();
-
+            //admin /dm törölhet játékost
             if (torlendoLobbies == null)
             {
                 return NotFound();
@@ -363,6 +390,11 @@ namespace backendSzM.Controllers
         [HttpGet("GetLobbies_youre_in")]
         public async Task<ActionResult<List<LobbyInfoDTO>>> GetLobbiesIn()
         {
+            var check = await ValidateAccesToken();
+            if (check != null)
+            {
+                return check;
+            }
             var idClaim = User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (string.IsNullOrEmpty(idClaim) || !Guid.TryParse(idClaim, out var userId))
                 return Unauthorized("womp womp");
@@ -390,9 +422,15 @@ namespace backendSzM.Controllers
 
             return Ok(lobbies);
         }
+        [Authorize(Roles = "User,Admin")]
         [HttpPatch("ChangeUserData")]//
         public async Task<ActionResult<CurrentUserDTO>> ChangeUserData(ProfileDTO profile)
         {
+            var check = await ValidateAccesToken();
+            if (check != null)
+            {
+                return check;
+            }
             var currentId = User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             var Changeduser = _context.Users.FirstOrDefault(x=>x.Id.ToString()==currentId);
             Changeduser.Name=profile.Name;
@@ -402,9 +440,15 @@ namespace backendSzM.Controllers
             await _context.SaveChangesAsync();
             return Ok();
         }
+        [Authorize(Roles = "User,Admin")]
         [HttpPatch("Add/RemoveRep")]//
         public async Task<ActionResult<CurrentUserDTO>> AddRep(RepDTO rep,Guid id)
         {
+            var check = await ValidateAccesToken();
+            if (check != null)
+            {
+                return check;
+            }
             var kapoUser = _context.Users.FirstOrDefault(x => x.Id == id);
             var currentId = User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             var Changeduser = _context.Users.FirstOrDefault(x => x.Id.ToString() == currentId);
@@ -425,11 +469,15 @@ namespace backendSzM.Controllers
             return Ok();
         }
 
-         [Authorize(Roles = "User,Admin")]
-        
+        [Authorize(Roles = "User,Admin")]
         [HttpPost("WriteComment")]
         public async Task<IActionResult> Comment(KommentDTO request)
         {
+            var check = await ValidateAccesToken();
+            if (check != null)
+            {
+                return check;
+            }
             var kommentelo = _context.Users.FirstOrDefault(x => x.Name == request.Kommentalo);
             var fogado = _context?.Users.FirstOrDefault(x => x.Name == request.Fogado);
             if (fogado == null)
@@ -447,6 +495,11 @@ namespace backendSzM.Controllers
         [HttpPost("CreateLobby")]//működik
         public async Task<ActionResult<CurrentUserDTO>> CreateLobby(LobbyDTO request, Guid Id)
         {
+            var check = await ValidateAccesToken();
+            if (check != null)
+            {
+                return check;
+            }
             var name = User?.FindFirst(ClaimTypes.Name)?.Value;
             var user = _context.Users.FirstOrDefault(x => x.Name == name);
             var locationId = _context?.Locations.FirstOrDefault(x => x.Id == Id);
@@ -494,6 +547,11 @@ namespace backendSzM.Controllers
         [HttpGet("GetLocations")]//
         public async Task<ActionResult<List<LocationDTO>>> GetLocations()
         {
+            var check = await ValidateAccesToken();
+            if (check != null)
+            {
+                return check;
+            }
             var locations = await _context.Locations.Select(x => new { x.LocationName, x.Adress, x.Description, x.Image }).ToListAsync();
             if (locations == null)
             {
@@ -505,6 +563,11 @@ namespace backendSzM.Controllers
         [HttpGet("GetAllLobbies")]//működik
         public async Task<ActionResult<List<LobbyDTO>>> GetAllLobbies()
         {
+            var check = await ValidateAccesToken();
+            if (check != null)
+            {
+                return check;
+            }
             var lobbies = await _context.Lobbies.Select(x => new { x.Dm, x.locationName, x.TtType, x.StartDate, x.EndDate, x.PlayerLimit }).ToListAsync();
             if (lobbies == null)
             {
@@ -512,10 +575,15 @@ namespace backendSzM.Controllers
             }
             return Ok(lobbies);
         }
-        
+        [Authorize(Roles = "User,Admin")]
         [HttpGet("GetLocation")]//
         public async Task<ActionResult<LocationDTO>> GetLocation(Guid Id)
         {
+            var check = await ValidateAccesToken();
+            if (check != null)
+            {
+                return check;
+            }
             var locations =  _context.Locations.Select(x => new { x.LocationName, x.Adress, x.Description, x.Image });
             if (locations == null)
             {
@@ -525,20 +593,35 @@ namespace backendSzM.Controllers
         }
         [Authorize(Roles = "User,Admin")]
         [HttpGet("Authorization")]
-        public IActionResult AuthorizedEndpoint()
+        public async Task<ActionResult> AuthorizedEndpoint()
         {
+            var check = await ValidateAccesToken();
+            if (check != null)
+            {
+                return check;
+            }
             return Ok("You are authorized!");
         }
         [Authorize(Roles = "Admin")]
         [HttpGet("admin-only")]
-        public IActionResult AdminOnlyEndpoint()
+        public async Task<IActionResult> AdminOnlyEndpoint()
         {
+            var check = await ValidateAccesToken();
+            if (check != null)
+            {
+                return check;
+            }
             return Ok("You are an admin!");
         }
         [Authorize(Roles = "Admin")]
         [HttpPatch("SuspendUser")]//
         public async Task<IActionResult> SuspendUser(Guid Id)
         {
+            var check = await ValidateAccesToken();
+            if (check != null)
+            {
+                return check;
+            }
             var suspendedUser = _context.Users.FirstOrDefault(x => x.Id == Id);
 
             if (suspendedUser == null)
@@ -558,6 +641,11 @@ namespace backendSzM.Controllers
         [HttpPatch("GiveWarning")]//
         public async Task<IActionResult> GiveWarning(Guid Id)
         {
+            var check = await ValidateAccesToken();
+            if (check != null)
+            {
+                return check;
+            }
             var warnedUser = _context.Users.FirstOrDefault(x => x.Id == Id);
 
             if (warnedUser == null)
@@ -573,6 +661,11 @@ namespace backendSzM.Controllers
         [HttpDelete("{Id}")]//
         public async Task<IActionResult> DeleteUser(Guid Id)
         {
+            var check = await ValidateAccesToken();
+            if (check != null)
+            {
+                return check;
+            }
             var torlendoUser = _context?.Users.Where(x => x.Id == Id).FirstOrDefault();
             var torlendoUserToken = _context?.Tokens.Where(x => x.UserDataId == Id).FirstOrDefault();
 
@@ -592,6 +685,11 @@ namespace backendSzM.Controllers
         [HttpPatch("ChangeRole")]//
         public async Task<ActionResult<CurrentUserDTO>> ChangeRole(RoleDTO role, Guid Id)
         {
+            var check = await ValidateAccesToken();
+            if (check != null)
+            {
+                return check;
+            }
             var currentId = User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             var changedUser = _context.Users.FirstOrDefault(x => x.Id == Id);
             var roleChanger = _context.Users.FirstOrDefault(x => x.Id.ToString() == currentId && role.Role == "Admin");
