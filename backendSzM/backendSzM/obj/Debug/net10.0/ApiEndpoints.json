@@ -27,22 +27,6 @@
   },
   {
     "ContainingType": "backendSzM.Controllers.AuthController",
-    "Method": "DeleteUser",
-    "RelativePath": "api/Auth/{Id}",
-    "HttpMethod": "DELETE",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "Id",
-        "Type": "System.Guid",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "backendSzM.Controllers.AuthController",
     "Method": "AddRep",
     "RelativePath": "api/Auth/Add/RemoveRep",
     "HttpMethod": "PATCH",
@@ -137,11 +121,43 @@
   {
     "ContainingType": "backendSzM.Controllers.AuthController",
     "Method": "AuthorizedEndpoint",
-    "RelativePath": "api/Auth/Authorization",
+    "RelativePath": "api/Auth/Authorization checker",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
     "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "backendSzM.Controllers.AuthController",
+    "Method": "DeleteUser",
+    "RelativePath": "api/Auth/Ban User {Id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "Id",
+        "Type": "System.Guid",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "backendSzM.Controllers.AuthController",
+    "Method": "ChangeRoleNoAdmin",
+    "RelativePath": "api/Auth/Change Role Rendszergazda",
+    "HttpMethod": "PATCH",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "role",
+        "Type": "backendSzM.DTOs.RoleNoAdminDTO",
+        "IsRequired": true
+      }
+    ],
     "ReturnTypes": []
   },
   {

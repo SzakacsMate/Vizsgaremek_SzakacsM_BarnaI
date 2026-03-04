@@ -2,7 +2,7 @@
 {
     public class RoleNoAdminDTO
     {
-        public Guid ChangedUser { get; set; }
+        public Guid ChangedUserId { get; set; }
         public string Role { get; set; }
     }
 }

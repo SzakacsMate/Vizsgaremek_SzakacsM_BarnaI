@@ -7,12 +7,12 @@
       "RelativeMoniker": "D:0:0:{C12CD6BB-EF85-5F5F-E806-13188BEE0A95}|backendSzM\\backendSzM.csproj|solutionrelative:backendszm\\controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{C12CD6BB-EF85-5F5F-E806-13188BEE0A95}|backendSzM\\backendSzM.csproj|c:\\users\\szakacs.mate\\source\\repos\\vizsgaremek_szakacsm_barnai\\backendszm\\backendszm\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{C12CD6BB-EF85-5F5F-E806-13188BEE0A95}|backendSzM\\backendSzM.csproj|solutionrelative:backendszm\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{C12CD6BB-EF85-5F5F-E806-13188BEE0A95}|backendSzM\\backendSzM.csproj|c:\\users\\szakacs.mate\\source\\repos\\vizsgaremek_szakacsm_barnai\\backendszm\\backendszm\\dtos\\userdatadto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{C12CD6BB-EF85-5F5F-E806-13188BEE0A95}|backendSzM\\backendSzM.csproj|solutionrelative:backendszm\\dtos\\userdatadto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C12CD6BB-EF85-5F5F-E806-13188BEE0A95}|backendSzM\\backendSzM.csproj|c:\\users\\szakacs.mate\\source\\repos\\vizsgaremek_szakacsm_barnai\\backendszm\\backendszm\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C12CD6BB-EF85-5F5F-E806-13188BEE0A95}|backendSzM\\backendSzM.csproj|solutionrelative:backendszm\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{C12CD6BB-EF85-5F5F-E806-13188BEE0A95}|backendSzM\\backendSzM.csproj|c:\\users\\szakacs.mate\\source\\repos\\vizsgaremek_szakacsm_barnai\\backendszm\\backendszm\\dtos\\repdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -56,14 +56,14 @@
               "RelativeDocumentMoniker": "backendSzM\\Controllers\\AuthController.cs",
               "ToolTip": "C:\\Users\\szakacs.mate\\source\\repos\\Vizsgaremek_SzakacsM_BarnaI\\backendSzM\\backendSzM\\Controllers\\AuthController.cs",
               "RelativeToolTip": "backendSzM\\Controllers\\AuthController.cs",
-              "ViewState": "AgIAAOgAAAAAAAAAAAAmwNgAAABQAAAAAAAAAA==",
+              "ViewState": "AgIAAL8CAAAAAAAAAAAIwPACAAAuAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-03-02T07:55:11.818Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 2,
               "Title": "Program.cs",
               "DocumentMoniker": "C:\\Users\\szakacs.mate\\source\\repos\\Vizsgaremek_SzakacsM_BarnaI\\backendSzM\\backendSzM\\Program.cs",
               "RelativeDocumentMoniker": "backendSzM\\Program.cs",
@@ -71,8 +71,7 @@
               "RelativeToolTip": "backendSzM\\Program.cs",
               "ViewState": "AgIAAB4AAAAAAAAAAAAAAB0AAAAiAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-03T11:00:51.669Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-03-03T11:00:51.669Z"
             },
             {
               "$type": "Document",
@@ -100,7 +99,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 1,
               "Title": "UserDataDTO.cs",
               "DocumentMoniker": "C:\\Users\\szakacs.mate\\source\\repos\\Vizsgaremek_SzakacsM_BarnaI\\backendSzM\\backendSzM\\DTOs\\UserDataDTO.cs",
               "RelativeDocumentMoniker": "backendSzM\\DTOs\\UserDataDTO.cs",
@@ -108,7 +107,8 @@
               "RelativeToolTip": "backendSzM\\DTOs\\UserDataDTO.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAAIAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-02T12:23:30.791Z"
+              "WhenOpened": "2026-03-02T12:23:30.791Z",
+              "EditorCaption": ""
             }
           ]
         }
