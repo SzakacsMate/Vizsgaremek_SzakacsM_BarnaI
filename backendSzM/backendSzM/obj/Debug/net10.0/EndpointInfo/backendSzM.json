@@ -155,6 +155,45 @@
         }
       }
     },
+    "/api/Auth/Search for user": {
+      "get": {
+        "tags": [
+          "Auth"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenDTO"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenDTO"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/Auth/GetLobbies_youre_in": {
       "get": {
         "tags": [
@@ -202,17 +241,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ProfileDTO"
+                "$ref": "#/components/schemas/ChangeDataDTO"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/ProfileDTO"
+                "$ref": "#/components/schemas/ChangeDataDTO"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/ProfileDTO"
+                "$ref": "#/components/schemas/ChangeDataDTO"
               }
             }
           },
@@ -693,6 +732,45 @@
         }
       }
     },
+    "/api/Auth/LeavFromLobby": {
+      "delete": {
+        "tags": [
+          "Auth"
+        ],
+        "parameters": [
+          {
+            "name": "Id",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/CurrentUserDTO"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CurrentUserDTO"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CurrentUserDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/Auth/LeaveLobby": {
       "delete": {
         "tags": [
@@ -1023,6 +1101,26 @@
   },
   "components": {
     "schemas": {
+      "ChangeDataDTO": {
+        "type": "object",
+        "properties": {
+          "currentName": {
+            "type": "string"
+          },
+          "currentPassword": {
+            "type": "string"
+          },
+          "changeName": {
+            "type": "string"
+          },
+          "changePassword": {
+            "type": "string"
+          },
+          "changeProfileI": {
+            "type": "string"
+          }
+        }
+      },
       "CurrentUserDTO": {
         "type": "object",
         "properties": {
@@ -1037,6 +1135,14 @@
           },
           "imageUrl": {
             "type": "string"
+          },
+          "rep": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
           }
         }
       },
@@ -1134,20 +1240,6 @@
             "type": "string"
           },
           "image": {
-            "type": "string"
-          }
-        }
-      },
-      "ProfileDTO": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string"
-          },
-          "password": {
-            "type": "string"
-          },
-          "profileI": {
             "type": "string"
           }
         }

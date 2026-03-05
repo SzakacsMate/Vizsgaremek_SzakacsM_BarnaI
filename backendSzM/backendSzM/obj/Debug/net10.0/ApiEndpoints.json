@@ -221,7 +221,7 @@
     "Parameters": [
       {
         "Name": "profile",
-        "Type": "backendSzM.DTOs.ProfileDTO",
+        "Type": "backendSzM.DTOs.ChangeDataDTO",
         "IsRequired": true
       }
     ],
@@ -496,6 +496,32 @@
   },
   {
     "ContainingType": "backendSzM.Controllers.AuthController",
+    "Method": "LeavFromLobby",
+    "RelativePath": "api/Auth/LeavFromLobby",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "Id",
+        "Type": "System.Guid",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "backendSzM.DTOs.CurrentUserDTO",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "backendSzM.Controllers.AuthController",
     "Method": "Login",
     "RelativePath": "api/Auth/login",
     "HttpMethod": "POST",
@@ -569,6 +595,32 @@
     "ReturnTypes": [
       {
         "Type": "backendSzM.DTOs.CurrentUserDTO",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "backendSzM.Controllers.AuthController",
+    "Method": "SearchUser",
+    "RelativePath": "api/Auth/Search for user",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Guid",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "backendSzM.DTOs.TokenDTO",
         "MediaTypes": [
           "text/plain",
           "application/json",

@@ -65,7 +65,7 @@ namespace backendSzM.Controllers
             }
             _context.Users.Add(ujUserData);
             await _context.SaveChangesAsync();
-            return Ok(new { ujUserData.Id, ujUserData.Name, ujUserData.Gmail, ujUserData.Role,ujUserData.Rep,ujUserData.ProfileI,ujUserData.IsSuspended });
+            return Ok(new { ujUserData.Id, ujUserData.Name, ujUserData.Gmail, ujUserData.Role,ujUserData.Rep,ujUserData.ProfileI});
 
         }
 
@@ -150,7 +150,12 @@ namespace backendSzM.Controllers
         {
             
             var result = await RefreshTokenAsync(request);
+            var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == request.Id);
             if (result == null||result.AccesToken is null) { return Unauthorized("Invalid refresh token"); }
+            if (user.Name!=request.name|| user.Gmail!=request.email)
+            {
+                return Unauthorized("Téves felhasználói adat");
+            }
             return Ok(result);
         }
         private string GenRefreshToken()
@@ -208,13 +213,7 @@ namespace backendSzM.Controllers
                 return Unauthorized("No token record");
             if (tokenRow.AccessTokenExpiryTime.HasValue && tokenRow.AccessTokenExpiryTime <= DateTime.UtcNow)
                 return Unauthorized("Access token expired");
-            /*var authHeader = Request.Headers["Authorization"].FirstOrDefault();
-            if (!string.IsNullOrEmpty(authHeader) && authHeader.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
-            {
-                var presented = authHeader.Substring("Bearer ".Length).Trim();
-                if (!string.IsNullOrEmpty(tokenRow.AccesToken) && !string.Equals(tokenRow.AccesToken, presented, StringComparison.Ordinal))
-                    return Unauthorized("Token mismatch");
-            }*/
+          
             return null;
         }
 
@@ -259,15 +258,32 @@ namespace backendSzM.Controllers
             
             var role = User?.FindFirst(ClaimTypes.Role)?.Value ?? currentUser.Role;
             var image = currentUser.ProfileI;
+
             var resp= new CurrentUserDTO
             {
                 Id=id,
                 Name = name,
                 Role = role,
-                ImageUrl = image
+                ImageUrl = image,
+                Rep=currentUser.Rep
             }
             ;
             return Ok(resp);
+        }
+        [Authorize(Roles = "User,Admin")]
+        [HttpGet("Search for user")]
+        public async Task<ActionResult<TokenDTO>> SearchUser(Guid id)
+        {
+            var check = await ValidateAccesToken();
+            if (check != null)
+            {
+                return check;
+            }
+            var lookedUser = _context.Users.FirstOrDefault(x => x.Id == id);
+
+
+            return Ok(new {lookedUser.Name,lookedUser.ProfileI,lookedUser.Rep,lookedUser.Role});
+
         }
         [Authorize(Roles = "User,Admin")]
         [HttpGet("GetLobbies_youre_in")]
@@ -307,19 +323,43 @@ namespace backendSzM.Controllers
         }
         [Authorize(Roles = "User,Admin")]
         [HttpPatch("ChangeUserData")]// átdolgozandó
-        public async Task<ActionResult<CurrentUserDTO>> ChangeUserData(ProfileDTO profile)
+        public async Task<ActionResult<CurrentUserDTO>> ChangeUserData(ChangeDataDTO profile)
         {
             var check = await ValidateAccesToken();
-            if (check != null)
-            {
-                return check;
-            }
-            var currentId = User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            var Changeduser = _context.Users.FirstOrDefault(x => x.Id.ToString() == currentId);
-            Changeduser.Name = profile.Name;
-            Changeduser.Hash = profile.Password;
-            Changeduser.ProfileI = profile.ProfileI;
-            _context.Users.Update(Changeduser);
+            if (check != null) return check;
+
+            var idClaim = User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(idClaim) || !Guid.TryParse(idClaim, out var userId))
+                return Unauthorized();
+
+            var changedUser = await _context.Users.FindAsync(userId);
+            if (changedUser == null)
+                return NotFound("User not found");
+
+            
+            if (changedUser.Id != userId)
+                return Unauthorized("Csak saját profilodat módosíthatod");
+
+            
+            var pwVerify = new PasswordHasher<UserData>()
+                .VerifyHashedPassword(changedUser, changedUser.Hash, profile.CurrentPassword);
+            if (pwVerify == PasswordVerificationResult.Failed || profile.CurrentName != changedUser.Name)
+                return Unauthorized("rossz eredeti név vagy jelszó");
+
+            if (string.IsNullOrWhiteSpace(profile.ChangeName) || string.IsNullOrWhiteSpace(profile.ChangePassword))
+                return BadRequest("Valamelyik mező üres");
+
+            
+            if (await _context.Users.AnyAsync(u => u.Name == profile.ChangeName && u.Id != userId))
+                return BadRequest("Már van ilyen felhasználónév");
+
+            
+            changedUser.Name = profile.ChangeName;
+            changedUser.Hash = new PasswordHasher<UserData>().HashPassword(changedUser, profile.ChangePassword);
+            if (!string.IsNullOrEmpty(profile.ChangeProfileI))
+                changedUser.ProfileI = profile.ChangeProfileI;
+
+            _context.Users.Update(changedUser);
             await _context.SaveChangesAsync();
             return Ok();
         }
@@ -471,10 +511,17 @@ namespace backendSzM.Controllers
             ujLobby.EndDate = request.EndDate;
             ujLobby.PlayerLimit = request.PlayerLimit;
             ujLobby.TtType = request.TtType;
-
+            ujLobby.PlayerCount = 0;
             ujLobby.locationName = location;
             ujLobby.LocationId = locationId.Id;
-
+            if(ujLobby.PlayerLimit<=2)
+            {
+                return BadRequest("Legalább 3-nak kell lennie a Játékos limitnek");
+            }
+            if(locationId.Id ==null)
+            {
+                return BadRequest("Nincs ilyen helyszín");
+            }
             LobbyCon newLobbyCon = new LobbyCon();
             newLobbyCon.Id = Guid.NewGuid();
             newLobbyCon.UserDataId = user.Id;
@@ -547,15 +594,20 @@ namespace backendSzM.Controllers
             var claimId = User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             var user = _context.Users.FirstOrDefault(x => x.Id == request.PlayerId);
             var lobby = _context.Lobbies.FirstOrDefault(x => x.Id == request.LobbyId);
+            
             if(user.Id.ToString() != claimId)
             {
                 return Unauthorized("Nem adhatsz más játékost hozzáadni a lobbyhoz!");
             }
+            
+            lobby.PlayerCount++;
             LobbyCon newLobbyCon = new LobbyCon();
             newLobbyCon.Id = Guid.NewGuid();
             newLobbyCon.UserDataId = user.Id;
             newLobbyCon.LobbyId = lobby.Id;
+            
             _context.LobbyCons.Add(newLobbyCon);
+            _context.Lobbies.Update(lobby);
             await _context.SaveChangesAsync();
             return Ok(new());
         }
@@ -578,6 +630,34 @@ namespace backendSzM.Controllers
                 return NotFound();
             }
             if (torlendoLobbies.Dm != idClaim||currentId.Role!="Admin")
+            {
+                return Unauthorized("Nincs jogod ehhez!");
+            }
+
+            _context.LobbyCons.Remove(torlendoLobbyCon);
+            _context.Lobbies.Remove(torlendoLobbies);
+            await _context.SaveChangesAsync();
+            return Ok();
+        }
+        [Authorize(Roles = "User,Admin")]
+        [HttpDelete("LeavFromLobby")] //DM saját lobbyban/Admin bárkit player csak magát- tesztelendő
+        public async Task<ActionResult<CurrentUserDTO>> LeavFromLobby(Guid Id)
+        {
+            var check = await ValidateAccesToken();
+            if (check != null)
+            {
+                return check;
+            }
+            var idClaim = User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var currentId = _context.Users.FirstOrDefault(x => x.Id.ToString() == idClaim);
+            var torlendoLobbyCon = _context?.LobbyCons.Where(x => x.LobbyId == Id).FirstOrDefault();
+            var torlendoLobbies = _context?.Lobbies.Where(x => x.Id == Id).FirstOrDefault();
+            //admin /dm törölhet játékost
+            if (torlendoLobbies == null)
+            {
+                return NotFound();
+            }
+            if (idClaim!=currentId.ToString())
             {
                 return Unauthorized("Nincs jogod ehhez!");
             }
@@ -658,15 +738,7 @@ namespace backendSzM.Controllers
             await _context.SaveChangesAsync();
             return Ok();
         }
-        
-        
-        
 
-        
-        
-        
-        
-        
         [Authorize(Roles = "User,Admin")]
         [HttpGet("Authorization checker")]
         public async Task<ActionResult> AuthorizedEndpoint()
@@ -824,5 +896,13 @@ namespace backendSzM.Controllers
             }
             return Ok(jeloltek.ProfileI);
     
-        }*/
+        }
+      var authHeader = Request.Headers["Authorization"].FirstOrDefault();
+            if (!string.IsNullOrEmpty(authHeader) && authHeader.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
+            {
+                var presented = authHeader.Substring("Bearer ".Length).Trim();
+                if (!string.IsNullOrEmpty(tokenRow.AccesToken) && !string.Equals(tokenRow.AccesToken, presented, StringComparison.Ordinal))
+                    return Unauthorized("Token mismatch");
+            }
+    */
 }
