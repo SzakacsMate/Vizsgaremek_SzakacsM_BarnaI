@@ -842,6 +842,29 @@
         }
       }
     },
+    "/api/Auth/FogadoComments/{Id}": {
+      "get": {
+        "tags": [
+          "Auth"
+        ],
+        "parameters": [
+          {
+            "name": "Id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/Auth/DeleteComment/{Id}": {
       "delete": {
         "tags": [
@@ -1255,6 +1278,15 @@
             "format": "uuid"
           },
           "refreshToken": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "password": {
             "type": "string"
           }
         }

@@ -368,6 +368,22 @@
   },
   {
     "ContainingType": "backendSzM.Controllers.AuthController",
+    "Method": "Comments",
+    "RelativePath": "api/Auth/FogadoComments/{Id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "Id",
+        "Type": "System.Guid",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "backendSzM.Controllers.AuthController",
     "Method": "GetAllLobbies",
     "RelativePath": "api/Auth/GetAllLobbies",
     "HttpMethod": "GET",

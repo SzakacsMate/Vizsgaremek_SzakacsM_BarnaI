@@ -695,28 +695,55 @@ namespace backendSzM.Controllers
         public async Task<IActionResult> Comment(KommentDTO request)
         {
             var check = await ValidateAccesToken();
+            if (check != null) return check;
+
+            var idClaim = User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(idClaim) || !Guid.TryParse(idClaim, out var userId))
+                return Unauthorized();
+
+            // fetch current user directly by Guid
+            var kommentelo = await _context.Users.FirstOrDefaultAsync(x => x.Id == userId);
+            if (kommentelo == null)
+                return Unauthorized("User not found");
+
+            var fogado = await _context.Users.FirstOrDefaultAsync(x => x.Name == request.Fogado);
+            if (fogado == null)
+                return BadRequest("Nincs ilyen fogadó");
+
+            if (kommentelo.Id != userId)
+                return Unauthorized();
+
+            var ujKomment = new Komment
+            {
+                Id = Guid.NewGuid(),
+                KommentSzoveg = request.KommentSzoveg,
+                KommentaloUserId = kommentelo.Id,
+                FogadoUserId = fogado.Id
+            };
+
+            _context.Komments.Add(ujKomment);
+            await _context.SaveChangesAsync();
+            return Ok();
+        }
+        [Authorize(Roles = "User,Admin")]
+        [HttpGet("FogadoComments/{Id}")]
+        public async Task<IActionResult> Comments(Guid Id)
+            {
+            var check = await ValidateAccesToken();
             if (check != null)
             {
                 return check;
             }
-            var idClaim = User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            var kommentelo = _context.Users.FirstOrDefault(x => x.Name == request.Kommentalo);
-            var fogado = _context?.Users.FirstOrDefault(x => x.Name == request.Fogado);
+            var fogado = await _context.Users.FindAsync(Id);
             if (fogado == null)
                 return BadRequest("Nincs ilyen fogadó");
-            if (kommentelo.Id.ToString()!=idClaim)
-            {
-                return Unauthorized("");
-            }
-            Komment ujKomment = new Komment();
-            ujKomment.Id = Guid.NewGuid();
-            ujKomment.KommentSzoveg = request.KommentSzoveg;
-            ujKomment.KommentaloUserId = kommentelo.Id;
-            ujKomment.FogadoUserId = fogado.Id;
-            _context.Komments.Add(ujKomment);
-            await _context.SaveChangesAsync();
-            return Ok(new());
+            var fogadoId=_context.Komments.FirstOrDefault(x => x.FogadoUserId == Id);
+            var kommentelo = _context.Users.FirstOrDefault(x=>x.Id==fogadoId.KommentaloUserId);
+            var kommentek = await _context.Komments.Where(x => x.FogadoUserId == Id).Select(x => new { x.KommentSzoveg, x.KommentaloUserId,kommentelo.Name }).ToListAsync(); 
+            return Ok(kommentek);
         }
+
+
         [Authorize(Roles = "User,Admin")]
         [HttpDelete("DeleteComment/{Id}")]
         public async Task<ActionResult<CurrentUserDTO>> DeleteComment(Guid Id)
