@@ -1,35 +1,87 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import "./App.css";
+import LocationCard from "./components/LocationCard";
+import UpcomingSessionCard from "./components/UpcomingSessionCard";
+import { currentUser, locations, upcomingSessions } from "./data/mockData";
+
+import questBookLogo from "./assets/branding/QuestBook.png";
+import bellIcon from "./assets/icons/bell.png";
+import magnifierIcon from "./assets/icons/magnifier.png";
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <div className="page">
+      <div className="app-shell">
+        <header className="navbar">
+          <div className="navbar-logo-section">
+            <img
+              src={questBookLogo}
+              alt="QuestBook"
+              className="navbar-logo"
+            />
+          </div>
+
+          <div className="navbar-divider" />
+
+          <nav className="navbar-links">
+            <a href="/">Locations</a>
+            <a href="/">My Sessions</a>
+            <a href="/">Community</a>
+          </nav>
+
+          <div className="navbar-divider" />
+
+          <div className="navbar-icons">
+            <img src={bellIcon} alt="Notifications" />
+            <img src={magnifierIcon} alt="Search" />
+          </div>
+        </header>
+
+        <div className="content-layout">
+          <main className="main-content">
+            <div className="main-overlay">
+              <h1 className="page-title">Locations</h1>
+
+              <section className="locations-list">
+                {locations.map((location) => (
+                  <LocationCard key={location.id} location={location} />
+                ))}
+              </section>
+            </div>
+          </main>
+
+          <aside className="sidebar">
+            <div className="sidebar-overlay">
+              {currentUser ? (
+                <>
+                  <h2 className="sidebar-title">
+                    Welcome back, {currentUser.name}!
+                  </h2>
+
+                  <img
+                    src={currentUser.image}
+                    alt={currentUser.name}
+                    className="sidebar-user-image"
+                  />
+                </>
+              ) : (
+                <h2 className="sidebar-title">
+                  You are currently not logged in.
+                </h2>
+              )}
+
+              <div className="sidebar-sessions">
+                <h3 className="sidebar-subtitle">Upcoming Reservations</h3>
+
+                {upcomingSessions.slice(0, 2).map((session) => (
+                  <UpcomingSessionCard key={session.id} session={session} />
+                ))}
+              </div>
+            </div>
+          </aside>
+        </div>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    </div>
+  );
 }
 
-export default App
+export default App;
