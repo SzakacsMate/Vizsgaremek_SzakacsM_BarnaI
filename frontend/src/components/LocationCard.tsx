@@ -2,11 +2,15 @@ import type { Location } from "../types/location";
 
 type LocationCardProps = {
   location: Location;
+  onOpen: (location: Location) => void;
 };
 
-export default function LocationCard({ location }: LocationCardProps) {
+export default function LocationCard({
+  location,
+  onOpen,
+}: LocationCardProps) {
   return (
-    <div className="location-card">
+    <article className="location-card" onClick={() => onOpen(location)}>
       <img
         src={location.image}
         alt={location.name}
@@ -17,8 +21,17 @@ export default function LocationCard({ location }: LocationCardProps) {
         <h2 className="location-card-title">{location.name}</h2>
         <p className="location-card-address">{location.address}</p>
         <p className="location-card-description">{location.description}</p>
-        <button className="location-card-button">Reserve</button>
       </div>
-    </div>
+
+      <button
+        className="location-card-button"
+        onClick={(event) => {
+          event.stopPropagation();
+          alert(`Reserve clicked for: ${location.name}`);
+        }}
+      >
+        RESERVE
+      </button>
+    </article>
   );
 }
