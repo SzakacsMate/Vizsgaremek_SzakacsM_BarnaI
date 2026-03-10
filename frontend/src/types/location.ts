@@ -5,4 +5,5 @@ export type Location = {
   description: string;
   image: string;
   longDescription: string;
+  bookedDates: string[];
 };

@@ -3,11 +3,13 @@ import type { Location } from "../types/location";
 type LocationDetailsCardProps = {
   location: Location;
   onBack: () => void;
+  onReserve: (location: Location) => void;
 };
 
 export default function LocationDetailsCard({
   location,
   onBack,
+  onReserve,
 }: LocationDetailsCardProps) {
   return (
     <section className="location-details-card">
@@ -31,13 +33,13 @@ export default function LocationDetailsCard({
       </div>
 
       <div className="location-details-actions">
-        <button className="location-details-back-button" onClick={onBack}>
+        <button className="details-back-button" onClick={onBack}>
           BACK
         </button>
 
         <button
           className="location-details-reserve-button"
-          onClick={() => alert(`Reserve clicked for: ${location.name}`)}
+          onClick={() => onReserve(location)}
         >
           RESERVE
         </button>

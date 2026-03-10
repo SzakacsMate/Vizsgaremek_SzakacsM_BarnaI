@@ -2,13 +2,17 @@ import type { Session } from "../types/session";
 
 type MySessionCardProps = {
   session: Session;
+  onOpen: (session: Session) => void;
 };
 
-export default function MySessionCard({ session }: MySessionCardProps) {
+export default function MySessionCard({
+  session,
+  onOpen,
+}: MySessionCardProps) {
   const currentPlayerCount = session.players.length;
 
   return (
-    <article className="my-session-card">
+    <article className="my-session-card" onClick={() => onOpen(session)}>
       <div
         className="my-session-left-bar"
         style={{ backgroundColor: session.systemColor }}

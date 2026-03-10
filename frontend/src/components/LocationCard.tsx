@@ -3,11 +3,13 @@ import type { Location } from "../types/location";
 type LocationCardProps = {
   location: Location;
   onOpen: (location: Location) => void;
+  onReserve: (location: Location) => void;
 };
 
 export default function LocationCard({
   location,
   onOpen,
+  onReserve,
 }: LocationCardProps) {
   return (
     <article className="location-card" onClick={() => onOpen(location)}>
@@ -27,7 +29,7 @@ export default function LocationCard({
         className="location-card-button"
         onClick={(event) => {
           event.stopPropagation();
-          alert(`Reserve clicked for: ${location.name}`);
+          onReserve(location);
         }}
       >
         RESERVE
