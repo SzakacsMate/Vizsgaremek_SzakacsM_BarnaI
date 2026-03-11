@@ -1,0 +1,23 @@
+﻿<Window x:Class="QuestBook_AdminPanel_SzM.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:QuestBook_AdminPanel_SzM"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800">
+    <Grid>
+        <Grid.ColumnDefinitions> 
+            <ColumnDefinition Width="2*"/>
+            <ColumnDefinition Width="1*"/>
+        </Grid.ColumnDefinitions>
+        <Grid/>
+        <DataGrid d:ItemsSource="{d:SampleData ItemCount=5}" x:Name="Result"/>
+        <Grid Grid.Column="1">
+            <StackPanel>
+                <Button Content="Összes Felhasználó lekérés" Click="Button_Click"/>
+            </StackPanel>
+        </Grid>
+
+    </Grid>
+</Window>
