@@ -1007,6 +1007,28 @@
         }
       }
     },
+    "/api/Auth/UnSuspendUser": {
+      "patch": {
+        "tags": [
+          "Auth"
+        ],
+        "parameters": [
+          {
+            "name": "Id",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/Auth/GiveWarning": {
       "patch": {
         "tags": [
@@ -1029,7 +1051,7 @@
         }
       }
     },
-    "/api/Auth/Ban User {Id}": {
+    "/api/Auth/BanUser{Id}": {
       "delete": {
         "tags": [
           "Auth"

@@ -25,7 +25,7 @@ namespace backendSzM.Controllers
     {
        private readonly UserDataDBContext _context;
         private readonly IConfiguration _configuration;
-        private readonly TimeSpan _accessTokenLifetime = TimeSpan.FromMinutes(15);
+        private readonly TimeSpan _accessTokenLifetime = TimeSpan.FromHours(10);
         private readonly TimeSpan _refreshTokenLifetime = TimeSpan.FromDays(7);
 
         public AuthController(UserDataDBContext context, IConfiguration configuration)
@@ -98,9 +98,6 @@ namespace backendSzM.Controllers
             var CurrentToken = _context.Tokens.FirstOrDefault(x => x.UserDataId ==user.Id);
             var accessToken = CreateToken(user);
             var accessExpiry = DateTime.UtcNow.Add(_accessTokenLifetime);
-
-
-
             if (CurrentToken== null)
             { 
                var  newToken = new Token
@@ -112,9 +109,6 @@ namespace backendSzM.Controllers
 
 
                };
-                
-                
-                
                 _context.Tokens.Add(newToken);
                 CurrentToken = newToken;
             }
@@ -125,9 +119,6 @@ namespace backendSzM.Controllers
                 _context.Tokens.Update(CurrentToken);
             }
             await _context.SaveChangesAsync();
-             
-
-
             var refresh_token = new TokenDTO
             {
 
@@ -137,7 +128,6 @@ namespace backendSzM.Controllers
                 RefreshTokenExpiryTime = CurrentToken.RefreshTokenExpiryTime
 
             };
-          
             return Ok(refresh_token);
             
         }
@@ -548,12 +538,15 @@ namespace backendSzM.Controllers
         [HttpGet("GetAllLobbies")]//működik
         public async Task<ActionResult<List<LobbyDTO>>> GetAllLobbies()
         {
+            List<UserData> names = new();
             var check = await ValidateAccesToken();
             if (check != null)
             {
                 return check;
             }
-            var lobbies = await _context.Lobbies.Select(x => new { x.Dm, x.locationName, x.TtType, x.StartDate, x.EndDate, x.PlayerLimit }).ToListAsync();
+            
+            
+            var lobbies = await _context.Lobbies.Select(x => new { x.Dm, x.locationName, x.TtType, x.StartDate, x.EndDate, x.PlayerLimit}).ToListAsync();
             if (lobbies == null)
             {
                 return NotFound();
@@ -807,7 +800,7 @@ namespace backendSzM.Controllers
         }
         [Authorize(Roles = "Admin")]
         [HttpPatch("SuspendUser")]// müködik
-        public async Task<IActionResult> SuspendUser(Guid Id)
+        public async Task<IActionResult> SuspendUser([FromQuery]Guid Id)
         {
             var check = await ValidateAccesToken();
             if (check != null)
@@ -820,12 +813,33 @@ namespace backendSzM.Controllers
             {
                 return BadRequest("Nincs ilyen felhasználó");
             }
-            if (suspendedUser.Warnings % 3 == 0 && suspendedUser.Warnings>=3)
+            if (suspendedUser.Warnings % 3 == 0 && suspendedUser.Warnings<=3)
             {
-                return BadRequest("Ez a felhasználónak nincs elég warningja");
+                return BadRequest("Ennek a felhasználónak nincs elég warningja");
             }
             suspendedUser.IsSuspended = true;
             _context.Users.Update(suspendedUser);
+            await _context.SaveChangesAsync();
+            return Ok();
+        }
+        [Authorize(Roles = "Admin")]
+        [HttpPatch("UnSuspendUser")]// müködik
+        public async Task<IActionResult> UnSuspendUser([FromQuery] Guid Id)
+        {
+            var check = await ValidateAccesToken();
+            if (check != null)
+            {
+                return check;
+            }
+            var UnsuspendedUser = _context.Users.FirstOrDefault(x => x.Id == Id);
+
+            if (UnsuspendedUser == null)
+            {
+                return BadRequest("Nincs ilyen felhasználó");
+            }
+            
+            UnsuspendedUser.IsSuspended = false;
+            _context.Users.Update(UnsuspendedUser);
             await _context.SaveChangesAsync();
             return Ok();
         }
@@ -850,7 +864,7 @@ namespace backendSzM.Controllers
             return Ok();
         }
         [Authorize(Roles = "Admin")]
-        [HttpDelete("Ban User {Id}")]// működik
+        [HttpDelete("BanUser{Id}")]// működik
         public async Task<IActionResult> DeleteUser(Guid Id)
         {
             var check = await ValidateAccesToken();
@@ -859,6 +873,7 @@ namespace backendSzM.Controllers
                 return check;
             }
             var torlendoUser = _context?.Users.Where(x => x.Id == Id).FirstOrDefault();
+            var torlendoUserKomments = _context?.Komments.Where(x => x.KommentaloUserId == Id || x.FogadoUserId == Id).ToList();
             var torlendoUserToken = _context?.Tokens.Where(x => x.UserDataId == Id).FirstOrDefault();
 
             if (torlendoUser == null)
@@ -869,9 +884,12 @@ namespace backendSzM.Controllers
             ujBanned.Id = Guid.NewGuid();
             ujBanned.BannedGmail = torlendoUser.Gmail;
             _context.BannedUsers.Add(ujBanned);
-            _context.Users.Remove(torlendoUser);
             _context.Tokens.Remove(torlendoUserToken);
+            _context.RemoveRange(torlendoUserKomments);
+            _context.Users.Remove(torlendoUser);
+
             await _context.SaveChangesAsync();
+            
             return Ok();
         }
         [HttpPatch("ChangeRole")]// 
@@ -925,7 +943,7 @@ namespace backendSzM.Controllers
             }
             
             var users = await _context.Users
-                .Select(x => new { x.Name, x.Rep, x.Gmail })
+                .Select(x => new { x.Id, x.Name, x.Rep, x.Gmail, x.Role, x.Warnings, x.IsSuspended })
                 .ToListAsync();
             
             if (users == null || !users.Any())

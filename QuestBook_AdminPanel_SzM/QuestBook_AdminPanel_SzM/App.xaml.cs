@@ -12,6 +12,7 @@ namespace QuestBook_AdminPanel_SzM
     {
         protected override void OnStartup(StartupEventArgs e)
         {
+            ShutdownMode = ShutdownMode.OnExplicitShutdown;
             base.OnStartup(e);
 
             var loginWindow = new LoginWindow();
@@ -19,7 +20,9 @@ namespace QuestBook_AdminPanel_SzM
 
             if (result == true && loginWindow.IsAdminAuthenticated)
             {
-                var mainWindow = new MainWindow(loginWindow.AccessToken);
+                var mainWindow = new MainWindow(loginWindow.AccessToken!);
+                MainWindow = mainWindow;
+                ShutdownMode = ShutdownMode.OnMainWindowClose;
                 mainWindow.Show();
             }
             else

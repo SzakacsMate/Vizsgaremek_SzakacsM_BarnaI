@@ -141,7 +141,7 @@
   {
     "ContainingType": "backendSzM.Controllers.AuthController",
     "Method": "DeleteUser",
-    "RelativePath": "api/Auth/Ban User {Id}",
+    "RelativePath": "api/Auth/BanUser{Id}",
     "HttpMethod": "DELETE",
     "IsController": true,
     "Order": 0,
@@ -696,6 +696,22 @@
     "ContainingType": "backendSzM.Controllers.AuthController",
     "Method": "SuspendUser",
     "RelativePath": "api/Auth/SuspendUser",
+    "HttpMethod": "PATCH",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "Id",
+        "Type": "System.Guid",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "backendSzM.Controllers.AuthController",
+    "Method": "UnSuspendUser",
+    "RelativePath": "api/Auth/UnSuspendUser",
     "HttpMethod": "PATCH",
     "IsController": true,
     "Order": 0,

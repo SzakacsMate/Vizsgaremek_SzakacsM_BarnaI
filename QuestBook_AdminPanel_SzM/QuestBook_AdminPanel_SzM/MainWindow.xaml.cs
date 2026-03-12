@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace QuestBook_AdminPanel_SzM
 {
@@ -15,6 +16,8 @@ namespace QuestBook_AdminPanel_SzM
     {
         private readonly string url = "https://localhost:7231";
         private readonly string accessToken;
+        private List<UserModel> playerList = [];
+        private List<Lobbies> lobbyList = [];
 
         public MainWindow(string token)
         {
@@ -22,13 +25,14 @@ namespace QuestBook_AdminPanel_SzM
             accessToken = token;
         }
 
-        private async void Button_Click(object sender, RoutedEventArgs e)
+        private async Task LoadUsersAsync()
         {
+            playerList = [];
             try
             {
                 using (HttpClient client = new HttpClient())
                 {
-                    client.DefaultRequestHeaders.Authorization = 
+                    client.DefaultRequestHeaders.Authorization =
                         new AuthenticationHeaderValue("Bearer", accessToken);
 
                     var getUsersApiUrl = $"{url}/api/Auth/GetAllUsers";
@@ -38,8 +42,8 @@ namespace QuestBook_AdminPanel_SzM
                     {
                         string jsonResponse = await response.Content.ReadAsStringAsync();
                         var users = JsonConvert.DeserializeObject<List<UserModel>>(jsonResponse);
-                        
-                        Result.ItemsSource = users;
+                        playerList = users ?? [];
+                        PlayerResult.ItemsSource = users;
                     }
                     else
                     {
@@ -52,5 +56,197 @@ namespace QuestBook_AdminPanel_SzM
                 MessageBox.Show($"Exception: {ex.Message}");
             }
         }
+
+        private async void Button_Click(object sender, RoutedEventArgs e)
+        {
+            await LoadUsersAsync();
+        }
+        private async Task LoadLobbies()
+        {
+            try
+            {
+                using (HttpClient client = new HttpClient())
+                {
+                    client.DefaultRequestHeaders.Authorization =
+                        new AuthenticationHeaderValue("Bearer", accessToken);
+
+                    var getLobbiesApiUrl = $"{url}/api/Auth/GetAllLobbies";
+                    HttpResponseMessage response = await client.GetAsync(getLobbiesApiUrl);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        string jsonResponse = await response.Content.ReadAsStringAsync();
+                        var lobbies = JsonConvert.DeserializeObject<List<Lobbies>>(jsonResponse);
+                        lobbyList = lobbies ?? [];
+                        LobbyResult.ItemsSource = lobbyList;
+                    }
+                    else
+                    {
+                        MessageBox.Show($"Error: {response.StatusCode} - {response.ReasonPhrase}");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Exception: {ex.Message}");
+            }
+        }
+
+        private async void GetLobbies(object sender, RoutedEventArgs e)
+        {
+            await LoadLobbies();
+        }
+
+        private async void GiveWarning_Click(object sender, RoutedEventArgs e)
+        {
+            if (PlayerResult.SelectedItem is not UserModel selectedUser)
+            {
+                MessageBox.Show("Válassz ki egy felhasználót a figyelmeztetéshez.");
+                return;
+            }
+
+            try
+            {
+                using (HttpClient client = new HttpClient())
+                {
+                    client.DefaultRequestHeaders.Authorization =
+                        new AuthenticationHeaderValue("Bearer", accessToken);
+
+                    var giveWarningApiUrl = $"{url}/api/Auth/GiveWarning?Id={selectedUser.Id}";
+                    HttpResponseMessage response = await client.PatchAsync(giveWarningApiUrl, null);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        MessageBox.Show($"Figyelmeztetés sikeresen kiosztva: {selectedUser.Name}");
+                        await LoadUsersAsync();
+                    }
+                    else
+                    {
+                        string errorContent = await response.Content.ReadAsStringAsync();
+                        MessageBox.Show(string.IsNullOrWhiteSpace(errorContent)
+                            ? $"Error: {response.StatusCode} - {response.ReasonPhrase}"
+                            : errorContent);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Exception: {ex.Message}");
+            }
+        }
+
+    
+    private async void SuspendUser_Click(object sender, RoutedEventArgs e)
+        {
+            if (PlayerResult.SelectedItem is not UserModel selectedUser)
+            {
+                MessageBox.Show("Válassz ki egy felhasználót a figyelmeztetéshez.");
+                return;
+            }
+
+            try
+            {
+                using (HttpClient client = new HttpClient())
+                {
+                    client.DefaultRequestHeaders.Authorization =
+                        new AuthenticationHeaderValue("Bearer", accessToken);
+
+                    var giveWarningApiUrl = $"{url}/api/Auth/SuspendUser?Id={selectedUser.Id}";
+                    HttpResponseMessage response = await client.PatchAsync(giveWarningApiUrl, null);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        MessageBox.Show($"Felhasználó sikeresen felfüggesztve {selectedUser.Name}");
+                        await LoadUsersAsync();
+                    }
+                    else
+                    {
+                        string errorContent = await response.Content.ReadAsStringAsync();
+                        MessageBox.Show(string.IsNullOrWhiteSpace(errorContent)
+                            ? $"Error: {response.StatusCode} - {response.ReasonPhrase}"
+                            : errorContent);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Exception: {ex.Message}");
+            }
+        }
+
+        private async void UnSuspendUser_Click(object sender, RoutedEventArgs e)
+        {
+            if (PlayerResult.SelectedItem is not UserModel selectedUser)
+            {
+                MessageBox.Show("Válassz ki egy felhasználót a felmentéshez.");
+                return;
+            }
+
+            try
+            {
+                using (HttpClient client = new HttpClient())
+                {
+                    client.DefaultRequestHeaders.Authorization =
+                        new AuthenticationHeaderValue("Bearer", accessToken);
+
+                    var giveWarningApiUrl = $"{url}/api/Auth/UnSuspendUser?Id={selectedUser.Id}";
+                    HttpResponseMessage response = await client.PatchAsync(giveWarningApiUrl, null);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        MessageBox.Show($"Felhasználó sikeresen felmentve {selectedUser.Name}");
+                        await LoadUsersAsync();
+                    }
+                    else
+                    {
+                        string errorContent = await response.Content.ReadAsStringAsync();
+                        MessageBox.Show(string.IsNullOrWhiteSpace(errorContent)
+                            ? $"Error: {response.StatusCode} - {response.ReasonPhrase}"
+                            : errorContent);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Exception: {ex.Message}");
+            }
+        }
+        private async void Ban_Click(object sender, RoutedEventArgs e)
+        {
+            if (PlayerResult.SelectedItem is not UserModel selectedUser)
+            {
+                MessageBox.Show("Válassz ki egy felhasználót a felmentéshez.");
+                return;
+            }
+
+            try
+            {
+                using (HttpClient client = new HttpClient())
+                {
+                    client.DefaultRequestHeaders.Authorization =
+                        new AuthenticationHeaderValue("Bearer", accessToken);
+
+                    var giveWarningApiUrl = $"{url}/api/Auth/BanUser?Id={selectedUser.Id}";
+                    HttpResponseMessage response = await client.PatchAsync(giveWarningApiUrl, null);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        MessageBox.Show($"Felhasználó bannolva {selectedUser.Name}");
+                        await LoadUsersAsync();
+                    }
+                    else
+                    {
+                        string errorContent = await response.Content.ReadAsStringAsync();
+                        MessageBox.Show(string.IsNullOrWhiteSpace(errorContent)
+                            ? $"Error: {response.StatusCode} - {response.ReasonPhrase}"
+                            : errorContent);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Exception: {ex.Message}");
+            }
+        }
     }
-}
+    }

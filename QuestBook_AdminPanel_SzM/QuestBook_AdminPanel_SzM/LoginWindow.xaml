@@ -31,15 +31,19 @@
                    HorizontalAlignment="Center"/>
 
         <TextBlock Grid.Row="2" Text="Felhasznalonev:" FontWeight="SemiBold"/>
-        <TextBox Grid.Row="4"
+        <TextBox Grid.Row="3"
                  x:Name="UsernameTextBox"
-                 Height="30"
+                 Height="20"
                  VerticalContentAlignment="Center"/>
-
+        <TextBlock Grid.Row="4" Text="Gmail:" FontWeight="SemiBold"/>
+        <TextBox Grid.Row="5"
+         x:Name="GmailTextBox"
+         Height="20"
+         VerticalContentAlignment="Center"/>
         <TextBlock Grid.Row="6" Text="Jelszo:" FontWeight="SemiBold"/>
         <PasswordBox Grid.Row="8"
                      x:Name="PasswordBox"
-                     Height="30"
+                     Height="20"
                      VerticalContentAlignment="Center"/>
 
         <StackPanel Grid.Row="10"
