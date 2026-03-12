@@ -560,6 +560,23 @@ namespace backendSzM.Controllers
             }
             return Ok(lobbies);
         }
+        [Authorize(Roles = "User,Admin")]
+        [HttpGet("GetLobby")]//   - működik
+        public async Task<ActionResult<LocationDTO>> GetLobby(Guid Id)
+        {
+            var check = await ValidateAccesToken();
+            if (check != null)
+            {
+                return check;
+            }
+
+            var lobbies = _context.Lobbies.Select(x => new { x.Dm, x.locationName, x.TtType, x.StartDate, x.EndDate, x.PlayerLimit, x.PlayerCount, x.Id }).Where(x => x.Id == Id);
+            if (lobbies == null)
+            {
+                return NotFound();
+            }
+            return Ok(lobbies);
+        }
         [Authorize(Roles = "User,Admin")]//Dm és admin törölhet lobbyt, de csak a sajátját - tesztelendő
         [HttpDelete("DeleteLobby/{Id}")]
         public async Task<ActionResult<CurrentUserDTO>> DeleteLobby(Guid Id)
@@ -897,7 +914,27 @@ namespace backendSzM.Controllers
             await _context.SaveChangesAsync();
             return Ok();
         }
-
+        [Authorize(Roles = "Admin")]
+        [HttpGet("GetAllUsers")]
+        public async Task<ActionResult<List<UserData>>> GetAllUsers()
+        {
+            var check = await ValidateAccesToken();
+            if (check != null)
+            {
+                return check;
+            }
+            
+            var users = await _context.Users
+                .Select(x => new { x.Name, x.Rep, x.Gmail })
+                .ToListAsync();
+            
+            if (users == null || !users.Any())
+            {
+                return NotFound();
+            }
+            
+            return Ok(users);
+        }
     }
     //Lehet nem kellenek már
     /* lehet törölve lesz

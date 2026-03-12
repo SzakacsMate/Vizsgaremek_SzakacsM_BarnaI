@@ -603,6 +603,45 @@
         }
       }
     },
+    "/api/Auth/GetLobby": {
+      "get": {
+        "tags": [
+          "Auth"
+        ],
+        "parameters": [
+          {
+            "name": "Id",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/LocationDTO"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LocationDTO"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LocationDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/Auth/DeleteLobby/{Id}": {
       "delete": {
         "tags": [
@@ -1120,6 +1159,44 @@
           }
         }
       }
+    },
+    "/api/Auth/GetAllUsers": {
+      "get": {
+        "tags": [
+          "Auth"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/UserData"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/UserData"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/UserData"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -1182,6 +1259,46 @@
           }
         }
       },
+      "Komment": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "kommentSzoveg": {
+            "type": "string"
+          },
+          "kommentaloUserId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "kommenteloUser": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/UserData"
+              }
+            ]
+          },
+          "fogadoUserId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "fogadoUser": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/UserData"
+              }
+            ]
+          }
+        }
+      },
       "KommentDTO": {
         "type": "object",
         "properties": {
@@ -1193,6 +1310,114 @@
           },
           "fogado": {
             "type": "string"
+          }
+        }
+      },
+      "Lobby": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "dm": {
+            "type": "string"
+          },
+          "ttType": {
+            "type": "string"
+          },
+          "locationName": {
+            "type": "string"
+          },
+          "startDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "endDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "playerLimit": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "playerCount": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "image": {
+            "type": "string"
+          },
+          "lobbyCons": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "$ref": "#/components/schemas/LobbyCon"
+            }
+          },
+          "locationId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "location": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/Location"
+              }
+            ]
+          }
+        }
+      },
+      "LobbyCon": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "userDataId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "userData": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/UserData"
+              }
+            ]
+          },
+          "lobbyId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "lobby": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/Lobby"
+              }
+            ]
           }
         }
       },
@@ -1247,6 +1472,36 @@
               "string"
             ],
             "format": "int32"
+          }
+        }
+      },
+      "Location": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "locationName": {
+            "type": "string"
+          },
+          "adress": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "image": {
+            "type": "string"
+          },
+          "lobbies": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "$ref": "#/components/schemas/Lobby"
+            }
           }
         }
       },
@@ -1332,6 +1587,58 @@
           }
         }
       },
+      "Token": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "refreshToken": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "refreshTokenExpiryTime": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "accessTokenExpiryTime": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "accesToken": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "userDataId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "userData": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/UserData"
+              }
+            ]
+          }
+        }
+      },
       "TokenDTO": {
         "type": "object",
         "properties": {
@@ -1360,6 +1667,84 @@
               "string"
             ],
             "format": "date-time"
+          }
+        }
+      },
+      "UserData": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "hash": {
+            "type": "string"
+          },
+          "gmail": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string"
+          },
+          "rep": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "warnings": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "profileI": {
+            "type": "string"
+          },
+          "isSuspended": {
+            "type": "boolean"
+          },
+          "tokenId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "token": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/Token"
+              }
+            ]
+          },
+          "komments": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "$ref": "#/components/schemas/Komment"
+            }
+          },
+          "lobbyCons": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "$ref": "#/components/schemas/LobbyCon"
+            }
           }
         }
       },

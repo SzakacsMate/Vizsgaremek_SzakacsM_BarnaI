@@ -1,16 +1,10 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
 using System.Net.Http;
-using System.Text;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace QuestBook_AdminPanel_SzM
 {
@@ -19,27 +13,44 @@ namespace QuestBook_AdminPanel_SzM
     /// </summary>
     public partial class MainWindow : Window
     {
+        private readonly string url = "https://localhost:7231";
+        private readonly string accessToken;
 
-        public MainWindow()
+        public MainWindow(string token)
         {
             InitializeComponent();
-            RequestAPI();
-            var url = "https://localhost:7231";
+            accessToken = token;
         }
 
-        private async Task Button_Click(object sender, RoutedEventArgs e)
+        private async void Button_Click(object sender, RoutedEventArgs e)
         {
-            HttpClient client = new HttpClient();
-            var getUsersApiUrl = await client.GetAsync(url+"/api/Auth/Users");
-        }
+            try
+            {
+                using (HttpClient client = new HttpClient())
+                {
+                    client.DefaultRequestHeaders.Authorization = 
+                        new AuthenticationHeaderValue("Bearer", accessToken);
 
-        public async void RequestAPI()
-        {
-            using HttpClient client = new HttpClient();
-            
-            HttpResponseMessage latLenResponse = await client.GetAsync(url);
-            string latLenResponseData = await latLenResponse.Content.ReadAsStringAsync();
-            JObject latLenJsonObj = JObject.Parse(latLenResponseData);
+                    var getUsersApiUrl = $"{url}/api/Auth/GetAllUsers";
+                    HttpResponseMessage response = await client.GetAsync(getUsersApiUrl);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        string jsonResponse = await response.Content.ReadAsStringAsync();
+                        var users = JsonConvert.DeserializeObject<List<UserModel>>(jsonResponse);
+                        
+                        Result.ItemsSource = users;
+                    }
+                    else
+                    {
+                        MessageBox.Show($"Error: {response.StatusCode} - {response.ReasonPhrase}");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Exception: {ex.Message}");
+            }
         }
     }
 }

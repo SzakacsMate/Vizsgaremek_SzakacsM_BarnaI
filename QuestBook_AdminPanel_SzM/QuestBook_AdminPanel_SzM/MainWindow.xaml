@@ -12,7 +12,15 @@
             <ColumnDefinition Width="1*"/>
         </Grid.ColumnDefinitions>
         <Grid/>
-        <DataGrid d:ItemsSource="{d:SampleData ItemCount=5}" x:Name="Result"/>
+        <DataGrid x:Name="Result" AutoGenerateColumns="True" IsReadOnly="True" d:ItemsSource="{d:SampleData ItemCount=5}">
+            
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Név" Binding="{Binding Name}" Width="*"/>
+                <DataGridTextColumn Header="Reputáció" Binding="{Binding Rep}" Width="100"/>
+                <DataGridTextColumn Header="Gmail" Binding="{Binding Gmail}" Width="*"/>
+            </DataGrid.Columns>
+           
+        </DataGrid>
         <Grid Grid.Column="1">
             <StackPanel>
                 <Button Content="Összes Felhasználó lekérés" Click="Button_Click"/>
