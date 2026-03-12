@@ -57,3 +57,10 @@ C:\Users\szakacs.mate\source\repos\Vizsgaremek_SzakacsM_BarnaI\QuestBook_AdminPa
 C:\Users\szakacs.mate\source\repos\Vizsgaremek_SzakacsM_BarnaI\QuestBook_AdminPanel_SzM\QuestBook_AdminPanel_SzM\bin\Debug\net10.0-windows\Microsoft.IdentityModel.Tokens.dll
 C:\Users\szakacs.mate\source\repos\Vizsgaremek_SzakacsM_BarnaI\QuestBook_AdminPanel_SzM\QuestBook_AdminPanel_SzM\bin\Debug\net10.0-windows\System.IdentityModel.Tokens.Jwt.dll
 C:\Users\szakacs.mate\source\repos\Vizsgaremek_SzakacsM_BarnaI\QuestBook_AdminPanel_SzM\QuestBook_AdminPanel_SzM\bin\Debug\net10.0-windows\QuestBook_AdminPanel_SzM.exe
+C:\Users\KomPhone\source\repos\Vizsgaremek_SzakacsM_BarnaI\QuestBook_AdminPanel_SzM\QuestBook_AdminPanel_SzM\bin\Debug\net10.0-windows\Microsoft.Extensions.DependencyInjection.Abstractions.dll
+C:\Users\KomPhone\source\repos\Vizsgaremek_SzakacsM_BarnaI\QuestBook_AdminPanel_SzM\QuestBook_AdminPanel_SzM\bin\Debug\net10.0-windows\Microsoft.Extensions.Logging.Abstractions.dll
+C:\Users\KomPhone\source\repos\Vizsgaremek_SzakacsM_BarnaI\QuestBook_AdminPanel_SzM\QuestBook_AdminPanel_SzM\bin\Debug\net10.0-windows\Microsoft.IdentityModel.Abstractions.dll
+C:\Users\KomPhone\source\repos\Vizsgaremek_SzakacsM_BarnaI\QuestBook_AdminPanel_SzM\QuestBook_AdminPanel_SzM\bin\Debug\net10.0-windows\Microsoft.IdentityModel.JsonWebTokens.dll
+C:\Users\KomPhone\source\repos\Vizsgaremek_SzakacsM_BarnaI\QuestBook_AdminPanel_SzM\QuestBook_AdminPanel_SzM\bin\Debug\net10.0-windows\Microsoft.IdentityModel.Logging.dll
+C:\Users\KomPhone\source\repos\Vizsgaremek_SzakacsM_BarnaI\QuestBook_AdminPanel_SzM\QuestBook_AdminPanel_SzM\bin\Debug\net10.0-windows\Microsoft.IdentityModel.Tokens.dll
+C:\Users\KomPhone\source\repos\Vizsgaremek_SzakacsM_BarnaI\QuestBook_AdminPanel_SzM\QuestBook_AdminPanel_SzM\bin\Debug\net10.0-windows\System.IdentityModel.Tokens.Jwt.dll

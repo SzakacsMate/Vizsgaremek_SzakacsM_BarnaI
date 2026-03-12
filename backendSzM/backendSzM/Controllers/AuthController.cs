@@ -864,7 +864,7 @@ namespace backendSzM.Controllers
             return Ok();
         }
         [Authorize(Roles = "Admin")]
-        [HttpDelete("BanUser{Id}")]// működik
+        [HttpDelete("BanUser/{Id}")]// működik
         public async Task<IActionResult> DeleteUser(Guid Id)
         {
             var check = await ValidateAccesToken();
@@ -884,7 +884,10 @@ namespace backendSzM.Controllers
             ujBanned.Id = Guid.NewGuid();
             ujBanned.BannedGmail = torlendoUser.Gmail;
             _context.BannedUsers.Add(ujBanned);
-            _context.Tokens.Remove(torlendoUserToken);
+            if (torlendoUserToken != null)
+            {
+                _context.Tokens.Remove(torlendoUserToken);
+            }
             _context.RemoveRange(torlendoUserKomments);
             _context.Users.Remove(torlendoUser);
 

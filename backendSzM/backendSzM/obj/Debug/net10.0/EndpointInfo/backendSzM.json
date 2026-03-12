@@ -1051,7 +1051,7 @@
         }
       }
     },
-    "/api/Auth/BanUser{Id}": {
+    "/api/Auth/BanUser/{Id}": {
       "delete": {
         "tags": [
           "Auth"

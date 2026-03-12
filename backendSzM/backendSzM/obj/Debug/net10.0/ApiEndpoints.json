@@ -141,7 +141,7 @@
   {
     "ContainingType": "backendSzM.Controllers.AuthController",
     "Method": "DeleteUser",
-    "RelativePath": "api/Auth/BanUser{Id}",
+    "RelativePath": "api/Auth/BanUser/{Id}",
     "HttpMethod": "DELETE",
     "IsController": true,
     "Order": 0,
