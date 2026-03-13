@@ -182,17 +182,38 @@
   },
   {
     "ContainingType": "backendSzM.Controllers.AuthController",
-    "Method": "ChangeRole",
-    "RelativePath": "api/Auth/ChangeRole",
+    "Method": "ChangeRoleAdmin",
+    "RelativePath": "api/Auth/ChangeToAdmin",
     "HttpMethod": "PATCH",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
-        "Name": "role",
-        "Type": "backendSzM.DTOs.RoleDTO",
-        "IsRequired": true
-      },
+        "Name": "Id",
+        "Type": "System.Guid",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "backendSzM.DTOs.CurrentUserDTO",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "backendSzM.Controllers.AuthController",
+    "Method": "ChangeRoleUser",
+    "RelativePath": "api/Auth/ChangeToUser",
+    "HttpMethod": "PATCH",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
       {
         "Name": "Id",
         "Type": "System.Guid",
@@ -534,32 +555,6 @@
     "ContainingType": "backendSzM.Controllers.AuthController",
     "Method": "LeaveLobby",
     "RelativePath": "api/Auth/LeaveLobby",
-    "HttpMethod": "DELETE",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "Id",
-        "Type": "System.Guid",
-        "IsRequired": false
-      }
-    ],
-    "ReturnTypes": [
-      {
-        "Type": "backendSzM.DTOs.CurrentUserDTO",
-        "MediaTypes": [
-          "text/plain",
-          "application/json",
-          "text/json"
-        ],
-        "StatusCode": 200
-      }
-    ]
-  },
-  {
-    "ContainingType": "backendSzM.Controllers.AuthController",
-    "Method": "LeavFromLobby",
-    "RelativePath": "api/Auth/LeavFromLobby",
     "HttpMethod": "DELETE",
     "IsController": true,
     "Order": 0,

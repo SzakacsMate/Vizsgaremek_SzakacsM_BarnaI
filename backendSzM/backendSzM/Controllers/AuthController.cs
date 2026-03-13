@@ -424,7 +424,7 @@ namespace backendSzM.Controllers
             {
                 return check;
             }
-            var locations = await _context.Locations.Select(x => new { x.LocationName, x.Adress, x.Description, x.Image }).ToListAsync();
+            var locations = await _context.Locations.Select(x => new { x.Id,x.LocationName, x.Adress, x.Description, x.Image }).ToListAsync();
             if (locations == null)
             {
                 return NotFound();
@@ -458,18 +458,20 @@ namespace backendSzM.Controllers
                 return check;
             }
             var torlendoLocation = _context?.Locations.Where(x => x.Id == Id).FirstOrDefault();
-            var torlendoLobbies = _context?.Lobbies.Where(x => x.LocationId == Id).FirstOrDefault();
-
+            var torlendoLobbies = _context?.Lobbies.Where(x => x.LocationId == Id).ToList();
+            var torlendoLobbyCon = _context?.LobbyCons.Where(x => x.Lobby.LocationId == Id).ToList();
             if (torlendoLocation == null)
             {
                 return NotFound();
             }
-            if (torlendoLobbies != null)
+            if (torlendoLobbies == null)
             {
-                _context.Lobbies.Remove(torlendoLobbies);
+                _context.Locations.Remove(torlendoLocation);
                 await _context.SaveChangesAsync();
+                return Ok();
             }
-
+            _context.LobbyCons.RemoveRange(torlendoLobbyCon);
+            _context.Lobbies.RemoveRange(torlendoLobbies);
             _context.Locations.Remove(torlendoLocation);
             
             await _context.SaveChangesAsync();
@@ -497,6 +499,7 @@ namespace backendSzM.Controllers
             Lobby ujLobby = new Lobby();
             ujLobby.Id = Guid.NewGuid();
             ujLobby.Dm = user.Name;
+            ujLobby.LobbyName = request.LobbyName;
             ujLobby.StartDate = request.StartDate;
             ujLobby.EndDate = request.EndDate;
             ujLobby.PlayerLimit = request.PlayerLimit;
@@ -546,7 +549,7 @@ namespace backendSzM.Controllers
             }
             
             
-            var lobbies = await _context.Lobbies.Select(x => new { x.Dm, x.locationName, x.TtType, x.StartDate, x.EndDate, x.PlayerLimit}).ToListAsync();
+            var lobbies = await _context.Lobbies.Select(x => new { x.Id,x.LobbyName, x.Dm, x.locationName, x.TtType, x.StartDate, x.EndDate, x.PlayerLimit}).ToListAsync();
             if (lobbies == null)
             {
                 return NotFound();
@@ -563,7 +566,7 @@ namespace backendSzM.Controllers
                 return check;
             }
 
-            var lobbies = _context.Lobbies.Select(x => new { x.Dm, x.locationName, x.TtType, x.StartDate, x.EndDate, x.PlayerLimit, x.PlayerCount, x.Id }).Where(x => x.Id == Id);
+            var lobbies = _context.Lobbies.Select(x => new { x.LobbyName, x.Dm, x.locationName, x.TtType, x.StartDate, x.EndDate, x.PlayerLimit, x.PlayerCount, x.Id }).Where(x => x.Id == Id);
             if (lobbies == null)
             {
                 return NotFound();
@@ -579,11 +582,12 @@ namespace backendSzM.Controllers
             {
                 return check;
             }
-            var claimId = User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            var currentId = _context.Users.FirstOrDefault(x => x.Id.ToString() == claimId);
+            var currentRole = User?.FindFirst(ClaimTypes.Role)?.Value;
+            var name = User?.FindFirst(ClaimTypes.Name)?.Value;
+            
             var torlendoLobbyCon = _context?.LobbyCons.Where(x => x.LobbyId == Id).FirstOrDefault();
             var torlendoLobbies = _context?.Lobbies.Where(x => x.Id == Id).FirstOrDefault();
-            if(torlendoLobbies.Dm != claimId||currentId.Role!="Admin" )
+            if (torlendoLobbies.Dm != name||currentRole!="Admin" )
             {
                 return Unauthorized("Nincs jogod a lobby törléséhez");
             }
@@ -645,10 +649,10 @@ namespace backendSzM.Controllers
             }
 
             _context.LobbyCons.Remove(torlendoLobbyCon);
-            _context.Lobbies.Remove(torlendoLobbies);
+            
             await _context.SaveChangesAsync();
             return Ok();
-        }
+        }/*
         [Authorize(Roles = "User,Admin")]
         [HttpDelete("LeavFromLobby")] //DM saját lobbyban/Admin bárkit player csak magát- tesztelendő
         public async Task<ActionResult<CurrentUserDTO>> LeavFromLobby(Guid Id)
@@ -676,7 +680,7 @@ namespace backendSzM.Controllers
             _context.Lobbies.Remove(torlendoLobbies);
             await _context.SaveChangesAsync();
             return Ok();
-        }
+        }*/
         [Authorize(Roles = "User,Admin")]
         [HttpDelete("LeaveLobby")]//tesztelendő
         public async Task<ActionResult<CurrentUserDTO>> LeaveLobby(Guid Id)
@@ -895,8 +899,8 @@ namespace backendSzM.Controllers
             
             return Ok();
         }
-        [HttpPatch("ChangeRole")]// 
-        public async Task<ActionResult<CurrentUserDTO>> ChangeRole(RoleDTO role, Guid Id)
+        [HttpPatch("ChangeToAdmin")]// 
+        public async Task<ActionResult<CurrentUserDTO>> ChangeRoleAdmin(Guid Id)
         {
             var check = await ValidateAccesToken();
             if (check != null)
@@ -904,17 +908,43 @@ namespace backendSzM.Controllers
                 return check;
             }
             var currentId = User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            var changedUser = _context.Users.FirstOrDefault(x => x.Id == Id);
-            var roleChanger = _context.Users.FirstOrDefault(x => x.Id.ToString() == currentId && role.Role == "Admin");
+            var currentRole = User?.FindFirst(ClaimTypes.Role)?.Value;
+            var changedUser = _context.Users?.FirstOrDefault(x => x.Id == Id);
+            var roleChanger = _context.Users?.FirstOrDefault(x => x.Id.ToString() == currentId && currentRole == "Admin");
             if (changedUser == null)
             {
                 return BadRequest("Nincs ilyen felhasználó");
             }
-            if (roleChanger.Role != "Admin")
+            if (currentRole != "Admin")
             {
                 return Unauthorized("Ehhez nincs jogod!");
             }
-            changedUser.Role = role.Role;
+            changedUser.Role = "Admin";
+            _context.Users.Update(changedUser);
+            await _context.SaveChangesAsync();
+            return Ok();
+        }
+        [HttpPatch("ChangeToUser")]// 
+        public async Task<ActionResult<CurrentUserDTO>> ChangeRoleUser( Guid Id)
+        {
+            var check = await ValidateAccesToken();
+            if (check != null)
+            {
+                return check;
+            }
+            var currentId = User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var currentRole = User?.FindFirst(ClaimTypes.Role)?.Value;
+            var changedUser = _context.Users?.FirstOrDefault(x => x.Id == Id);
+            var roleChanger = _context.Users?.FirstOrDefault(x => x.Id.ToString() == currentId && currentRole== "Admin");
+            if (changedUser == null)
+            {
+                return BadRequest("Nincs ilyen felhasználó");
+            }
+            if (currentRole!= "Admin")
+            {
+                return Unauthorized("Ehhez nincs jogod!");
+            }
+            changedUser.Role = "User";
             _context.Users.Update(changedUser);
             await _context.SaveChangesAsync();
             return Ok();

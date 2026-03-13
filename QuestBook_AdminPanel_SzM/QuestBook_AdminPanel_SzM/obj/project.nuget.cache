@@ -1,26 +1,26 @@
 {
   "version": 2,
-  "dgSpecHash": "14kTVVZRYOk=",
+  "dgSpecHash": "rQzhPgleEn8=",
   "success": true,
-  "projectFilePath": "C:\\Users\\KomPhone\\source\\repos\\Vizsgaremek_SzakacsM_BarnaI\\QuestBook_AdminPanel_SzM\\QuestBook_AdminPanel_SzM\\QuestBook_AdminPanel_SzM.csproj",
+  "projectFilePath": "C:\\Users\\szakacs.mate\\source\\repos\\Vizsgaremek_SzakacsM_BarnaI\\QuestBook_AdminPanel_SzM\\QuestBook_AdminPanel_SzM\\QuestBook_AdminPanel_SzM.csproj",
   "expectedPackageFiles": [
-    "C:\\Users\\KomPhone\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\9.0.0\\microsoft.extensions.dependencyinjection.abstractions.9.0.0.nupkg.sha512",
-    "C:\\Users\\KomPhone\\.nuget\\packages\\microsoft.extensions.logging.abstractions\\9.0.0\\microsoft.extensions.logging.abstractions.9.0.0.nupkg.sha512",
-    "C:\\Users\\KomPhone\\.nuget\\packages\\microsoft.identitymodel.abstractions\\8.4.0\\microsoft.identitymodel.abstractions.8.4.0.nupkg.sha512",
-    "C:\\Users\\KomPhone\\.nuget\\packages\\microsoft.identitymodel.jsonwebtokens\\8.4.0\\microsoft.identitymodel.jsonwebtokens.8.4.0.nupkg.sha512",
-    "C:\\Users\\KomPhone\\.nuget\\packages\\microsoft.identitymodel.logging\\8.4.0\\microsoft.identitymodel.logging.8.4.0.nupkg.sha512",
-    "C:\\Users\\KomPhone\\.nuget\\packages\\microsoft.identitymodel.tokens\\8.4.0\\microsoft.identitymodel.tokens.8.4.0.nupkg.sha512",
-    "C:\\Users\\KomPhone\\.nuget\\packages\\newtonsoft.json\\13.0.4\\newtonsoft.json.13.0.4.nupkg.sha512",
-    "C:\\Users\\KomPhone\\.nuget\\packages\\system.identitymodel.tokens.jwt\\8.4.0\\system.identitymodel.tokens.jwt.8.4.0.nupkg.sha512"
+    "C:\\Users\\szakacs.mate\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\9.0.0\\microsoft.extensions.dependencyinjection.abstractions.9.0.0.nupkg.sha512",
+    "C:\\Users\\szakacs.mate\\.nuget\\packages\\microsoft.extensions.logging.abstractions\\9.0.0\\microsoft.extensions.logging.abstractions.9.0.0.nupkg.sha512",
+    "C:\\Users\\szakacs.mate\\.nuget\\packages\\microsoft.identitymodel.abstractions\\8.4.0\\microsoft.identitymodel.abstractions.8.4.0.nupkg.sha512",
+    "C:\\Users\\szakacs.mate\\.nuget\\packages\\microsoft.identitymodel.jsonwebtokens\\8.4.0\\microsoft.identitymodel.jsonwebtokens.8.4.0.nupkg.sha512",
+    "C:\\Users\\szakacs.mate\\.nuget\\packages\\microsoft.identitymodel.logging\\8.4.0\\microsoft.identitymodel.logging.8.4.0.nupkg.sha512",
+    "C:\\Users\\szakacs.mate\\.nuget\\packages\\microsoft.identitymodel.tokens\\8.4.0\\microsoft.identitymodel.tokens.8.4.0.nupkg.sha512",
+    "C:\\Users\\szakacs.mate\\.nuget\\packages\\newtonsoft.json\\13.0.4\\newtonsoft.json.13.0.4.nupkg.sha512",
+    "C:\\Users\\szakacs.mate\\.nuget\\packages\\system.identitymodel.tokens.jwt\\8.4.0\\system.identitymodel.tokens.jwt.8.4.0.nupkg.sha512"
   ],
   "logs": [
     {
       "code": "NU1603",
       "level": "Warning",
       "message": "QuestBook_AdminPanel_SzM depends on System.IdentityModel.Tokens.Jwt (>= 8.3.2) but System.IdentityModel.Tokens.Jwt 8.3.2 was not found. System.IdentityModel.Tokens.Jwt 8.4.0 was resolved instead.",
-      "projectPath": "C:\\Users\\KomPhone\\source\\repos\\Vizsgaremek_SzakacsM_BarnaI\\QuestBook_AdminPanel_SzM\\QuestBook_AdminPanel_SzM\\QuestBook_AdminPanel_SzM.csproj",
+      "projectPath": "C:\\Users\\szakacs.mate\\source\\repos\\Vizsgaremek_SzakacsM_BarnaI\\QuestBook_AdminPanel_SzM\\QuestBook_AdminPanel_SzM\\QuestBook_AdminPanel_SzM.csproj",
       "warningLevel": 1,
-      "filePath": "C:\\Users\\KomPhone\\source\\repos\\Vizsgaremek_SzakacsM_BarnaI\\QuestBook_AdminPanel_SzM\\QuestBook_AdminPanel_SzM\\QuestBook_AdminPanel_SzM.csproj",
+      "filePath": "C:\\Users\\szakacs.mate\\source\\repos\\Vizsgaremek_SzakacsM_BarnaI\\QuestBook_AdminPanel_SzM\\QuestBook_AdminPanel_SzM\\QuestBook_AdminPanel_SzM.csproj",
       "libraryId": "System.IdentityModel.Tokens.Jwt",
       "targetGraphs": [
         "net10.0-windows7.0"

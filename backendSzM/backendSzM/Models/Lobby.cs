@@ -3,11 +3,13 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace backendSzM.Models
 {
-    public class Lobby
+    public class Lobby //lobby name hozzáadása
     {
         
         public Guid Id { get; set; }
+
         public string Dm { get; set; } = string.Empty;
+        public string LobbyName { get; set; } = string.Empty;
         public string TtType { get; set; }= string.Empty;
         
         public string locationName { get; set; } = string.Empty;

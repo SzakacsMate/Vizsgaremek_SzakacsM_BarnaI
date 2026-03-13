@@ -15,18 +15,26 @@
             <Grid.RowDefinitions>
                 <RowDefinition/>
                 <RowDefinition/>
+                <RowDefinition/>
             </Grid.RowDefinitions>
             <DataGrid d:ItemsSource="{d:SampleData ItemCount=5}" x:Name="PlayerResult"/>
             <DataGrid Grid.Row="1" d:ItemsSource="{d:SampleData ItemCount=5}" x:Name="LobbyResult"/>
+            <DataGrid Grid.Row="3" d:ItemsSource="{d:SampleData ItemCount=5}" x:Name="LocationResult"/>
         </Grid>
         <Grid Grid.Column="1">
             <StackPanel>
                 <Button Content = "Összes Felhasználó lekérés" Click="Button_Click"/>
                 <Button Content="Összes Lobby lekérés" Click="GetLobbies"/>
+                <Button Content="Összes Location lekérés" Click="GetLocations"/>
+                <Button Content="Admin adása" Click="ChangeRoleToAdmin_Click"/>
+                <Button Content="Felhasználó adása" Click="ChangeRoleToUser_Click"/>
                 <Button Content="Figyelmeztetés adása" Click="GiveWarning_Click"/>
                 <Button Content="Felhasználó felfüggesztése" Click="SuspendUser_Click"/>
                 <Button Content="Felhasználó felmentése" Click="UnSuspendUser_Click"/>
                 <Button Content="Ban felhasználó" Click="Ban_Click"/>
+                <Button Content="Lobby Törlése" Click="DeleteLobby_Click"/>
+                <Button Content="Helyszín Törlése" Click="DeleteLocation_Click"/>
+                <TextBlock Text="" x:Name="nametext"/>
             </StackPanel>
         </Grid>
 

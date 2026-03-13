@@ -18,13 +18,18 @@ namespace QuestBook_AdminPanel_SzM
         private readonly string accessToken;
         private List<UserModel> playerList = [];
         private List<Lobbies> lobbyList = [];
+        private List<LocationModel> locationList = [];
 
         public MainWindow(string token)
         {
             InitializeComponent();
             accessToken = token;
         }
-
+        
+        private async void Button_Click(object sender, RoutedEventArgs e)
+        {
+            await LoadUsersAsync();
+        }
         private async Task LoadUsersAsync()
         {
             playerList = [];
@@ -43,7 +48,7 @@ namespace QuestBook_AdminPanel_SzM
                         string jsonResponse = await response.Content.ReadAsStringAsync();
                         var users = JsonConvert.DeserializeObject<List<UserModel>>(jsonResponse);
                         playerList = users ?? [];
-                        PlayerResult.ItemsSource = users;
+                        PlayerResult.ItemsSource = playerList;
                     }
                     else
                     {
@@ -57,9 +62,10 @@ namespace QuestBook_AdminPanel_SzM
             }
         }
 
-        private async void Button_Click(object sender, RoutedEventArgs e)
+        
+        private async void GetLobbies(object sender, RoutedEventArgs e)
         {
-            await LoadUsersAsync();
+            await LoadLobbies();
         }
         private async Task LoadLobbies()
         {
@@ -91,12 +97,122 @@ namespace QuestBook_AdminPanel_SzM
                 MessageBox.Show($"Exception: {ex.Message}");
             }
         }
-
-        private async void GetLobbies(object sender, RoutedEventArgs e)
+        private void GetLocations(object sender, RoutedEventArgs e)
         {
-            await LoadLobbies();
+            LoadLocations();
         }
+        private async Task LoadLocations()
+        {
+            try
+            {
+                using (HttpClient client = new HttpClient())
+                {
+                    client.DefaultRequestHeaders.Authorization =
+                        new AuthenticationHeaderValue("Bearer", accessToken);
 
+                    var getLocationsApiUrl = $"{url}/api/Auth/GetLocations";
+                    HttpResponseMessage response = await client.GetAsync(getLocationsApiUrl);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        string jsonResponse = await response.Content.ReadAsStringAsync();
+                        var locations = JsonConvert.DeserializeObject<List<LocationModel>>(jsonResponse);
+                        locationList = locations ?? [];
+                        LocationResult.ItemsSource = locations;
+                    }
+                    else
+                    {
+                        MessageBox.Show($"Error: {response.StatusCode} - {response.ReasonPhrase}");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Exception: {ex.Message}");
+            }
+        }
+        private void UserTable_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
+            UserModel selected = PlayerResult.SelectedItem as UserModel;
+            nametext.Text = selected.Name;
+
+
+        }
+        private async void ChangeRoleToAdmin_Click(object sender, RoutedEventArgs e)
+        {
+            if (PlayerResult.SelectedItem is not UserModel selectedUser)
+            {
+                MessageBox.Show("Válassz ki egy felhasználót az admin ranghoz.");
+                return;
+            }
+
+            try
+            {
+                using (HttpClient client = new HttpClient())
+                {
+                    client.DefaultRequestHeaders.Authorization =
+                        new AuthenticationHeaderValue("Bearer", accessToken);
+
+                    var ChangeRoleApiUrl = $"{url}/api/Auth/ChangeToAdmin?Id={selectedUser.Id}";
+                    HttpResponseMessage response = await client.PatchAsync(ChangeRoleApiUrl, null);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        MessageBox.Show($"Felhasználó sikeresen admin lett {selectedUser.Name}");
+                        await LoadUsersAsync();
+                    }
+                    else
+                    {
+                        string errorContent = await response.Content.ReadAsStringAsync();
+                        MessageBox.Show(string.IsNullOrWhiteSpace(errorContent)
+                            ? $"Error: {response.StatusCode} - {response.ReasonPhrase}"
+                            : errorContent);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Exception: {ex.Message}");
+            }
+        }
+        private async void ChangeRoleToUser_Click(object sender, RoutedEventArgs e)
+        {
+            if (PlayerResult.SelectedItem is not UserModel selectedUser)
+            {
+                MessageBox.Show("Válassz ki egy felhasználót az admin ranghoz.");
+                return;
+            }
+
+            try
+            {
+                using (HttpClient client = new HttpClient())
+                {
+                    client.DefaultRequestHeaders.Authorization =
+                        new AuthenticationHeaderValue("Bearer", accessToken);
+
+                    var ChangeRoleApiUrl = $"{url}/api/Auth/ChangeToUser?Id={selectedUser.Id}";
+                    HttpResponseMessage response = await client.PatchAsync(ChangeRoleApiUrl, null);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        MessageBox.Show($"Felhasználó sikeresen felhasználó lett {selectedUser.Name}");
+                        await LoadUsersAsync();
+                    }
+                    else
+                    {
+                        string errorContent = await response.Content.ReadAsStringAsync();
+                        MessageBox.Show(string.IsNullOrWhiteSpace(errorContent)
+                            ? $"Error: {response.StatusCode} - {response.ReasonPhrase}"
+                            : errorContent);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Exception: {ex.Message}");
+            }
+        }
         private async void GiveWarning_Click(object sender, RoutedEventArgs e)
         {
             if (PlayerResult.SelectedItem is not UserModel selectedUser)
@@ -151,8 +267,8 @@ namespace QuestBook_AdminPanel_SzM
                     client.DefaultRequestHeaders.Authorization =
                         new AuthenticationHeaderValue("Bearer", accessToken);
 
-                    var giveWarningApiUrl = $"{url}/api/Auth/SuspendUser?Id={selectedUser.Id}";
-                    HttpResponseMessage response = await client.PatchAsync(giveWarningApiUrl, null);
+                    var SuspendUserApiUrl = $"{url}/api/Auth/SuspendUser?Id={selectedUser.Id}";
+                    HttpResponseMessage response = await client.PatchAsync(SuspendUserApiUrl, null);
 
                     if (response.IsSuccessStatusCode)
                     {
@@ -189,8 +305,8 @@ namespace QuestBook_AdminPanel_SzM
                     client.DefaultRequestHeaders.Authorization =
                         new AuthenticationHeaderValue("Bearer", accessToken);
 
-                    var giveWarningApiUrl = $"{url}/api/Auth/UnSuspendUser?Id={selectedUser.Id}";
-                    HttpResponseMessage response = await client.PatchAsync(giveWarningApiUrl, null);
+                    var UnSuspendUserApiUrl = $"{url}/api/Auth/UnSuspendUser?Id={selectedUser.Id}";
+                    HttpResponseMessage response = await client.PatchAsync(UnSuspendUserApiUrl, null);
 
                     if (response.IsSuccessStatusCode)
                     {
@@ -215,7 +331,7 @@ namespace QuestBook_AdminPanel_SzM
         {
             if (PlayerResult.SelectedItem is not UserModel selectedUser)
             {
-                MessageBox.Show("Válassz ki egy felhasználót a bannoláshoz.");
+                MessageBox.Show("Válassz ki egy lobbyt a törléshez.");
                 return;
             }
 
@@ -231,7 +347,83 @@ namespace QuestBook_AdminPanel_SzM
 
                     if (response.IsSuccessStatusCode)
                     {
-                        MessageBox.Show($"Felhasználó bannolva {selectedUser.Name}");
+                        MessageBox.Show($"Lobby törölve{selectedUser.Name}");
+                        await LoadUsersAsync();
+                    }
+                    else
+                    {
+                        string errorContent = await response.Content.ReadAsStringAsync();
+                        MessageBox.Show(string.IsNullOrWhiteSpace(errorContent)
+                            ? $"Error: {response.StatusCode} - {response.ReasonPhrase}"
+                            : errorContent);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Exception: {ex.Message}");
+            }
+        }
+        
+        private async void DeleteLobby_Click(object sender, RoutedEventArgs e)
+        {
+            if (LobbyResult.SelectedItem is not Lobbies selectedLobby)
+            {
+                MessageBox.Show("Válassz ki egy felhasználót a bannoláshoz.");
+                return;
+            }
+
+            try
+            {
+                using (HttpClient client = new HttpClient())
+                {
+                    client.DefaultRequestHeaders.Authorization =
+                        new AuthenticationHeaderValue("Bearer", accessToken);
+
+                    var LobbyApiUrl = $"{url}/api/Auth/DeleteLobby/{selectedLobby.Id}";
+                    HttpResponseMessage response = await client.DeleteAsync(LobbyApiUrl);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        MessageBox.Show($"Lobby törölve {selectedLobby.LobbyName}");
+                        await LoadUsersAsync();
+                    }
+                    else
+                    {
+                        string errorContent = await response.Content.ReadAsStringAsync();
+                        MessageBox.Show(string.IsNullOrWhiteSpace(errorContent)
+                            ? $"Error: {response.StatusCode} - {response.ReasonPhrase}"
+                            : errorContent);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Exception: {ex.Message}");
+            }
+        }
+
+        private async void DeleteLocation_Click(object sender, RoutedEventArgs e)
+        {
+            if (LocationResult.SelectedItem is not LocationModel selectedLocations)
+            {
+                MessageBox.Show("Válassz ki egy helyszínt a törléshez.");
+                return;
+            }
+
+            try
+            {
+                using (HttpClient client = new HttpClient())
+                {
+                    client.DefaultRequestHeaders.Authorization =
+                        new AuthenticationHeaderValue("Bearer", accessToken);
+
+                    var LocationApiUrl = $"{url}/api/Auth/DeleteLocation/{selectedLocations.Id}";
+                    HttpResponseMessage response = await client.DeleteAsync(LocationApiUrl);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        MessageBox.Show($"Helyszín törölve {selectedLocations.LocationName}");
                         await LoadUsersAsync();
                     }
                     else

@@ -74,6 +74,10 @@ namespace backendSzM.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("LobbyName")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.Property<Guid?>("LocationId")
                         .HasColumnType("TEXT");
 
