@@ -4,12 +4,14 @@ type LocationDetailsCardProps = {
   location: Location;
   onBack: () => void;
   onReserve: (location: Location) => void;
+  canReserve: boolean;
 };
 
 export default function LocationDetailsCard({
   location,
   onBack,
   onReserve,
+  canReserve,
 }: LocationDetailsCardProps) {
   return (
     <section className="location-details-card">
@@ -38,9 +40,12 @@ export default function LocationDetailsCard({
         </button>
 
         <button
-          className="location-details-reserve-button"
-          onClick={() => onReserve(location)}
-        >
+          className={`location-details-reserve-button ${!canReserve ? "disabled-reserve-button" : ""}`}
+          onClick={() => {
+            if (!canReserve) return;
+            onReserve(location);
+          }}
+          disabled={!canReserve}>
           RESERVE
         </button>
       </div>

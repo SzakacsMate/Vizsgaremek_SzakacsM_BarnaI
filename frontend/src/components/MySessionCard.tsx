@@ -30,7 +30,14 @@ export default function MySessionCard({
           >
             {session.system}
           </span>
-          <span className="my-session-status">Confirmed</span>
+          <span
+            className={`my-session-status ${
+              session.status === "confirmed"
+                ? "status-confirmed"
+                : "status-pending"
+            }`}>
+            {session.status === "confirmed" ? "Confirmed" : "Pending"}
+          </span>
         </div>
 
         <div

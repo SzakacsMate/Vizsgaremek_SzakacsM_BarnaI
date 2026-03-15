@@ -1,12 +1,15 @@
 import { useState } from "react";
 import type { Location } from "../types/location";
+import SimpleCalendar from "./SimpleCalendar";
 
 type ReservationDetailsCardProps = {
   location: Location;
   onBack: () => void;
   onFinalize: (reservationData: {
     location: Location;
+    sessionTitle: string;
     gameSystem: string;
+    minPlayers: number;
     maxPlayers: number;
     period: number;
     selectedDate: string;
@@ -19,22 +22,42 @@ export default function ReservationDetailsCard({
   onFinalize,
 }: ReservationDetailsCardProps) {
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const [sessionTitle, setSessionTitle] = useState("");
   const [gameSystem, setGameSystem] = useState("");
+  const [minPlayers, setMinPlayers] = useState("");
   const [maxPlayers, setMaxPlayers] = useState("");
   const [period, setPeriod] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
   const handleFinalize = () => {
-    if (!gameSystem || !maxPlayers || !period || !selectedDate) {
+    if (
+      !sessionTitle ||
+      !gameSystem ||
+      !minPlayers ||
+      !maxPlayers ||
+      !period ||
+      !selectedDate
+    ) {
       setErrorMessage("Please fill in every field before finalizing.");
       return;
     }
 
+    const minPlayersNumber = Number(minPlayers);
     const maxPlayersNumber = Number(maxPlayers);
     const periodNumber = Number(period);
 
+    if (Number.isNaN(minPlayersNumber) || minPlayersNumber <= 0) {
+      setErrorMessage("Minimum players must be a valid number greater than 0.");
+      return;
+    }
+
     if (Number.isNaN(maxPlayersNumber) || maxPlayersNumber <= 0) {
       setErrorMessage("Max players must be a valid number greater than 0.");
+      return;
+    }
+
+    if (minPlayersNumber > maxPlayersNumber) {
+      setErrorMessage("Minimum players cannot be greater than maximum players.");
       return;
     }
 
@@ -47,7 +70,9 @@ export default function ReservationDetailsCard({
 
     onFinalize({
       location,
+      sessionTitle,
       gameSystem,
+      minPlayers: minPlayersNumber,
       maxPlayers: maxPlayersNumber,
       period: periodNumber,
       selectedDate,
@@ -70,6 +95,14 @@ export default function ReservationDetailsCard({
           </div>
 
           <div className="reservation-form-grid">
+            <input
+              className="reservation-input reservation-text-input"
+              type="text"
+              placeholder="Session Title"
+              value={sessionTitle}
+              onChange={(e) => setSessionTitle(e.target.value)}
+            />
+
             <select
               className="reservation-input reservation-select"
               value={gameSystem}
@@ -80,6 +113,18 @@ export default function ReservationDetailsCard({
               <option value="Pathfinder 2e">Pathfinder 2e</option>
               <option value="Call of Cthulhu 7e">Call of Cthulhu 7e</option>
             </select>
+
+            <div className="reservation-inline-input">
+              <label>Min. Players:</label>
+              <input
+                className="reservation-input"
+                type="number"
+                min="1"
+                max="12"
+                value={minPlayers}
+                onChange={(e) => setMinPlayers(e.target.value)}
+              />
+            </div>
 
             <div className="reservation-inline-input">
               <label>Max. Players:</label>
@@ -93,7 +138,7 @@ export default function ReservationDetailsCard({
               />
             </div>
 
-            <SimpleCalendarWrapper
+            <SimpleCalendar
               bookedDates={location.bookedDates}
               selectedDate={selectedDate}
               onSelectDate={setSelectedDate}
@@ -129,27 +174,5 @@ export default function ReservationDetailsCard({
         </button>
       </div>
     </section>
-  );
-}
-
-import SimpleCalendar from "./SimpleCalendar";
-
-type SimpleCalendarWrapperProps = {
-  bookedDates: string[];
-  selectedDate: string | null;
-  onSelectDate: (date: string) => void;
-};
-
-function SimpleCalendarWrapper({
-  bookedDates,
-  selectedDate,
-  onSelectDate,
-}: SimpleCalendarWrapperProps) {
-  return (
-    <SimpleCalendar
-      bookedDates={bookedDates}
-      selectedDate={selectedDate}
-      onSelectDate={onSelectDate}
-    />
   );
 }

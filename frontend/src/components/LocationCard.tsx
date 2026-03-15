@@ -4,12 +4,14 @@ type LocationCardProps = {
   location: Location;
   onOpen: (location: Location) => void;
   onReserve: (location: Location) => void;
+  canReserve: boolean;
 };
 
 export default function LocationCard({
   location,
   onOpen,
   onReserve,
+  canReserve,
 }: LocationCardProps) {
   return (
     <article className="location-card" onClick={() => onOpen(location)}>
@@ -26,12 +28,15 @@ export default function LocationCard({
       </div>
 
       <button
-        className="location-card-button"
+        className={`location-card-button ${!canReserve ? "disabled-reserve-button" : ""}`}
         onClick={(event) => {
           event.stopPropagation();
+
+          if (!canReserve) return;
+
           onReserve(location);
         }}
-      >
+        disabled={!canReserve}>
         RESERVE
       </button>
     </article>
