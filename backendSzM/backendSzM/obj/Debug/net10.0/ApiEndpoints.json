@@ -91,22 +91,12 @@
     "Order": 0,
     "Parameters": [
       {
-        "Name": "request",
-        "Type": "backendSzM.DTOs.JoinLobbyDTO",
-        "IsRequired": true
+        "Name": "Id",
+        "Type": "System.Guid",
+        "IsRequired": false
       }
     ],
-    "ReturnTypes": [
-      {
-        "Type": "backendSzM.DTOs.TokenDTO",
-        "MediaTypes": [
-          "text/plain",
-          "application/json",
-          "text/json"
-        ],
-        "StatusCode": 200
-      }
-    ]
+    "ReturnTypes": []
   },
   {
     "ContainingType": "backendSzM.Controllers.AuthController",
@@ -248,7 +238,7 @@
     ],
     "ReturnTypes": [
       {
-        "Type": "backendSzM.DTOs.CurrentUserDTO",
+        "Type": "backendSzM.DTOs.TokenDTO",
         "MediaTypes": [
           "text/plain",
           "application/json",
@@ -637,29 +627,24 @@
   },
   {
     "ContainingType": "backendSzM.Controllers.AuthController",
-    "Method": "RemovePlayer",
-    "RelativePath": "api/Auth/RemovePlayerFromLobby/{Id}",
+    "Method": "RemovePlayerFromLobby",
+    "RelativePath": "api/Auth/RemovePlayerFromLobby",
     "HttpMethod": "DELETE",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
-        "Name": "Id",
+        "Name": "lobbyId",
         "Type": "System.Guid",
-        "IsRequired": true
+        "IsRequired": false
+      },
+      {
+        "Name": "userId",
+        "Type": "System.Guid",
+        "IsRequired": false
       }
     ],
-    "ReturnTypes": [
-      {
-        "Type": "backendSzM.DTOs.CurrentUserDTO",
-        "MediaTypes": [
-          "text/plain",
-          "application/json",
-          "text/json"
-        ],
-        "StatusCode": 200
-      }
-    ]
+    "ReturnTypes": []
   },
   {
     "ContainingType": "backendSzM.Controllers.AuthController",

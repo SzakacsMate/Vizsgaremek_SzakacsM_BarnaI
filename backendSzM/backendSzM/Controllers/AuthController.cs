@@ -135,17 +135,17 @@ namespace backendSzM.Controllers
 
 
         
-        [HttpPost("refresh")]//refreshexpiry 1sec es 
+        [HttpPost("refresh")]// működik rn
         public async Task<ActionResult<TokenDTO>> RefreshToken(RefreshTokenReqDto request)
         {
             
             var result = await RefreshTokenAsync(request);
             var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == request.Id);
             if (result == null||result.AccesToken is null) { return Unauthorized("Invalid refresh token"); }
-            if (user.Name!=request.name|| user.Gmail!=request.email)
+           /* if (user.Name!=request.name|| user.Gmail!=request.email)
             {
                 return Unauthorized("Téves felhasználói adat");
-            }
+            }*/
             return Ok(result);
         }
         private string GenRefreshToken()
@@ -229,7 +229,7 @@ namespace backendSzM.Controllers
 
         }
         [Authorize(Roles = "User,Admin")]
-        [HttpGet("CurrentUser")]
+        [HttpGet("CurrentUser")] // műlödik
         public async Task<ActionResult<TokenDTO>> AuthenthicatedUser()
         {
            var check=await ValidateAccesToken();
@@ -244,7 +244,7 @@ namespace backendSzM.Controllers
                 return Unauthorized("Nincs ilyen felhasználó");
             }
             var id = User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            var currentUser = _context?.Users.FirstOrDefault(x=>x.Name== name);
+            var currentUser = await _context.Users.FirstOrDefaultAsync(x => x.Id.ToString() == id);
             
             var role = User?.FindFirst(ClaimTypes.Role)?.Value ?? currentUser.Role;
             var image = currentUser.ProfileI;
@@ -261,7 +261,7 @@ namespace backendSzM.Controllers
             return Ok(resp);
         }
         [Authorize(Roles = "User,Admin")]
-        [HttpGet("Search for user")]
+        [HttpGet("Search for user")] // működik
         public async Task<ActionResult<TokenDTO>> SearchUser(Guid id)
         {
             var check = await ValidateAccesToken();
@@ -312,8 +312,8 @@ namespace backendSzM.Controllers
             return Ok(lobbies);
         }
         [Authorize(Roles = "User,Admin")]
-        [HttpPatch("ChangeUserData")]// átdolgozandó
-        public async Task<ActionResult<CurrentUserDTO>> ChangeUserData(ChangeDataDTO profile)
+        [HttpPatch("ChangeUserData")]// működik
+        public async Task<ActionResult<TokenDTO>> ChangeUserData(ChangeDataDTO profile)
         {
             var check = await ValidateAccesToken();
             if (check != null) return check;
@@ -351,10 +351,31 @@ namespace backendSzM.Controllers
 
             _context.Users.Update(changedUser);
             await _context.SaveChangesAsync();
+            var newAccessToken = CreateToken(changedUser);
+            var tokenRow = await _context.Tokens.FirstOrDefaultAsync(t => t.UserDataId == userId);
+
+            if (tokenRow != null)
+            {
+                tokenRow.AccesToken = newAccessToken;
+                tokenRow.AccessTokenExpiryTime = DateTime.UtcNow.Add(_accessTokenLifetime);
+                _context.Tokens.Update(tokenRow);
+
+                var newRefreshToken = await GenAndSaveRefreshTokenAsync(tokenRow);
+
+                await _context.SaveChangesAsync();
+
+                return Ok(new TokenDTO
+                {
+                    AccesToken = newAccessToken,
+                    AccessTokenExpiryTime = tokenRow.AccessTokenExpiryTime,
+                    RefreshToken = newRefreshToken,
+                    RefreshTokenExpiryTime = tokenRow.RefreshTokenExpiryTime
+                });
+            }
             return Ok();
         }
         [Authorize(Roles = "User,Admin")]
-        [HttpPatch("Add/RemoveRep")]// átnézendő-működik
+        [HttpPatch("Add/RemoveRep")]// működik
         public async Task<ActionResult<CurrentUserDTO>> AddRep(RepDTO rep, Guid id)
         {
             var Tesz=0;
@@ -416,7 +437,7 @@ namespace backendSzM.Controllers
             return Ok(new());
         }
         [Authorize(Roles = "User,Admin")]
-        [HttpGet("GetLocations")]//
+        [HttpGet("GetLocations")]// működik
         public async Task<ActionResult<List<LocationDTO>>> GetLocations()
         {
             var check = await ValidateAccesToken();
@@ -432,7 +453,7 @@ namespace backendSzM.Controllers
             return Ok(locations);
         }
         [Authorize(Roles = "User,Admin")]
-        [HttpGet("GetLocation")]//  Egyszerre több helyet mutat - működik
+        [HttpGet("GetLocation")]// működik
         public async Task<ActionResult<LocationDTO>> GetLocation(Guid Id)
         {
             var check = await ValidateAccesToken();
@@ -449,7 +470,7 @@ namespace backendSzM.Controllers
             return Ok(locations);
         }
         [Authorize(Roles = "User,Admin")]
-        [HttpDelete("DeleteLocation/{Id}")]
+        [HttpDelete("DeleteLocation/{Id}")] //müködik
         public async Task<ActionResult<CurrentUserDTO>> DeleteLocation(Guid Id)
         {
             var check = await ValidateAccesToken();
@@ -478,7 +499,7 @@ namespace backendSzM.Controllers
             return Ok();
         }
         [Authorize(Roles = "User,Admin")]
-        [HttpPost("CreateLobby")]//Player limitet hozzáadni
+        [HttpPost("CreateLobby")]// működik
         public async Task<ActionResult<CurrentUserDTO>> CreateLobby(LobbyDTO request, Guid Id)
         {
             var check = await ValidateAccesToken();
@@ -486,16 +507,17 @@ namespace backendSzM.Controllers
             {
                 return check;
             }
+            
             var name = User?.FindFirst(ClaimTypes.Name)?.Value;
-            var user = _context.Users.FirstOrDefault(x => x.Name == name);
+            var user = _context?.Users.FirstOrDefault(x => x.Name == name);
             var locationId = _context?.Locations.FirstOrDefault(x => x.Id == Id);
             var location = locationId.LocationName;
-
+            
             if (user == null)
             {
                 return BadRequest("Nincs ilyen felhasználó");
             }
-
+            
             Lobby ujLobby = new Lobby();
             ujLobby.Id = Guid.NewGuid();
             ujLobby.Dm = user.Name;
@@ -573,7 +595,7 @@ namespace backendSzM.Controllers
             }
             return Ok(lobbies);
         }
-        [Authorize(Roles = "User,Admin")]//Dm és admin törölhet lobbyt, de csak a sajátját - tesztelendő
+        [Authorize(Roles = "User,Admin")]//működik
         [HttpDelete("DeleteLobby/{Id}")]
         public async Task<ActionResult<CurrentUserDTO>> DeleteLobby(Guid Id)
         {
@@ -602,54 +624,92 @@ namespace backendSzM.Controllers
             return Ok();
         }
         [Authorize(Roles = "User,Admin")]
-        [HttpPost("AddPlayer")]//Csak saját magát rakhatja be egy játékos lobbyba - tesztelendő
-        public async Task<ActionResult<TokenDTO>> AddPlayer(JoinLobbyDTO request)
-        {
-            var claimId = User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            var user = _context.Users.FirstOrDefault(x => x.Id == request.PlayerId);
-            var lobby = _context.Lobbies.FirstOrDefault(x => x.Id == request.LobbyId);
-            
-            if(user.Id.ToString() != claimId)
-            {
-                return Unauthorized("Nem adhatsz más játékost hozzáadni a lobbyhoz!");
-            }
-            
-            lobby.PlayerCount++;
-            LobbyCon newLobbyCon = new LobbyCon();
-            newLobbyCon.Id = Guid.NewGuid();
-            newLobbyCon.UserDataId = user.Id;
-            newLobbyCon.LobbyId = lobby.Id;
-            
-            _context.LobbyCons.Add(newLobbyCon);
-            _context.Lobbies.Update(lobby);
-            await _context.SaveChangesAsync();
-            return Ok(new());
-        }
-        [Authorize(Roles = "User,Admin")]
-        [HttpDelete("RemovePlayerFromLobby/{Id}")] //DM saját lobbyban/Admin bárkit player csak magát- tesztelendő
-        public async Task<ActionResult<CurrentUserDTO>> RemovePlayer(Guid Id)
+        [HttpPost("AddPlayer")]//működik
+        public async Task<IActionResult> AddPlayer(Guid Id)
         {
             var check = await ValidateAccesToken();
             if (check != null)
             {
                 return check;
             }
-            var idClaim = User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            var currentId = _context.Users.FirstOrDefault(x => x.Id.ToString() == idClaim);
-            var torlendoLobbyCon = _context?.LobbyCons.Where(x => x.LobbyId == Id).FirstOrDefault();
-            var torlendoLobbies = _context?.Lobbies.Where(x => x.Id == Id).FirstOrDefault();
-            //admin /dm törölhet játékost
-            if (torlendoLobbies == null)
+            
+            var claimId = User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(claimId) || !Guid.TryParse(claimId, out var userId))
             {
-                return NotFound();
+                return Unauthorized();
             }
-            if (torlendoLobbies.Dm != idClaim||currentId.Role!="Admin")
+            
+            var user = await _context.Users.FindAsync(userId);
+            if (user == null)
             {
-                return Unauthorized("Nincs jogod ehhez!");
+                return Unauthorized("User not found");
             }
 
-            _context.LobbyCons.Remove(torlendoLobbyCon);
-            
+            var lobby = await _context.Lobbies.FindAsync(Id);
+            if (lobby == null)
+            {
+                return NotFound("Lobby not found");
+            }
+
+            lobby.PlayerCount++;
+
+            var newLobbyCon = new LobbyCon
+            {
+                Id = Guid.NewGuid(),
+                UserDataId = user.Id,
+                LobbyId = lobby.Id
+            };
+
+            _context.LobbyCons.Add(newLobbyCon);
+            _context.Lobbies.Update(lobby);
+            await _context.SaveChangesAsync();
+
+            return Ok(new());
+        }/*
+           if (torlendoLobbies.Dm != currentId.Name||currentId.Role!="Admin")
+            {
+                return Unauthorized("Nincs jogod ehhez!");
+            }*/
+        [Authorize(Roles = "User,Admin")]
+        [HttpDelete("RemovePlayerFromLobby")] // működik
+        public async Task<IActionResult> RemovePlayerFromLobby([FromQuery] Guid lobbyId, [FromQuery] Guid userId)
+        {
+            var check = await ValidateAccesToken();
+            if (check != null)
+            {
+                return check;
+            }
+
+            var lobby = await _context.Lobbies.FirstOrDefaultAsync(x => x.Id == lobbyId);
+            var idClaim = User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var currentRole = User?.FindFirst(ClaimTypes.Role)?.Value;
+            var currentId = _context.Users.FirstOrDefault(x => x.Id.ToString() == idClaim);
+            var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == userId);
+            var lobbyCon = await _context.LobbyCons.FirstOrDefaultAsync(x => x.LobbyId == lobbyId && x.UserDataId == userId);
+            if (lobby == null)
+            {
+                return NotFound("Nincs ilyen lobby.");
+            }
+            if (user == null)
+            {
+                return NotFound("Nincs ilyen felhasználó.");
+            }
+            if (lobbyCon == null)
+            {
+                return BadRequest("A felhasználó nincs ebben a lobbyban.");
+            }
+
+            if (lobby.Dm != currentId.Name || currentRole != "Admin" )
+            {
+                return Unauthorized("Nincs jogod a játékos eltávolításához!");
+            }
+            _context.LobbyCons.Remove(lobbyCon);
+            if (lobby.PlayerCount > 0)
+            {
+                lobby.PlayerCount--;
+                _context.Lobbies.Update(lobby);
+            }
+
             await _context.SaveChangesAsync();
             return Ok();
         }/*
@@ -715,23 +775,24 @@ namespace backendSzM.Controllers
             if (string.IsNullOrEmpty(idClaim) || !Guid.TryParse(idClaim, out var userId))
                 return Unauthorized();
 
-            // fetch current user directly by Guid
-            var kommentelo = await _context.Users.FirstOrDefaultAsync(x => x.Id == userId);
-            if (kommentelo == null)
-                return Unauthorized("User not found");
 
-            var fogado = await _context.Users.FirstOrDefaultAsync(x => x.Name == request.Fogado);
+            var kommentalo = await _context.Users.FindAsync(userId);
+            if (kommentalo == null)
+            {
+                return Unauthorized("User not found");
+            }
+
+            var fogado = await _context.Users.FirstOrDefaultAsync(x => x.Id == request.Fogado);
             if (fogado == null)
                 return BadRequest("Nincs ilyen fogadó");
 
-            if (kommentelo.Id != userId)
-                return Unauthorized();
+            
 
             var ujKomment = new Komment
             {
                 Id = Guid.NewGuid(),
-                KommentSzoveg = request.KommentSzoveg,
-                KommentaloUserId = kommentelo.Id,
+               KommentSzoveg = request.KommentSzoveg,
+                KommentaloUserId = kommentalo.Id,
                 FogadoUserId = fogado.Id
             };
 
@@ -899,7 +960,7 @@ namespace backendSzM.Controllers
             
             return Ok();
         }
-        [HttpPatch("ChangeToAdmin")]// 
+        [HttpPatch("ChangeToAdmin")]// müködik
         public async Task<ActionResult<CurrentUserDTO>> ChangeRoleAdmin(Guid Id)
         {
             var check = await ValidateAccesToken();
@@ -924,7 +985,7 @@ namespace backendSzM.Controllers
             await _context.SaveChangesAsync();
             return Ok();
         }
-        [HttpPatch("ChangeToUser")]// 
+        [HttpPatch("ChangeToUser")]// müködik
         public async Task<ActionResult<CurrentUserDTO>> ChangeRoleUser( Guid Id)
         {
             var check = await ValidateAccesToken();
@@ -949,7 +1010,7 @@ namespace backendSzM.Controllers
             await _context.SaveChangesAsync();
             return Ok();
         }
-        [HttpPatch("Change Role Rendszergazda")]
+        [HttpPatch("Change Role Rendszergazda")] // müködik
         public async Task<ActionResult<CurrentUserDTO>> ChangeRoleNoAdmin(RoleNoAdminDTO role)
         {
             var changedUser = _context.Users.FirstOrDefault(x => x.Id == role.ChangedUserId);
@@ -960,13 +1021,13 @@ namespace backendSzM.Controllers
             }
             
 
-            changedUser.Role = role.Role;
+            changedUser.Role = "Admin";
             _context.Users.Update(changedUser);
             await _context.SaveChangesAsync();
             return Ok();
         }
         [Authorize(Roles = "Admin")]
-        [HttpGet("GetAllUsers")]
+        [HttpGet("GetAllUsers")] //müködik
         public async Task<ActionResult<List<UserData>>> GetAllUsers()
         {
             var check = await ValidateAccesToken();
