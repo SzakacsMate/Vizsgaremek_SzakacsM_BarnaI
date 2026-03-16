@@ -87,7 +87,14 @@ namespace backendSzM.Migrations
                     b.Property<int>("PlayerLimit")
                         .HasColumnType("INTEGER");
 
+                    b.Property<int>("PlayerMin")
+                        .HasColumnType("INTEGER");
+
                     b.Property<DateTime>("StartDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("TtType")

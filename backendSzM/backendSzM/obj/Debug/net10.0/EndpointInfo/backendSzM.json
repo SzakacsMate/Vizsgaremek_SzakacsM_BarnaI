@@ -1279,6 +1279,9 @@
           "ttType": {
             "type": "string"
           },
+          "status": {
+            "type": "string"
+          },
           "locationName": {
             "type": "string"
           },
@@ -1291,6 +1294,14 @@
             "format": "date-time"
           },
           "playerLimit": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "playerMin": {
             "pattern": "^-?(?:0|[1-9]\\d*)$",
             "type": [
               "integer",
@@ -1398,6 +1409,14 @@
               "string"
             ],
             "format": "int32"
+          },
+          "playerMin": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
           }
         }
       },
@@ -1428,6 +1447,28 @@
               "string"
             ],
             "format": "int32"
+          },
+          "playerCount": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "status": {
+            "type": "string"
+          },
+          "playerMin": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "address": {
+            "type": "string"
           }
         }
       },

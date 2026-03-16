@@ -8,5 +8,9 @@
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public int PlayerLimit { get; set; }
+        public int PlayerCount { get; set; }
+        public string Status { get; set; }
+        public int PlayerMin { get; set; }
+        public string Address { get; set; }
     }
 }

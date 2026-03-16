@@ -286,12 +286,12 @@ namespace backendSzM.Controllers
             }
             var idClaim = User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (string.IsNullOrEmpty(idClaim) || !Guid.TryParse(idClaim, out var userId))
-                return Unauthorized("womp womp");
+                return Unauthorized();
 
             var user = await _context.Users.FindAsync(userId);
             if (user == null)
                 return NotFound("User not found");
-
+            
             var lobbies = await _context.LobbyCons
                 .Where(lc => lc.UserDataId == userId)
                 .Include(lc => lc.Lobby)
@@ -303,7 +303,10 @@ namespace backendSzM.Controllers
                     TtType = lc.Lobby.TtType,
                     StartDate = lc.Lobby.StartDate,
                     EndDate = lc.Lobby.EndDate,
-                    PlayerLimit = lc.Lobby.PlayerLimit
+                    PlayerLimit = lc.Lobby.PlayerLimit,
+                    PlayerCount=lc.Lobby.PlayerCount,
+                    Status = lc.Lobby.Status,
+                    PlayerMin=lc.Lobby.PlayerMin,
                 })
                 .ToListAsync();
 
@@ -436,15 +439,11 @@ namespace backendSzM.Controllers
             await _context.SaveChangesAsync();
             return Ok(new());
         }
-        [Authorize(Roles = "User,Admin")]
+        
         [HttpGet("GetLocations")]// működik
         public async Task<ActionResult<List<LocationDTO>>> GetLocations()
         {
-            var check = await ValidateAccesToken();
-            if (check != null)
-            {
-                return check;
-            }
+            
             var locations = await _context.Locations.Select(x => new { x.Id,x.LocationName, x.Adress, x.Description, x.Image }).ToListAsync();
             if (locations == null)
             {
@@ -529,9 +528,16 @@ namespace backendSzM.Controllers
             ujLobby.PlayerCount = 0;
             ujLobby.locationName = location;
             ujLobby.LocationId = locationId.Id;
+            ujLobby.Status = "Pending";
+            ujLobby.PlayerMin = request.PlayerMin;
+            /*
             if(ujLobby.PlayerLimit<=2)
             {
                 return BadRequest("Legalább 3-nak kell lennie a Játékos limitnek");
+            }*/
+            if (ujLobby.PlayerMin > ujLobby.PlayerLimit)
+            {
+                return BadRequest("Minimum játékosszám nem lehet nagyobb a maximumnál");
             }
             if(locationId.Id ==null)
             {
@@ -571,7 +577,7 @@ namespace backendSzM.Controllers
             }
             
             
-            var lobbies = await _context.Lobbies.Select(x => new { x.Id,x.LobbyName, x.Dm, x.locationName, x.TtType, x.StartDate, x.EndDate, x.PlayerLimit}).ToListAsync();
+            var lobbies = await _context.Lobbies.Select(x => new { x.Id,x.LobbyName, x.Dm, x.locationName, x.TtType, x.StartDate, x.EndDate, x.PlayerLimit,x.PlayerCount,x.Status}).ToListAsync();
             if (lobbies == null)
             {
                 return NotFound();
@@ -588,7 +594,7 @@ namespace backendSzM.Controllers
                 return check;
             }
 
-            var lobbies = _context.Lobbies.Select(x => new { x.LobbyName, x.Dm, x.locationName, x.TtType, x.StartDate, x.EndDate, x.PlayerLimit, x.PlayerCount, x.Id }).Where(x => x.Id == Id);
+            var lobbies = _context.Lobbies.Select(x => new { x.LobbyName, x.Dm, x.locationName, x.TtType, x.StartDate, x.EndDate, x.PlayerLimit, x.PlayerCount, x.Id,x.Status }).Where(x => x.Id == Id);
             if (lobbies == null)
             {
                 return NotFound();
@@ -604,12 +610,15 @@ namespace backendSzM.Controllers
             {
                 return check;
             }
-            var currentRole = User?.FindFirst(ClaimTypes.Role)?.Value;
+            var id = User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var currentUser = await _context.Users.FirstOrDefaultAsync(x => x.Id.ToString() == id);
+            var role = User?.FindFirst(ClaimTypes.Role)?.Value ?? currentUser.Role;
             var name = User?.FindFirst(ClaimTypes.Name)?.Value;
-            
+            Console.WriteLine(currentUser.Role);
             var torlendoLobbyCon = _context?.LobbyCons.Where(x => x.LobbyId == Id).FirstOrDefault();
             var torlendoLobbies = _context?.Lobbies.Where(x => x.Id == Id).FirstOrDefault();
-            if (torlendoLobbies.Dm != name||currentRole!="Admin" )
+
+            if (torlendoLobbies.Dm != name||currentUser.Role!="Admin" )
             {
                 return Unauthorized("Nincs jogod a lobby törléséhez");
             }
@@ -644,15 +653,20 @@ namespace backendSzM.Controllers
             {
                 return Unauthorized("User not found");
             }
+            
 
             var lobby = await _context.Lobbies.FindAsync(Id);
             if (lobby == null)
             {
                 return NotFound("Lobby not found");
             }
+            if (lobby.PlayerCount !>=lobby.PlayerLimit)
+            {
+                return BadRequest("A lobby elérte a maximum játékost");
+            }
 
             lobby.PlayerCount++;
-
+            
             var newLobbyCon = new LobbyCon
             {
                 Id = Guid.NewGuid(),
@@ -662,8 +676,14 @@ namespace backendSzM.Controllers
 
             _context.LobbyCons.Add(newLobbyCon);
             _context.Lobbies.Update(lobby);
+            
             await _context.SaveChangesAsync();
-
+            if(lobby.PlayerCount>=lobby.PlayerMin)
+            {
+                lobby.Status = "Confirmed";
+                _context.Lobbies.Update(lobby);
+                await _context.SaveChangesAsync();
+            }
             return Ok(new());
         }/*
            if (torlendoLobbies.Dm != currentId.Name||currentId.Role!="Admin")
@@ -708,6 +728,7 @@ namespace backendSzM.Controllers
             {
                 lobby.PlayerCount--;
                 _context.Lobbies.Update(lobby);
+                await _context.SaveChangesAsync();
             }
 
             await _context.SaveChangesAsync();
@@ -750,13 +771,31 @@ namespace backendSzM.Controllers
             {
                 return check;
             }
-            var idClaim = User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            var currentId = _context.Users.FirstOrDefault(x => x.Id.ToString() == idClaim);
-            var torlendoLobbyCon = _context?.LobbyCons.Where(x => x.LobbyId == Id && x.UserDataId.ToString() == idClaim).FirstOrDefault();
+            var claimId = User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(claimId) || !Guid.TryParse(claimId, out var userId))
+            {
+                return Unauthorized();
+            }
+            var user = await _context.Users.FindAsync(userId);
+            if (user == null)
+            {
+                return Unauthorized("User not found");
+            }
+            var csokkentoLobby = _context.Lobbies.FirstOrDefault(x => x.Id == Id);
+            var torlendoLobbyCon = _context?.LobbyCons.FirstOrDefault(x => x.LobbyId == Id && x.UserDataId == user.Id);
+            
             if (torlendoLobbyCon == null)
             {
                 return NotFound();
             }
+            csokkentoLobby.PlayerCount--;
+            if( csokkentoLobby.PlayerCount!>=csokkentoLobby.PlayerMin)
+            {
+                csokkentoLobby.Status = "Pending";
+                _context.Lobbies.Update(csokkentoLobby);
+                await _context.SaveChangesAsync();
+            }
+            _context.Lobbies.Update(csokkentoLobby);
             _context.LobbyCons.Remove(torlendoLobbyCon);
             
             await _context.SaveChangesAsync();
@@ -1024,6 +1063,27 @@ namespace backendSzM.Controllers
             changedUser.Role = "Admin";
             _context.Users.Update(changedUser);
             await _context.SaveChangesAsync();
+            var newAccessToken = CreateToken(changedUser);
+            var tokenRow = await _context.Tokens.FirstOrDefaultAsync(t => t.UserDataId == changedUser.Id);
+
+            if (tokenRow != null)
+            {
+                tokenRow.AccesToken = newAccessToken;
+                tokenRow.AccessTokenExpiryTime = DateTime.UtcNow.Add(_accessTokenLifetime);
+                _context.Tokens.Update(tokenRow);
+
+                var newRefreshToken = await GenAndSaveRefreshTokenAsync(tokenRow);
+
+                await _context.SaveChangesAsync();
+
+                return Ok(new TokenDTO
+                {
+                    AccesToken = newAccessToken,
+                    AccessTokenExpiryTime = tokenRow.AccessTokenExpiryTime,
+                    RefreshToken = newRefreshToken,
+                    RefreshTokenExpiryTime = tokenRow.RefreshTokenExpiryTime
+                });
+            }
             return Ok();
         }
         [Authorize(Roles = "Admin")]
