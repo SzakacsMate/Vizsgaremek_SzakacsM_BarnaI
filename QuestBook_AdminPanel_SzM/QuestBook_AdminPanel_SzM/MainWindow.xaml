@@ -34,6 +34,7 @@
                 <Button Content="Ban felhasználó" Click="Ban_Click"/>
                 <Button Content="Lobby Törlése" Click="DeleteLobby_Click"/>
                 <Button Content="Helyszín Törlése" Click="DeleteLocation_Click"/>
+                <Button Content="Felhasználó eltávolítása lobbyból" Click="RemoveUserFromLobby_Click"/>
                 <TextBlock Text="" x:Name="nametext"/>
             </StackPanel>
         </Grid>

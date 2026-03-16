@@ -46,7 +46,8 @@
               "RelativeToolTip": "QuestBook_AdminPanel_SzM\\UserModel.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAA8AAAATAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-12T07:08:35.63Z"
+              "WhenOpened": "2026-03-12T07:08:35.63Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -57,7 +58,8 @@
               "ToolTip": "C:\\Users\\szakacs.mate\\source\\repos\\Vizsgaremek_SzakacsM_BarnaI\\QuestBook_AdminPanel_SzM\\QuestBook_AdminPanel_SzM\\MainWindow.xaml",
               "RelativeToolTip": "QuestBook_AdminPanel_SzM\\MainWindow.xaml",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
-              "WhenOpened": "2026-03-12T10:25:27.087Z"
+              "WhenOpened": "2026-03-12T10:25:27.087Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -67,7 +69,7 @@
               "RelativeDocumentMoniker": "QuestBook_AdminPanel_SzM\\MainWindow.xaml.cs",
               "ToolTip": "C:\\Users\\szakacs.mate\\source\\repos\\Vizsgaremek_SzakacsM_BarnaI\\QuestBook_AdminPanel_SzM\\QuestBook_AdminPanel_SzM\\MainWindow.xaml.cs",
               "RelativeToolTip": "QuestBook_AdminPanel_SzM\\MainWindow.xaml.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAIwAAAAJAAAAAAAAAA==",
+              "ViewState": "AgIAAGgAAAAAAAAAAAAuwIwAAAAJAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-03-11T07:16:28.996Z",
               "EditorCaption": ""
@@ -82,7 +84,8 @@
               "RelativeToolTip": "QuestBook_AdminPanel_SzM\\LocationModel.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAABcAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-13T10:39:33.551Z"
+              "WhenOpened": "2026-03-13T10:39:33.551Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -106,7 +109,8 @@
               "RelativeToolTip": "QuestBook_AdminPanel_SzM\\Lobbies.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABUAAAATAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-12T10:15:39.829Z"
+              "WhenOpened": "2026-03-12T10:15:39.829Z",
+              "EditorCaption": ""
             }
           ]
         }

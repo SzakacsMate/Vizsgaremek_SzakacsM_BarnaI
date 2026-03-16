@@ -293,20 +293,29 @@ namespace backendSzM.Controllers
                 return NotFound("User not found");
             
             var lobbies = await _context.LobbyCons
-                .Where(lc => lc.UserDataId == userId)
-                .Include(lc => lc.Lobby)
-                .Where(lc => lc.Lobby != null)
-                .Select(lc => new LobbyInfoDTO
+                .Where(x => x.UserDataId == userId)
+                .Include(x => x.Lobby)
+                .Where(x => x.Lobby != null)
+                .Select(x => new LobbyInfoDTO
                 {
-                    Dm = lc.Lobby.Dm,
-                    LocationName = lc.Lobby.locationName,
-                    TtType = lc.Lobby.TtType,
-                    StartDate = lc.Lobby.StartDate,
-                    EndDate = lc.Lobby.EndDate,
-                    PlayerLimit = lc.Lobby.PlayerLimit,
-                    PlayerCount=lc.Lobby.PlayerCount,
-                    Status = lc.Lobby.Status,
-                    PlayerMin=lc.Lobby.PlayerMin,
+                    Dm = x.Lobby.Dm,
+                    LocationName = x.Lobby.locationName,
+                    TtType = x.Lobby.TtType,
+                    StartDate = x.Lobby.StartDate,
+                    EndDate = x.Lobby.EndDate,
+                    PlayerLimit = x.Lobby.PlayerLimit,
+                    PlayerCount=x.Lobby.PlayerCount,
+                    Status = x.Lobby.Status,
+                    PlayerMin=x.Lobby.PlayerMin,
+                    Players = _context.LobbyCons
+                .Where(x => x.LobbyId == x.Lobby.Id)
+                .Join(
+                    _context.Users,
+                    x => x.UserDataId,
+                    y => y.Id,
+                    (x, y) => y.Name
+                )
+                .ToList()
                 })
                 .ToListAsync();
 
@@ -577,7 +586,7 @@ namespace backendSzM.Controllers
             }
             
             
-            var lobbies = await _context.Lobbies.Select(x => new { x.Id,x.LobbyName, x.Dm, x.locationName, x.TtType, x.StartDate, x.EndDate, x.PlayerLimit,x.PlayerCount,x.Status}).ToListAsync();
+            var lobbies = await _context.Lobbies.Select(x => new { x.Id,x.LobbyName, x.Dm, x.locationName, x.TtType, x.StartDate, x.EndDate, x.PlayerLimit,x.PlayerCount,x.Status,Players=_context.LobbyCons.Where(x=>x.LobbyId==x.Id).Join(_context.Users,x=>x.UserDataId,y=>y.Id,(x,y)=>y.Name).ToList()}).ToListAsync();
             if (lobbies == null)
             {
                 return NotFound();
@@ -594,15 +603,18 @@ namespace backendSzM.Controllers
                 return check;
             }
 
-            var lobbies = _context.Lobbies.Select(x => new { x.LobbyName, x.Dm, x.locationName, x.TtType, x.StartDate, x.EndDate, x.PlayerLimit, x.PlayerCount, x.Id,x.Status }).Where(x => x.Id == Id);
+            var lobbies = _context.Lobbies.Select(x => new { x.LobbyName, x.Dm, x.locationName, x.TtType, x.StartDate, x.EndDate, x.PlayerLimit, x.PlayerCount, x.Id, x.Status, Players = _context.LobbyCons.Where(x => x.LobbyId == x.Id).Join(_context.Users, x => x.UserDataId, y => y.Id, (x, y) => y.Name).ToList() }).Where(x => x.Id == Id);  
+
+
+
             if (lobbies == null)
             {
                 return NotFound();
             }
             return Ok(lobbies);
         }
-        [Authorize(Roles = "User,Admin")]//működik
-        [HttpDelete("DeleteLobby/{Id}")]
+        [Authorize(Roles = "User,Admin")]
+        [HttpDelete("DeleteLobby/{Id}")] //működik
         public async Task<ActionResult<CurrentUserDTO>> DeleteLobby(Guid Id)
         {
             var check = await ValidateAccesToken();
@@ -611,24 +623,34 @@ namespace backendSzM.Controllers
                 return check;
             }
             var id = User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            var currentUser = await _context.Users.FirstOrDefaultAsync(x => x.Id.ToString() == id);
-            var role = User?.FindFirst(ClaimTypes.Role)?.Value ?? currentUser.Role;
-            var name = User?.FindFirst(ClaimTypes.Name)?.Value;
-            Console.WriteLine(currentUser.Role);
-            var torlendoLobbyCon = _context?.LobbyCons.Where(x => x.LobbyId == Id).FirstOrDefault();
-            var torlendoLobbies = _context?.Lobbies.Where(x => x.Id == Id).FirstOrDefault();
-
-            if (torlendoLobbies.Dm != name||currentUser.Role!="Admin" )
+            if (string.IsNullOrEmpty(id) || !Guid.TryParse(id, out var userId))
             {
-                return Unauthorized("Nincs jogod a lobby törléséhez");
+                return Unauthorized();
             }
+            var currentUser = await _context.Users.FindAsync(userId);
+            if (currentUser == null)
+            {
+                return Unauthorized("User not found");
+            }
+            var name = User?.FindFirst(ClaimTypes.Name)?.Value;
+            var torlendoLobbyCon = await _context.LobbyCons.FirstOrDefaultAsync(x => x.LobbyId == Id);
+            var torlendoLobbies = await _context.Lobbies.FirstOrDefaultAsync(x => x.Id == Id);
+
             if (torlendoLobbies == null)
             {
                 return NotFound();
             }
+            if (torlendoLobbies.Dm != name && currentUser.Role != "Admin")
+            {
+                return Unauthorized("Nincs jogod a lobby törléséhez");
+            }
 
-            _context.LobbyCons.Remove(torlendoLobbyCon);
+            if (torlendoLobbyCon != null)
+            {
+                _context.LobbyCons.Remove(torlendoLobbyCon);
+            }
             _context.Lobbies.Remove(torlendoLobbies);
+
             await _context.SaveChangesAsync();
             return Ok();
         }
@@ -641,32 +663,47 @@ namespace backendSzM.Controllers
             {
                 return check;
             }
-            
+
             var claimId = User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (string.IsNullOrEmpty(claimId) || !Guid.TryParse(claimId, out var userId))
             {
                 return Unauthorized();
             }
-            
+
             var user = await _context.Users.FindAsync(userId);
             if (user == null)
             {
                 return Unauthorized("User not found");
             }
-            
 
             var lobby = await _context.Lobbies.FindAsync(Id);
             if (lobby == null)
             {
                 return NotFound("Lobby not found");
             }
-            if (lobby.PlayerCount !>=lobby.PlayerLimit)
+
+            
+            if (lobby.Dm == user.Name)
             {
-                return BadRequest("A lobby elérte a maximum játékost");
+                return BadRequest("A DM nem csatlakozhat a saját lobbyjához.");
+            }
+
+            
+            var alreadyInLobby = await _context.LobbyCons
+                .AnyAsync(x => x.LobbyId == Id && x.UserDataId == user.Id);
+            if (alreadyInLobby)
+            {
+                return BadRequest("Már csatlakoztál ehhez a lobbyhoz.");
+            }
+
+            
+            if (lobby.PlayerCount >= lobby.PlayerLimit)
+            {
+                return BadRequest("A lobby elérte a maximum játékosszámot.");
             }
 
             lobby.PlayerCount++;
-            
+
             var newLobbyCon = new LobbyCon
             {
                 Id = Guid.NewGuid(),
@@ -676,14 +713,16 @@ namespace backendSzM.Controllers
 
             _context.LobbyCons.Add(newLobbyCon);
             _context.Lobbies.Update(lobby);
-            
+
             await _context.SaveChangesAsync();
-            if(lobby.PlayerCount>=lobby.PlayerMin)
+
+            if (lobby.PlayerCount >= lobby.PlayerMin)
             {
                 lobby.Status = "Confirmed";
                 _context.Lobbies.Update(lobby);
                 await _context.SaveChangesAsync();
             }
+
             return Ok(new());
         }/*
            if (torlendoLobbies.Dm != currentId.Name||currentId.Role!="Admin")

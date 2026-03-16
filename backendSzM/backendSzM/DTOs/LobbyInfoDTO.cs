@@ -12,5 +12,6 @@
         public string Status { get; set; }
         public int PlayerMin { get; set; }
         public string Address { get; set; }
+        public List<string> Players { get; set; } = new List<string>();
     }
 }

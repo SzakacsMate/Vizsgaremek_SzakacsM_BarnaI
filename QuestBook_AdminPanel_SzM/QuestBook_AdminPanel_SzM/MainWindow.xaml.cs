@@ -440,5 +440,49 @@ namespace QuestBook_AdminPanel_SzM
                 MessageBox.Show($"Exception: {ex.Message}");
             }
         }
+        private async void RemoveUserFromLobby_Click(object sender, RoutedEventArgs e)
+        {
+            if (PlayerResult.SelectedItem is not UserModel selectedUser)
+            {
+                MessageBox.Show("Válassz ki egy felhasználót.");
+                return;
+            }
+
+            if (LobbyResult.SelectedItem is not Lobbies selectedLobby)
+            {
+                MessageBox.Show("Válassz ki egy lobbyt.");
+                return;
+            }
+
+            try
+            {
+                using (HttpClient client = new HttpClient())
+                {
+                    client.DefaultRequestHeaders.Authorization =
+                        new AuthenticationHeaderValue("Bearer", accessToken);
+
+                    var removeUserApiUrl = $"{url}/api/Auth/RemovePlayerFromLobby?lobbyId={selectedLobby.Id}&userId={selectedUser.Id}";
+                    HttpResponseMessage response = await client.DeleteAsync(removeUserApiUrl);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        MessageBox.Show($"{selectedUser.Name} el lett távolítva a(z) {selectedLobby.LobbyName} lobbyból.");
+                        await LoadUsersAsync();
+                        await LoadLobbies();
+                    }
+                    else
+                    {
+                        string errorContent = await response.Content.ReadAsStringAsync();
+                        MessageBox.Show(string.IsNullOrWhiteSpace(errorContent)
+                            ? $"Error: {response.StatusCode} - {response.ReasonPhrase}"
+                            : errorContent);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Exception: {ex.Message}");
+            }
+        }
     }
     }
