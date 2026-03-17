@@ -8,7 +8,7 @@
         public DateTime StartDate { get; set; } = new DateTime();
         public DateTime EndDate { get; set; } = new DateTime();
         public int PlayerLimit { get; set; } = 0;
-        public int PlayerMin { get; set; } = 0;
+        public int PlayerMin { get; set; } = 1;
 
     }
 }

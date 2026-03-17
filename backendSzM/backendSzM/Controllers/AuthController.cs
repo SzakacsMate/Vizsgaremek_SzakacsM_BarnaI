@@ -292,17 +292,18 @@ namespace backendSzM.Controllers
             if (user == null)
                 return NotFound("User not found");
             
-            var lobbyU = _context?.LobbyCons.FirstOrDefault(x => x.UserDataId == user.Id);
-            var lobby = _context?.Lobbies.FirstOrDefault(x => x.Id == lobbyU.LobbyId);
+            var lobbyUser = _context?.LobbyCons.FirstOrDefault(x => x.UserDataId == user.Id);
+            var lobby = _context?.Lobbies.FirstOrDefault(x => x.Id == lobbyUser.LobbyId);
             var location = _context.Locations?.FirstOrDefault(x => x.Id == lobby.LocationId);
-            var users = await _context.LobbyCons.Where(x => x.LobbyId == x.Lobby.Id).Join(_context.Users, x => x.UserDataId, y => y.Id, (x, y) => y.Name).Distinct().ToListAsync();
-
             var lobbies = await _context.LobbyCons
                 .Where(x => x.UserDataId == userId)
-              
                 .Select(x => new 
                 {
-                     x.Lobby.Dm,x.Lobby.locationName,x.Lobby.TtType,x.Lobby.StartDate,x.Lobby.EndDate,x.Lobby.PlayerLimit,x.Lobby.PlayerCount,x.Lobby.Status,x.Lobby.PlayerMin,location.Adress,users,
+                     x.Lobby.Dm,x.Lobby.locationName,x.Lobby.TtType,x.Lobby.StartDate,x.Lobby.EndDate,x.Lobby.PlayerLimit,x.Lobby.PlayerCount,x.Lobby.Status,x.Lobby.PlayerMin,x.Lobby.Location.Adress,
+                    Users = x.Lobby.LobbyCons
+                        .Where(lc => lc.UserData.Name != x.Lobby.Dm)
+                        .Select(lc => lc.UserData.Name)
+                        .ToList(),
                    
                 })
                 .ToListAsync();
@@ -566,16 +567,23 @@ namespace backendSzM.Controllers
         [HttpGet("GetAllLobbies")]//működik
         public async Task<ActionResult<List<LobbyDTO>>> GetAllLobbies()
         {
-            List<UserData> names = new();
+           
             var check = await ValidateAccesToken();
             if (check != null)
             {
                 return check;
             }
-            var users = await _context.LobbyCons.Where(x => x.LobbyId == x.Lobby.Id).Join(_context.Users, x => x.UserDataId, y => y.Id, (x, y) => y.Name).Distinct().ToListAsync();
+            
+
+            
 
 
-            var lobbies = await _context.Lobbies.Select(x => new { x.Id,x.LobbyName, x.Dm, x.locationName, x.TtType, x.StartDate, x.EndDate, x.PlayerLimit,x.PlayerCount,x.Status,users}).ToListAsync();
+            var lobbies = await _context.Lobbies.Select(x => new { x.Id,x.LobbyName, x.Dm, x.locationName, x.TtType, x.StartDate, x.EndDate, x.PlayerLimit,x.PlayerCount,x.Status,x.Location.Adress,
+                Users = x.LobbyCons
+                    .Where(lc => lc.UserData.Name != x.Dm)
+                    .Select(lc => lc.UserData.Name)
+                    .ToList()
+            }).ToListAsync();
             if (lobbies == null)
             {
                 return NotFound();
@@ -591,9 +599,12 @@ namespace backendSzM.Controllers
             {
                 return check;
             }
-            var users = await _context.LobbyCons.Where(x => x.LobbyId == x.Lobby.Id).Join(_context.Users, x => x.UserDataId, y => y.Id, (x, y) => y.Name).Distinct().ToListAsync();
-
-            var lobbies = _context.Lobbies.Select(x => new { x.LobbyName, x.Dm, x.locationName, x.TtType, x.StartDate, x.EndDate, x.PlayerLimit, x.PlayerCount, x.Id, x.Status, users }).Where(x => x.Id == Id);  
+            var lobbies = _context.Lobbies.Select(x => new { x.LobbyName, x.Dm, x.locationName, x.TtType, x.StartDate, x.EndDate, x.PlayerLimit, x.PlayerCount, x.Id, x.Status,x.Location.Adress ,
+                Users = x.LobbyCons
+                    .Where(lc => lc.UserData.Name != x.Dm)
+                    .Select(lc => lc.UserData.Name)
+                    .ToList()
+            }).Where(x => x.Id == Id);  
 
 
 
@@ -728,27 +739,28 @@ namespace backendSzM.Controllers
             {
                 return check;
             }
-
+            var id = User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(id) || !Guid.TryParse(id, out var CurrentuserId))
+            {
+                return Unauthorized();
+            }
+            var currentUser = await _context.Users.FindAsync(CurrentuserId);
+            if (currentUser == null)
+            {
+                return NotFound("Nincs ilyen felhasználó.");
+            }
             var lobby = await _context.Lobbies.FirstOrDefaultAsync(x => x.Id == lobbyId);
-            var idClaim = User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            var currentRole = User?.FindFirst(ClaimTypes.Role)?.Value;
-            var currentId = _context.Users.FirstOrDefault(x => x.Id.ToString() == idClaim);
-            var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == userId);
-            var lobbyCon = await _context.LobbyCons.FirstOrDefaultAsync(x => x.LobbyId == lobbyId && x.UserDataId == userId);
             if (lobby == null)
             {
                 return NotFound("Nincs ilyen lobby.");
             }
-            if (user == null)
-            {
-                return NotFound("Nincs ilyen felhasználó.");
-            }
+            var lobbyCon = await _context.LobbyCons.FirstOrDefaultAsync(x => x.LobbyId == lobbyId && x.UserDataId == userId);
             if (lobbyCon == null)
             {
                 return BadRequest("A felhasználó nincs ebben a lobbyban.");
             }
 
-            if (lobby.Dm != currentId.Name || currentRole != "Admin" )
+            if (lobby.Dm != currentUser.Name && currentUser.Role != "Admin")
             {
                 return Unauthorized("Nincs jogod a játékos eltávolításához!");
             }
@@ -757,12 +769,12 @@ namespace backendSzM.Controllers
             {
                 lobby.PlayerCount--;
                 _context.Lobbies.Update(lobby);
-                await _context.SaveChangesAsync();
             }
 
             await _context.SaveChangesAsync();
             return Ok();
-        }/*
+        }
+        /*
         [Authorize(Roles = "User,Admin")]
         [HttpDelete("LeavFromLobby")] //DM saját lobbyban/Admin bárkit player csak magát- tesztelendő
         public async Task<ActionResult<CurrentUserDTO>> LeavFromLobby(Guid Id)
