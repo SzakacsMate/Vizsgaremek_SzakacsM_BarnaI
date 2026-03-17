@@ -3,11 +3,15 @@ import type { Session } from "../types/session";
 type MySessionCardProps = {
   session: Session;
   onOpen: (session: Session) => void;
+  onJoin?: (sessionId: string) => void;
+  onLeave?: (sessionId: string) => void;
 };
 
 export default function MySessionCard({
   session,
   onOpen,
+  onJoin,
+  onLeave,
 }: MySessionCardProps) {
   const currentPlayerCount = session.players.length;
 
@@ -30,12 +34,14 @@ export default function MySessionCard({
           >
             {session.system}
           </span>
+
           <span
             className={`my-session-status ${
               session.status === "confirmed"
                 ? "status-confirmed"
                 : "status-pending"
-            }`}>
+            }`}
+          >
             {session.status === "confirmed" ? "Confirmed" : "Pending"}
           </span>
         </div>
@@ -45,11 +51,9 @@ export default function MySessionCard({
           style={{ backgroundColor: session.systemColor }}
         />
 
-        <p className="my-session-text">
-          {session.date} ({session.duration})
-        </p>
+        <p className="my-session-text">{session.date}</p>
         <p className="my-session-text">{session.location}</p>
-        <p className="my-session-text">DM: Placeholder DM</p>
+        <p className="my-session-text">DM: {session.dmName}</p>
 
         <div className="my-session-player-row">
           <div className="my-session-player-bars">
@@ -74,6 +78,34 @@ export default function MySessionCard({
             {currentPlayerCount}/{session.playerLimit} Players
           </p>
         </div>
+
+        {(onJoin || onLeave) && (
+          <div className="my-session-action-row">
+            {onJoin && (
+              <button
+                className="session-action-button join"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  onJoin(session.id);
+                }}
+              >
+                JOIN
+              </button>
+            )}
+
+            {onLeave && (
+              <button
+                className="session-action-button leave"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  onLeave(session.id);
+                }}
+              >
+                LEAVE PARTY
+              </button>
+            )}
+          </div>
+        )}
       </div>
     </article>
   );

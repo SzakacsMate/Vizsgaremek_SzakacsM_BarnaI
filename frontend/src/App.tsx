@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./App.css";
 
 import LocationCard from "./components/LocationCard";
@@ -9,15 +9,29 @@ import SessionDetailsCard from "./components/SessionDetailsCard";
 import UpcomingSessionCard from "./components/UpcomingSessionCard";
 import AuthPage from "./components/AuthPage";
 
-import { currentUser, locations, upcomingSessions } from "./data/mockData";
-
 import type { Location } from "./types/location";
 import type { Session } from "./types/session";
+import type { User } from "./types/user";
 
 import questBookLogo from "./assets/branding/QuestBook.png";
 import bellIcon from "./assets/icons/bell.png";
 import magnifierIcon from "./assets/icons/magnifier.png";
 import logoutIcon from "./assets/icons/LogoutIcon.png";
+
+import { getCurrentUser, login, logout, register } from "./services/authService";
+import { getLocations } from "./services/locationService";
+import {
+  createLobby,
+  getAllLobbies,
+  getMyLobbies,
+  joinLobby,
+  leaveLobby,
+} from "./services/lobbyService";
+import {
+  mapApiCurrentUserToUser,
+  mapApiLobbyToSession,
+  mapApiLocationToLocation,
+} from "./services/mappers";
 
 type ActiveTab =
   | "locations"
@@ -33,12 +47,6 @@ type ViewMode =
   | "session-list"
   | "session-details";
 
-const systemColorMap: Record<string, string> = {
-  "D&D 5e": "#ff1f1f",
-  "Pathfinder 2e": "#d6d800",
-  "Call of Cthulhu 7e": "#00cc22",
-};
-
 function App() {
   const [activeTab, setActiveTab] = useState<ActiveTab>("locations");
   const [viewMode, setViewMode] = useState<ViewMode>("location-list");
@@ -46,14 +54,11 @@ function App() {
   const [selectedLocation, setSelectedLocation] = useState<Location | null>(null);
   const [selectedSession, setSelectedSession] = useState<Session | null>(null);
 
-  const [sessions, setSessions] = useState<Session[]>(
-    upcomingSessions.map((session) => ({
-      ...session,
-      status:
-        session.players.length >= session.minPlayers ? "confirmed" : "pending",
-    }))
-  );
-  const [loggedInUser, setLoggedInUser] = useState(currentUser);
+  const [locationsState, setLocationsState] = useState<Location[]>([]);
+  const [sessions, setSessions] = useState<Session[]>([]);
+  const [loggedInUser, setLoggedInUser] = useState<User | null>(null);
+
+  const [error, setError] = useState("");
 
   const sortedSessions = [...sessions].sort((a, b) => {
     return new Date(a.dateKey).getTime() - new Date(b.dateKey).getTime();
@@ -61,18 +66,61 @@ function App() {
 
   const isAuthScreen = activeTab === "login" || activeTab === "register";
 
+  useEffect(() => {
+    async function loadInitialData() {
+      try {
+        const apiLocations = await getLocations();
+        setLocationsState(apiLocations.map(mapApiLocationToLocation));
+      } catch (error) {
+        console.error("Locations load error:", error);
+      }
+
+      try {
+        const apiUser = await getCurrentUser();
+        setLoggedInUser(mapApiCurrentUserToUser(apiUser));
+      } catch {
+        setLoggedInUser(null);
+      }
+    }
+
+    loadInitialData();
+  }, []);
+
+  useEffect(() => {
+    async function loadSessions() {
+      try {
+        if (activeTab === "sessions" && loggedInUser) {
+          const apiLobbies = await getMyLobbies();
+          setSessions(apiLobbies.map(mapApiLobbyToSession));
+        }
+
+        if (activeTab === "community") {
+          const apiLobbies = await getAllLobbies();
+          setSessions(apiLobbies.map(mapApiLobbyToSession));
+        }
+      } catch (error) {
+        console.error("Sessions load error:", error);
+      }
+    }
+
+    loadSessions();
+  }, [activeTab, loggedInUser]);
+
   const handleShowLocations = () => {
     setActiveTab("locations");
     setViewMode("location-list");
     setSelectedLocation(null);
     setSelectedSession(null);
+    setError("");
   };
 
   const handleShowSessions = () => {
+    if (!loggedInUser) return;
     setActiveTab("sessions");
     setViewMode("session-list");
     setSelectedLocation(null);
     setSelectedSession(null);
+    setError("");
   };
 
   const handleShowCommunity = () => {
@@ -80,29 +128,62 @@ function App() {
     setViewMode("session-list");
     setSelectedLocation(null);
     setSelectedSession(null);
+    setError("");
   };
 
   const handleShowLogin = () => {
     setActiveTab("login");
+    setError("");
   };
 
   const handleShowRegister = () => {
     setActiveTab("register");
+    setError("");
   };
 
-  const handleLoginSuccess = (username: string) => {
-    setLoggedInUser({
-      id: Date.now(),
-      name: username,
-      image: currentUser?.image ?? "",
-    });
+  const handleAuthSubmit = async (data: {
+    mode: "login" | "register";
+    username: string;
+    email: string;
+    password: string;
+  }) => {
+    try {
+      setError("");
 
-    setActiveTab("locations");
-    setViewMode("location-list");
+      if (data.mode === "login") {
+        await login({
+          name: data.username,
+          gmail: data.email,
+          password: data.password,
+        });
+      } else {
+        await register({
+          name: data.username,
+          gmail: data.email,
+          password: data.password,
+        });
+
+        await login({
+          name: data.username,
+          gmail: data.email,
+          password: data.password,
+        });
+      }
+
+      const apiUser = await getCurrentUser();
+      setLoggedInUser(mapApiCurrentUserToUser(apiUser));
+      setActiveTab("locations");
+      setViewMode("location-list");
+    } catch (error) {
+      console.error(error);
+      setError("Login / register failed.");
+    }
   };
 
   const handleLogout = () => {
+    logout();
     setLoggedInUser(null);
+    setSessions([]);
     setActiveTab("locations");
     setViewMode("location-list");
     setSelectedLocation(null);
@@ -138,7 +219,7 @@ function App() {
     setViewMode("session-list");
   };
 
-  const handleFinalizeReservation = (reservationData: {
+  const handleFinalizeReservation = async (reservationData: {
     location: Location;
     sessionTitle: string;
     gameSystem: string;
@@ -147,36 +228,76 @@ function App() {
     period: number;
     selectedDate: string;
   }) => {
-    const newSession: Session = {
-      id: Date.now(),
-      title: reservationData.sessionTitle,
-      system: reservationData.gameSystem,
-      sessionNumber: 1,
-      date: reservationData.selectedDate,
-      dateKey: reservationData.selectedDate,
-      duration: `${reservationData.period}h`,
-      location: reservationData.location.name,
-      minPlayers: reservationData.minPlayers,
-      playerLimit: reservationData.maxPlayers,
-      players: [],
-      systemColor: systemColorMap[reservationData.gameSystem] ?? "#999",
-      dmName: loggedInUser?.name ?? "Unknown",
-      status: "pending",
-    };
+    try {
+      const startDate = new Date(reservationData.selectedDate);
+      const endDate = new Date(startDate);
+      endDate.setHours(endDate.getHours() + reservationData.period);
 
-    setSessions((prev) => [newSession, ...prev]);
-    setActiveTab("sessions");
-    setViewMode("session-list");
-    setSelectedLocation(null);
+      await createLobby(reservationData.location.id, {
+        lobbyName: reservationData.sessionTitle,
+        ttType: reservationData.gameSystem,
+        startDate: startDate.toISOString(),
+        endDate: endDate.toISOString(),
+        playerLimit: reservationData.maxPlayers,
+        playerMin: reservationData.minPlayers,
+      });
+
+      const apiLobbies = await getMyLobbies();
+      setSessions(apiLobbies.map(mapApiLobbyToSession));
+
+      setActiveTab("sessions");
+      setViewMode("session-list");
+      setSelectedLocation(null);
+      setError("");
+    } catch (error) {
+      console.error(error);
+      setError("Creating reservation failed.");
+    }
+  };
+
+  const handleJoinSession = async (sessionId: string) => {
+    try {
+      await joinLobby(sessionId);
+
+      const apiLobbies =
+        activeTab === "community" ? await getAllLobbies() : await getMyLobbies();
+
+      setSessions(apiLobbies.map(mapApiLobbyToSession));
+      setError("");
+    } catch (error) {
+      console.error(error);
+      setError("Joining session failed.");
+    }
+  };
+
+  const handleLeaveSession = async (sessionId: string) => {
+    try {
+      await leaveLobby(sessionId);
+
+      const apiLobbies =
+        activeTab === "community" ? await getAllLobbies() : await getMyLobbies();
+
+      setSessions(apiLobbies.map(mapApiLobbyToSession));
+      setSelectedSession(null);
+      setViewMode("session-list");
+      setError("");
+    } catch (error) {
+      console.error(error);
+      setError("Leaving session failed.");
+    }
   };
 
   if (isAuthScreen) {
     return (
-      <AuthPage
-        mode={activeTab === "login" ? "login" : "register"}
-        onSwitchMode={(mode) => setActiveTab(mode)}
-        onLoginSuccess={handleLoginSuccess}
-      />
+      <>
+        {error && <div className="global-error-banner">{error}</div>}
+
+        <AuthPage
+          mode={activeTab === "login" ? "login" : "register"}
+          onSwitchMode={(mode) => setActiveTab(mode)}
+          onSubmit={handleAuthSubmit}
+        />
+      </>
     );
   }
 
@@ -195,9 +316,12 @@ function App() {
               Locations
             </button>
 
-            <button className={`navbar-link-button ${!loggedInUser ? "disabled-link" : ""}`} onClick={() => {
-              if (loggedInUser) handleShowSessions();
-            }}>
+            <button
+              className={`navbar-link-button ${!loggedInUser ? "disabled-link" : ""}`}
+              onClick={() => {
+                if (loggedInUser) handleShowSessions();
+              }}
+            >
               My Sessions
             </button>
 
@@ -220,6 +344,8 @@ function App() {
           </div>
         </header>
 
+        {error && <div className="global-error-banner">{error}</div>}
+
         <div className="content-layout">
           <main className="main-content">
             <div className="main-overlay">
@@ -228,7 +354,7 @@ function App() {
                   <h1 className="page-title">Locations</h1>
 
                   <section className="locations-list">
-                    {locations.map((location) => (
+                    {locationsState.map((location) => (
                       <LocationCard
                         key={location.id}
                         location={location}
@@ -273,6 +399,8 @@ function App() {
                           key={session.id}
                           session={session}
                           onOpen={handleOpenSession}
+                          onJoin={activeTab === "community" ? handleJoinSession : undefined}
+                          onLeave={activeTab === "sessions" ? handleLeaveSession : undefined}
                         />
                       ))}
                     </section>
@@ -283,6 +411,7 @@ function App() {
                 <SessionDetailsCard
                   session={selectedSession}
                   onBack={handleBackFromSessionDetails}
+                  onLeave={handleLeaveSession}
                 />
               )}
             </div>
@@ -296,11 +425,13 @@ function App() {
                     Welcome back, {loggedInUser.name}!
                   </h2>
 
-                  <img
-                    src={loggedInUser.image}
-                    alt={loggedInUser.name}
-                    className="sidebar-user-image"
-                  />
+                  {loggedInUser.image && (
+                    <img
+                      src={loggedInUser.image}
+                      alt={loggedInUser.name}
+                      className="sidebar-user-image"
+                    />
+                  )}
 
                   <div className="sidebar-sessions">
                     <h3 className="sidebar-subtitle">Upcoming Reservations</h3>

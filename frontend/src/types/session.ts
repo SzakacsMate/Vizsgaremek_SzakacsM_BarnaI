@@ -1,6 +1,6 @@
 export type SessionStatus = "confirmed" | "pending";
 export type Session = {
-  id: number;
+  id: string;
   title: string;
   system: string;
   sessionNumber: number;

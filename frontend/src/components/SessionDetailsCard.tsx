@@ -3,11 +3,13 @@ import type { Session } from "../types/session";
 type SessionDetailsCardProps = {
   session: Session;
   onBack: () => void;
+  onLeave?: (sessionId: string) => void;
 };
 
 export default function SessionDetailsCard({
   session,
   onBack,
+  onLeave,
 }: SessionDetailsCardProps) {
   const currentPlayerCount = session.players.length;
 
@@ -30,12 +32,14 @@ export default function SessionDetailsCard({
           >
             {session.system}
           </span>
+
           <span
             className={`session-details-status ${
               session.status === "confirmed"
                 ? "status-confirmed"
                 : "status-pending"
-            }`}>
+            }`}
+          >
             {session.status === "confirmed" ? "Confirmed" : "Pending"}
           </span>
         </div>
@@ -45,18 +49,12 @@ export default function SessionDetailsCard({
           style={{ backgroundColor: session.systemColor }}
         />
 
-        <p className="session-details-text">
-          {session.date} ({session.duration})
-        </p>
-
+        <p className="session-details-text">{session.date}</p>
         <p className="session-details-text">{session.location}</p>
-
-        <p className="session-details-text">
-          Dungeon Master: Placeholder DM
-        </p>
+        <p className="session-details-text">Dungeon Master: {session.dmName}</p>
 
         <div className="session-details-players-section">
-          <p className="session-details-players-title">Játékosok:</p>
+          <p className="session-details-players-title">Players:</p>
 
           <ul className="session-details-player-list">
             {session.players.map((player) => (
@@ -85,7 +83,7 @@ export default function SessionDetailsCard({
           </div>
 
           <p className="session-details-player-count">
-            Játékosok: {currentPlayerCount}/{session.playerLimit}
+            Players: {currentPlayerCount}/{session.playerLimit}
           </p>
         </div>
 
@@ -93,6 +91,15 @@ export default function SessionDetailsCard({
           <button className="details-back-button" onClick={onBack}>
             BACK
           </button>
+
+          {onLeave && (
+            <button
+              className="session-action-button leave"
+              onClick={() => onLeave(session.id)}
+            >
+              LEAVE PARTY
+            </button>
+          )}
         </div>
       </div>
     </section>

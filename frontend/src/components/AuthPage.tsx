@@ -7,30 +7,38 @@ type AuthMode = "login" | "register";
 type AuthPageProps = {
   mode: AuthMode;
   onSwitchMode: (mode: AuthMode) => void;
-  onLoginSuccess: (username: string) => void;
+  onSubmit: (data: {
+    mode: AuthMode;
+    username: string;
+    email: string;
+    password: string;
+  }) => Promise<void>;
 };
 
 export default function AuthPage({
   mode,
   onSwitchMode,
-  onLoginSuccess,
+  onSubmit,
 }: AuthPageProps) {
   const isLogin = mode === "login";
-
   const backgroundImage = isLogin ? loginBackground : registerBackground;
   const title = isLogin ? "LOGIN" : "REGISTER";
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     const formData = new FormData(event.currentTarget);
-    const username = String(formData.get("username") ?? "");
 
-    if (isLogin) {
-      onLoginSuccess(username || "Alex");
-    } else {
-      onSwitchMode("login");
-    }
+    const username = String(formData.get("username") ?? "");
+    const email = String(formData.get("email") ?? "");
+    const password = String(formData.get("password") ?? "");
+
+    await onSubmit({
+      mode,
+      username,
+      email,
+      password,
+    });
   };
 
   return (
@@ -55,15 +63,13 @@ export default function AuthPage({
               required
             />
 
-            {!isLogin && (
-              <input
-                className="auth-input"
-                type="email"
-                name="email"
-                placeholder="Email Address"
-                required
-              />
-            )}
+            <input
+              className="auth-input"
+              type="email"
+              name="email"
+              placeholder="Email Address"
+              required
+            />
 
             <input
               className="auth-input"

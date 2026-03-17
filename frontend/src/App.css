@@ -1037,3 +1037,34 @@ body {
 .status-pending {
   color: #d18a00;
 }
+
+.global-error-banner {
+  background-color: #d93a3a;
+  color: white;
+  padding: 12px 18px;
+  font-weight: 700;
+}
+
+.my-session-action-row {
+  display: flex;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.session-action-button {
+  border: none;
+  border-radius: 14px;
+  padding: 12px 18px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.session-action-button.join {
+  background-color: #68cb62;
+  color: white;
+}
+
+.session-action-button.leave {
+  background-color: #d93a3a;
+  color: white;
+}
