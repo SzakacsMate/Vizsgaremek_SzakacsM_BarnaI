@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\KomPhone\\source\\repos\\Vizsgaremek_SzakacsM_BarnaI\\QuestBook_AdminPanel_SzM\\QuestBook_AdminPanel_SzM\\QuestBook_AdminPanel_SzM.csproj": {}
+    "C:\\Users\\szakacs.mate\\source\\repos\\Vizsgaremek_SzakacsM_BarnaI\\QuestBook_AdminPanel_SzM\\QuestBook_AdminPanel_SzM\\QuestBook_AdminPanel_SzM.csproj": {}
   },
   "projects": {
-    "C:\\Users\\KomPhone\\source\\repos\\Vizsgaremek_SzakacsM_BarnaI\\QuestBook_AdminPanel_SzM\\QuestBook_AdminPanel_SzM\\QuestBook_AdminPanel_SzM.csproj": {
+    "C:\\Users\\szakacs.mate\\source\\repos\\Vizsgaremek_SzakacsM_BarnaI\\QuestBook_AdminPanel_SzM\\QuestBook_AdminPanel_SzM\\QuestBook_AdminPanel_SzM.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\KomPhone\\source\\repos\\Vizsgaremek_SzakacsM_BarnaI\\QuestBook_AdminPanel_SzM\\QuestBook_AdminPanel_SzM\\QuestBook_AdminPanel_SzM.csproj",
+        "projectUniqueName": "C:\\Users\\szakacs.mate\\source\\repos\\Vizsgaremek_SzakacsM_BarnaI\\QuestBook_AdminPanel_SzM\\QuestBook_AdminPanel_SzM\\QuestBook_AdminPanel_SzM.csproj",
         "projectName": "QuestBook_AdminPanel_SzM",
-        "projectPath": "C:\\Users\\KomPhone\\source\\repos\\Vizsgaremek_SzakacsM_BarnaI\\QuestBook_AdminPanel_SzM\\QuestBook_AdminPanel_SzM\\QuestBook_AdminPanel_SzM.csproj",
-        "packagesPath": "C:\\Users\\KomPhone\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\KomPhone\\source\\repos\\Vizsgaremek_SzakacsM_BarnaI\\QuestBook_AdminPanel_SzM\\QuestBook_AdminPanel_SzM\\obj\\",
+        "projectPath": "C:\\Users\\szakacs.mate\\source\\repos\\Vizsgaremek_SzakacsM_BarnaI\\QuestBook_AdminPanel_SzM\\QuestBook_AdminPanel_SzM\\QuestBook_AdminPanel_SzM.csproj",
+        "packagesPath": "C:\\Users\\szakacs.mate\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\szakacs.mate\\source\\repos\\Vizsgaremek_SzakacsM_BarnaI\\QuestBook_AdminPanel_SzM\\QuestBook_AdminPanel_SzM\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\KomPhone\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\szakacs.mate\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -78,7 +78,7 @@
               "privateAssets": "none"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.102/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.100/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

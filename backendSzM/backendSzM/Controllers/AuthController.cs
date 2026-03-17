@@ -277,7 +277,7 @@ namespace backendSzM.Controllers
         }
         [Authorize(Roles = "User,Admin")]
         [HttpGet("GetLobbies_youre_in")]
-        public async Task<ActionResult<List<LobbyInfoDTO>>> GetLobbiesIn()
+        public async Task<ActionResult<List<LobbyDTO>>> GetLobbiesIn()
         {
             var check = await ValidateAccesToken();
             if (check != null)
@@ -292,30 +292,18 @@ namespace backendSzM.Controllers
             if (user == null)
                 return NotFound("User not found");
             
+            var lobbyU = _context?.LobbyCons.FirstOrDefault(x => x.UserDataId == user.Id);
+            var lobby = _context?.Lobbies.FirstOrDefault(x => x.Id == lobbyU.LobbyId);
+            var location = _context.Locations?.FirstOrDefault(x => x.Id == lobby.LocationId);
+            var users = await _context.LobbyCons.Where(x => x.LobbyId == x.Lobby.Id).Join(_context.Users, x => x.UserDataId, y => y.Id, (x, y) => y.Name).Distinct().ToListAsync();
+
             var lobbies = await _context.LobbyCons
                 .Where(x => x.UserDataId == userId)
-                .Include(x => x.Lobby)
-                .Where(x => x.Lobby != null)
-                .Select(x => new LobbyInfoDTO
+              
+                .Select(x => new 
                 {
-                    Dm = x.Lobby.Dm,
-                    LocationName = x.Lobby.locationName,
-                    TtType = x.Lobby.TtType,
-                    StartDate = x.Lobby.StartDate,
-                    EndDate = x.Lobby.EndDate,
-                    PlayerLimit = x.Lobby.PlayerLimit,
-                    PlayerCount=x.Lobby.PlayerCount,
-                    Status = x.Lobby.Status,
-                    PlayerMin=x.Lobby.PlayerMin,
-                    Players = _context.LobbyCons
-                .Where(x => x.LobbyId == x.Lobby.Id)
-                .Join(
-                    _context.Users,
-                    x => x.UserDataId,
-                    y => y.Id,
-                    (x, y) => y.Name
-                )
-                .ToList()
+                     x.Lobby.Dm,x.Lobby.locationName,x.Lobby.TtType,x.Lobby.StartDate,x.Lobby.EndDate,x.Lobby.PlayerLimit,x.Lobby.PlayerCount,x.Lobby.Status,x.Lobby.PlayerMin,location.Adress,users,
+                   
                 })
                 .ToListAsync();
 
@@ -584,9 +572,10 @@ namespace backendSzM.Controllers
             {
                 return check;
             }
-            
-            
-            var lobbies = await _context.Lobbies.Select(x => new { x.Id,x.LobbyName, x.Dm, x.locationName, x.TtType, x.StartDate, x.EndDate, x.PlayerLimit,x.PlayerCount,x.Status,Players=_context.LobbyCons.Where(x=>x.LobbyId==x.Id).Join(_context.Users,x=>x.UserDataId,y=>y.Id,(x,y)=>y.Name).ToList()}).ToListAsync();
+            var users = await _context.LobbyCons.Where(x => x.LobbyId == x.Lobby.Id).Join(_context.Users, x => x.UserDataId, y => y.Id, (x, y) => y.Name).Distinct().ToListAsync();
+
+
+            var lobbies = await _context.Lobbies.Select(x => new { x.Id,x.LobbyName, x.Dm, x.locationName, x.TtType, x.StartDate, x.EndDate, x.PlayerLimit,x.PlayerCount,x.Status,users}).ToListAsync();
             if (lobbies == null)
             {
                 return NotFound();
@@ -602,8 +591,9 @@ namespace backendSzM.Controllers
             {
                 return check;
             }
+            var users = await _context.LobbyCons.Where(x => x.LobbyId == x.Lobby.Id).Join(_context.Users, x => x.UserDataId, y => y.Id, (x, y) => y.Name).Distinct().ToListAsync();
 
-            var lobbies = _context.Lobbies.Select(x => new { x.LobbyName, x.Dm, x.locationName, x.TtType, x.StartDate, x.EndDate, x.PlayerLimit, x.PlayerCount, x.Id, x.Status, Players = _context.LobbyCons.Where(x => x.LobbyId == x.Id).Join(_context.Users, x => x.UserDataId, y => y.Id, (x, y) => y.Name).ToList() }).Where(x => x.Id == Id);  
+            var lobbies = _context.Lobbies.Select(x => new { x.LobbyName, x.Dm, x.locationName, x.TtType, x.StartDate, x.EndDate, x.PlayerLimit, x.PlayerCount, x.Id, x.Status, users }).Where(x => x.Id == Id);  
 
 
 
@@ -1086,6 +1076,27 @@ namespace backendSzM.Controllers
             changedUser.Role = "User";
             _context.Users.Update(changedUser);
             await _context.SaveChangesAsync();
+            var newAccessToken = CreateToken(changedUser);
+            var tokenRow = await _context.Tokens.FirstOrDefaultAsync(t => t.UserDataId == changedUser.Id);
+
+            if (tokenRow != null)
+            {
+                tokenRow.AccesToken = newAccessToken;
+                tokenRow.AccessTokenExpiryTime = DateTime.UtcNow.Add(_accessTokenLifetime);
+                _context.Tokens.Update(tokenRow);
+
+                var newRefreshToken = await GenAndSaveRefreshTokenAsync(tokenRow);
+
+                await _context.SaveChangesAsync();
+
+                return Ok(new TokenDTO
+                {
+                    AccesToken = newAccessToken,
+                    AccessTokenExpiryTime = tokenRow.AccessTokenExpiryTime,
+                    RefreshToken = newRefreshToken,
+                    RefreshTokenExpiryTime = tokenRow.RefreshTokenExpiryTime
+                });
+            }
             return Ok();
         }
         [HttpPatch("Change Role Rendszergazda")] // müködik
