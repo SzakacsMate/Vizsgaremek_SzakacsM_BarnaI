@@ -14,8 +14,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
+
 
 namespace backendSzM.Controllers
 {
@@ -37,7 +36,7 @@ namespace backendSzM.Controllers
         [HttpPost("register")]//működik
         public  async Task<IActionResult> Register(UserDataDTO request)
         {
-            var user = _context.Users.FirstOrDefault();
+           // var user = _context.Users.FirstOrDefault();
             var banned=_context.BannedUsers.FirstOrDefault(x=>x.BannedGmail==request.Gmail);
             if (await _context.Users.AnyAsync(u => u.Name == request.Name))
             {
@@ -292,9 +291,7 @@ namespace backendSzM.Controllers
             if (user == null)
                 return NotFound("User not found");
             
-            var lobbyUser = _context?.LobbyCons.FirstOrDefault(x => x.UserDataId == user.Id);
-            var lobby = _context?.Lobbies.FirstOrDefault(x => x.Id == lobbyUser.LobbyId);
-            var location = _context.Locations?.FirstOrDefault(x => x.Id == lobby.LocationId);
+          
             var lobbies = await _context.LobbyCons
                 .Where(x => x.UserDataId == userId)
                 .Select(x => new 
@@ -458,7 +455,7 @@ namespace backendSzM.Controllers
             {
                 return check;
             }
-            var locationId = _context.Locations.FirstOrDefault(x => x.Id==Id);
+            //var locationId = _context.Locations.FirstOrDefault(x => x.Id==Id);
             var locations = _context.Locations.Select(x => new { x.LocationName, x.Adress, x.Description, x.Image,x.Id }).Where(x=>x.Id==Id);
             if (locations == null)
             {
@@ -1040,6 +1037,7 @@ namespace backendSzM.Controllers
             
             return Ok();
         }
+        [Authorize(Roles = "Admin")]
         [HttpPatch("ChangeToAdmin")]// müködik
         public async Task<ActionResult<CurrentUserDTO>> ChangeRoleAdmin(Guid Id)
         {
@@ -1065,6 +1063,7 @@ namespace backendSzM.Controllers
             await _context.SaveChangesAsync();
             return Ok();
         }
+        [Authorize(Roles = "Admin")]
         [HttpPatch("ChangeToUser")]// müködik
         public async Task<ActionResult<CurrentUserDTO>> ChangeRoleUser( Guid Id)
         {
