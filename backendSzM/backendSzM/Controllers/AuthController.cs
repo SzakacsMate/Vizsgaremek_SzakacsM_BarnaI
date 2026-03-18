@@ -242,15 +242,22 @@ namespace backendSzM.Controllers
             {
                 return Unauthorized("Nincs ilyen felhasználó");
             }
-            var id = User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            var currentUser = await _context.Users.FirstOrDefaultAsync(x => x.Id.ToString() == id);
-            
+            var idClaim = User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(idClaim) || !Guid.TryParse(idClaim, out var userId))
+            {
+                return Unauthorized();
+            }
+            var currentUser = await _context.Users.FirstOrDefaultAsync(x => x.Id == userId);
+            if (currentUser == null)
+            {
+                return Unauthorized("Nincs ilyen felhasználó");
+            }
             var role = User?.FindFirst(ClaimTypes.Role)?.Value ?? currentUser.Role;
             var image = currentUser.ProfileI;
 
             var resp= new CurrentUserDTO
             {
-                Id=id,
+                Id=idClaim,
                 Name = name,
                 Role = role,
                 ImageUrl = image,
