@@ -303,7 +303,7 @@ namespace backendSzM.Controllers
                 .Where(x => x.UserDataId == userId)
                 .Select(x => new 
                 {
-                     x.Lobby.Dm,x.Lobby.locationName,x.Lobby.TtType,x.Lobby.StartDate,x.Lobby.EndDate,x.Lobby.PlayerLimit,x.Lobby.PlayerCount,x.Lobby.Status,x.Lobby.PlayerMin,x.Lobby.Location.Adress,
+                     x.Lobby.Dm,x.Lobby.locationName,x.Lobby.TtType,x.Lobby.StartDate,x.Lobby.Duration,x.Lobby.PlayerLimit,x.Lobby.PlayerCount,x.Lobby.Status,x.Lobby.PlayerMin,x.Lobby.Location.Adress,
                     Users = x.Lobby.LobbyCons
                         .Where(lc => lc.UserData.Name != x.Lobby.Dm)
                         .Select(lc => lc.UserData.Name)
@@ -523,8 +523,8 @@ namespace backendSzM.Controllers
             ujLobby.Id = Guid.NewGuid();
             ujLobby.Dm = user.Name;
             ujLobby.LobbyName = request.LobbyName;
+            ujLobby.Duration = request.Duration;
             ujLobby.StartDate = request.StartDate;
-            ujLobby.EndDate = request.EndDate;
             ujLobby.PlayerLimit = request.PlayerLimit;
             ujLobby.TtType = request.TtType;
             ujLobby.PlayerCount = 0;
@@ -553,7 +553,7 @@ namespace backendSzM.Controllers
             {
                 return BadRequest("Nincs ilyen helyszín");
             }
-            var reserved = await _context.Lobbies.FirstOrDefaultAsync(x => x.LocationId == locationId.Id && x.StartDate <= request.EndDate && request.StartDate <= x.EndDate);
+            var reserved = await _context.Lobbies.FirstOrDefaultAsync(x => x.LocationId == locationId.Id && x.StartDate <= request.StartDate.AddHours(request.Duration) && request.StartDate <= x.StartDate.AddHours(x.Duration));
             if (reserved != null)
             {
                 return BadRequest("Ezen a helyen és időpontban már van egy foglalt lobby!");
@@ -582,7 +582,7 @@ namespace backendSzM.Controllers
             
 
 
-            var lobbies = await _context.Lobbies.Select(x => new { x.Id,x.LobbyName, x.Dm, x.locationName, x.TtType, x.StartDate, x.EndDate, x.PlayerLimit,x.PlayerCount,x.Status,x.Location.Adress,
+            var lobbies = await _context.Lobbies.Select(x => new { x.Id,x.LobbyName, x.Dm, x.locationName, x.TtType, x.StartDate, x.Duration, x.PlayerLimit,x.PlayerCount,x.Status,x.Location.Adress,
                 Users = x.LobbyCons
                     .Where(lc => lc.UserData.Name != x.Dm)
                     .Select(lc => lc.UserData.Name)
@@ -603,7 +603,7 @@ namespace backendSzM.Controllers
             {
                 return check;
             }
-            var lobbies = _context.Lobbies.Select(x => new { x.LobbyName, x.Dm, x.locationName, x.TtType, x.StartDate, x.EndDate, x.PlayerLimit, x.PlayerCount, x.Id, x.Status,x.Location.Adress ,
+            var lobbies = _context.Lobbies.Select(x => new { x.LobbyName, x.Dm, x.locationName, x.TtType, x.StartDate, x.Duration, x.PlayerLimit, x.PlayerCount, x.Id, x.Status,x.Location.Adress ,
                 Users = x.LobbyCons
                     .Where(lc => lc.UserData.Name != x.Dm)
                     .Select(lc => lc.UserData.Name)

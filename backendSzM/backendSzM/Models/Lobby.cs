@@ -14,7 +14,7 @@ namespace backendSzM.Models
         public string Status { get; set; } = string.Empty;
         public string locationName { get; set; } = string.Empty;
         public DateTime StartDate { get; set; } = new DateTime();
-        public DateTime EndDate { get; set; } = new DateTime();
+        public int Duration { get; set; } = 0;
         public int PlayerLimit { get; set; } = 0;
         public int PlayerMin { get; set; } = 1;
         public int PlayerCount { get; set; }= 0;

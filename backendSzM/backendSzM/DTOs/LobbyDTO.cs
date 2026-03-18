@@ -6,7 +6,7 @@
         public string TtType { get; set; } =string.Empty;
         public string LobbyName { get; set; } = string.Empty;
         public DateTime StartDate { get; set; } = new DateTime();
-        public DateTime EndDate { get; set; } = new DateTime();
+        public int Duration { get; set; } = 0;
         public int PlayerLimit { get; set; } = 0;
         public int PlayerMin { get; set; } = 1;
 

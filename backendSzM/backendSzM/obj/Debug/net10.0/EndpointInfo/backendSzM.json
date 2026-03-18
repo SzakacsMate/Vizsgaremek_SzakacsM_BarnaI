@@ -1289,9 +1289,13 @@
             "type": "string",
             "format": "date-time"
           },
-          "endDate": {
-            "type": "string",
-            "format": "date-time"
+          "duration": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
           },
           "playerLimit": {
             "pattern": "^-?(?:0|[1-9]\\d*)$",
@@ -1398,9 +1402,13 @@
             "type": "string",
             "format": "date-time"
           },
-          "endDate": {
-            "type": "string",
-            "format": "date-time"
+          "duration": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
           },
           "playerLimit": {
             "pattern": "^-?(?:0|[1-9]\\d*)$",
