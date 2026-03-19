@@ -131,14 +131,7 @@ namespace QuestBook_AdminPanel_SzM
                 MessageBox.Show($"Exception: {ex.Message}");
             }
         }
-        private void UserTable_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-
-            UserModel selected = PlayerResult.SelectedItem as UserModel;
-            nametext.Text = selected.Name;
-
-
-        }
+        
         private async void ChangeRoleToAdmin_Click(object sender, RoutedEventArgs e)
         {
             if (PlayerResult.SelectedItem is not UserModel selectedUser)
@@ -469,6 +462,87 @@ namespace QuestBook_AdminPanel_SzM
                         MessageBox.Show($"{selectedUser.Name} el lett távolítva a(z) {selectedLobby.LobbyName} lobbyból.");
                         await LoadUsersAsync();
                         await LoadLobbies();
+                    }
+                    else
+                    {
+                        string errorContent = await response.Content.ReadAsStringAsync();
+                        MessageBox.Show(string.IsNullOrWhiteSpace(errorContent)
+                            ? $"Error: {response.StatusCode} - {response.ReasonPhrase}"
+                            : errorContent);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Exception: {ex.Message}");
+            }
+        }
+        private async void AddLocation_Click(object sender, RoutedEventArgs e)
+        {
+            var dialog = new Window
+            {
+                Title = "Helyszín hozzáadása",
+                Width = 350,
+                Height = 300,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                Owner = this
+            };
+
+            var stack = new StackPanel { Margin = new Thickness(10) };
+
+            var txtName = new TextBox { Margin = new Thickness(0, 0, 0, 5) };
+            var txtAdress = new TextBox { Margin = new Thickness(0, 0, 0, 5) };
+            var txtDescription = new TextBox { Margin = new Thickness(0, 0, 0, 5) };
+            var txtImage = new TextBox { Margin = new Thickness(0, 0, 0, 10) };
+            var btnOk = new Button { Content = "Hozzáadás", Width = 100 };
+
+            stack.Children.Add(new TextBlock { Text = "Helyszín neve:" });
+            stack.Children.Add(txtName);
+            stack.Children.Add(new TextBlock { Text = "Cím:" });
+            stack.Children.Add(txtAdress);
+            stack.Children.Add(new TextBlock { Text = "Leírás:" });
+            stack.Children.Add(txtDescription);
+            stack.Children.Add(new TextBlock { Text = "Kép URL (opcionális):" });
+            stack.Children.Add(txtImage);
+            stack.Children.Add(btnOk);
+
+            btnOk.Click += (s, args) => { dialog.DialogResult = true; };
+            dialog.Content = stack;
+
+            if (dialog.ShowDialog() != true)
+                return;
+
+            if (string.IsNullOrWhiteSpace(txtName.Text) || string.IsNullOrWhiteSpace(txtAdress.Text))
+            {
+                MessageBox.Show("Helyszín neve és cím megadása kötelező.");
+                return;
+            }
+
+            try
+            {
+                using (HttpClient client = new HttpClient())
+                {
+                    client.DefaultRequestHeaders.Authorization =
+                        new AuthenticationHeaderValue("Bearer", accessToken);
+
+                    var body = new
+                    {
+                        LocationName = txtName.Text,
+                        Adress = txtAdress.Text,
+                        Description = txtDescription.Text,
+                        Image = string.IsNullOrWhiteSpace(txtImage.Text) ? "N/A" : txtImage.Text
+                    };
+
+                    var json = JsonConvert.SerializeObject(body);
+                    var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
+
+                    var addLocationApiUrl = $"{url}/api/Auth/AddLocation";
+                    HttpResponseMessage response = await client.PostAsync(addLocationApiUrl, content);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        MessageBox.Show($"Helyszín sikeresen hozzáadva: {txtName.Text}");
+                        await LoadLocations();
                     }
                     else
                     {

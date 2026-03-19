@@ -6,12 +6,13 @@ namespace QuestBook_AdminPanel_SzM
 {
     internal class Lobbies
     {
-        public Lobbies(Guid id, string lobbyName, string dm, string ttType, string locationName, DateTime startDate, DateTime endDate, int playerLimit, int playerCount, int playerMin, string status)
+        public Lobbies(Guid id, string lobbyName, string dm, string ttType, int duration, string locationName, DateTime startDate, DateTime endDate, int playerLimit, int playerCount, int playerMin, string status)
         {
             Id = id;
             LobbyName = lobbyName;
             Dm = dm;
             TtType = ttType;
+            Duration = duration;
             this.locationName = locationName;
             StartDate = startDate;
             EndDate = endDate;
@@ -25,7 +26,7 @@ namespace QuestBook_AdminPanel_SzM
         public string LobbyName { get; set; }
         public string Dm { get; set; } 
         public string TtType { get; set; } 
-
+        public int Duration { get; set; }
         public string locationName { get; set; } 
         public DateTime StartDate { get; set; } 
         public DateTime EndDate { get; set; } 
