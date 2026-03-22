@@ -56,6 +56,10 @@ export async function getCurrentUser() {
   return apiFetch<CurrentUserResponse>("/CurrentUser");
 }
 
+export function setStoredAccessToken(token: string) {
+  setAccessToken(token);
+}
+
 export function logout() {
   clearAccessToken();
 }

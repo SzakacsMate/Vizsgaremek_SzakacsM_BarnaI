@@ -12,6 +12,7 @@ type AuthPageProps = {
     username: string;
     email: string;
     password: string;
+    passwordAgain?: string;
   }) => Promise<void>;
 };
 
@@ -32,12 +33,14 @@ export default function AuthPage({
     const username = String(formData.get("username") ?? "");
     const email = String(formData.get("email") ?? "");
     const password = String(formData.get("password") ?? "");
+    const passwordAgain = String(formData.get("passwordAgain") ?? "");
 
     await onSubmit({
       mode,
       username,
       email,
       password,
+      passwordAgain,
     });
   };
 

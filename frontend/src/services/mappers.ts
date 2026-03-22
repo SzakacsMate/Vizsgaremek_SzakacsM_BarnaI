@@ -1,9 +1,13 @@
 import type { Location } from "../types/location";
 import type { Session } from "../types/session";
-import type { User } from "../types/user";
+import type { User, UserComment } from "../types/user";
 import type { CurrentUserResponse } from "./authService";
 import type { ApiLocation } from "./locationService";
 import type { ApiLobby } from "./lobbyService";
+import type {
+  ProfileCommentResponse,
+  SearchUserResponse,
+} from "./profileService";
 
 const systemColorMap: Record<string, string> = {
   "D&D 5e": "#ff1f1f",
@@ -26,23 +30,23 @@ export function mapApiLocationToLocation(apiLocation: ApiLocation): Location {
 export function mapApiLobbyToSession(apiLobby: ApiLobby): Session {
   const users = apiLobby.users ?? [];
 
-  const durationHours = Math.max(
-    1,
-    Math.round(
-      (new Date(apiLobby.endDate).getTime() -
-        new Date(apiLobby.startDate).getTime()) /
-        3600000
-    )
-  );
-
   return {
     id: apiLobby.id,
-    title: apiLobby.lobbyName,
+    title:
+      apiLobby.lobbyName && apiLobby.lobbyName.trim() !== ""
+        ? apiLobby.lobbyName
+        : `${apiLobby.ttType} Session`,
     system: apiLobby.ttType,
     sessionNumber: 1,
     date: new Date(apiLobby.startDate).toLocaleString(),
     dateKey: apiLobby.startDate,
-    duration: `${durationHours}h`,
+    duration: `${Math.max(
+      1,
+      Math.round(
+        (new Date(apiLobby.endDate).getTime() - new Date(apiLobby.startDate).getTime()) /
+          3600000
+      )
+    )}h`,
     location: apiLobby.locationName,
     minPlayers: apiLobby.playerMin,
     playerLimit: apiLobby.playerLimit,
@@ -59,5 +63,29 @@ export function mapApiCurrentUserToUser(apiUser: CurrentUserResponse): User {
     id: apiUser.id,
     name: apiUser.name,
     image: apiUser.imageUrl || "",
+    rep: apiUser.rep ?? 0,
+    role: apiUser.role,
+    comments: [],
   };
+}
+
+export function mapSearchUserToUser(apiUser: SearchUserResponse, fallbackId: string): User {
+  return {
+    id: apiUser.id || fallbackId,
+    name: apiUser.name,
+    image: apiUser.profileI || apiUser.profileIUrl || "",
+    rep: apiUser.rep ?? 0,
+    role: apiUser.role,
+    comments: [],
+  };
+}
+
+export function mapProfileCommentsToUserComments(
+  comments: ProfileCommentResponse[]
+): UserComment[] {
+  return comments.map((comment, index) => ({
+    id: `${comment.kommentaloUserId}-${index}`,
+    text: comment.kommentSzoveg,
+    authorName: comment.name,
+  }));
 }

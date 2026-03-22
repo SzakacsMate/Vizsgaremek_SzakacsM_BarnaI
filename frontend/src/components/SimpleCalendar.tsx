@@ -132,13 +132,21 @@ export default function SimpleCalendar({
           const isBooked = bookedDates.includes(dateKey);
           const isSelected = selectedDate === dateKey;
 
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+
+          const currentCellDate = new Date(year, month, day);
+          currentCellDate.setHours(0, 0, 0, 0);
+
+          const isPast = currentCellDate < today;
+
           return (
             <button
               key={dateKey}
               className={`simple-calendar-cell day ${
                 isBooked ? "booked" : ""
-              } ${isSelected ? "selected" : ""}`}
-              disabled={isBooked}
+              } ${isSelected ? "selected" : ""} ${isPast ? "past" : ""}`}
+              disabled={isBooked || isPast}
               onClick={() => onSelectDate(dateKey)}
             >
               {day}
