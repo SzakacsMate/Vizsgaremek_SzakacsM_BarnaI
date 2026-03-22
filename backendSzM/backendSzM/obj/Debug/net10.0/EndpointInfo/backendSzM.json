@@ -155,7 +155,7 @@
         }
       }
     },
-    "/api/Auth/Search for user": {
+    "/api/Auth/Search for user(Id)": {
       "get": {
         "tags": [
           "Auth"
@@ -187,6 +187,44 @@
               "text/json": {
                 "schema": {
                   "$ref": "#/components/schemas/TokenDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Auth/Search for user(Name)": {
+      "get": {
+        "tags": [
+          "Auth"
+        ],
+        "parameters": [
+          {
+            "name": "name",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserDataDTO"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserDataDTO"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserDataDTO"
                 }
               }
             }

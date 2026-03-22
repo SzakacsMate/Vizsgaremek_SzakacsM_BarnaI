@@ -648,8 +648,8 @@
   },
   {
     "ContainingType": "backendSzM.Controllers.AuthController",
-    "Method": "SearchUser",
-    "RelativePath": "api/Auth/Search for user",
+    "Method": "SearchUserId",
+    "RelativePath": "api/Auth/Search for user(Id)",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
@@ -663,6 +663,32 @@
     "ReturnTypes": [
       {
         "Type": "backendSzM.DTOs.TokenDTO",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "backendSzM.Controllers.AuthController",
+    "Method": "SearchUserName",
+    "RelativePath": "api/Auth/Search for user(Name)",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "name",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "backendSzM.DTOs.UserDataDTO",
         "MediaTypes": [
           "text/plain",
           "application/json",

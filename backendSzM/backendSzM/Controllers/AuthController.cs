@@ -267,8 +267,8 @@ namespace backendSzM.Controllers
             return Ok(resp);
         }
         [Authorize(Roles = "User,Admin")]
-        [HttpGet("Search for user")] // működik
-        public async Task<ActionResult<TokenDTO>> SearchUser(Guid id)
+        [HttpGet("Search for user(Id)")] // működik
+        public async Task<ActionResult<TokenDTO>> SearchUserId(Guid id)
         {
             var check = await ValidateAccesToken();
             if (check != null)
@@ -279,6 +279,24 @@ namespace backendSzM.Controllers
 
 
             return Ok(new {lookedUser.Name,lookedUser.ProfileI,lookedUser.Rep,lookedUser.Role});
+
+        }
+        [Authorize(Roles = "User,Admin")]
+        [HttpGet("Search for user(Name)")] // működik
+        public async Task<ActionResult<UserDataDTO>> SearchUserName([FromQuery]string name)
+        {
+            var check = await ValidateAccesToken();
+            if (check != null)
+            {
+                return check;
+            }
+            var lookedUser = _context.Users.Select(x => new {x.Name,x.ProfileI,x.Rep,x.Role}).FirstOrDefault(x => x.Name ==name );
+            if (lookedUser == null)
+            {
+                return NotFound("Nincs ilyen felhasználó");
+            }
+
+            return Ok(lookedUser);
 
         }
         [Authorize(Roles = "User,Admin")]
