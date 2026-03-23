@@ -742,6 +742,11 @@
         "Name": "request",
         "Type": "backendSzM.DTOs.KommentDTO",
         "IsRequired": true
+      },
+      {
+        "Name": "Id",
+        "Type": "System.Guid",
+        "IsRequired": false
       }
     ],
     "ReturnTypes": []

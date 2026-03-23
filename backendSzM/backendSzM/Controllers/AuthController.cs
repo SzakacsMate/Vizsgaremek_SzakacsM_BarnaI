@@ -26,7 +26,7 @@ namespace backendSzM.Controllers
         private readonly IConfiguration _configuration;
         private readonly TimeSpan _accessTokenLifetime = TimeSpan.FromHours(10);
         private readonly TimeSpan _refreshTokenLifetime = TimeSpan.FromDays(7);
-
+        List<string> ProfilePics = new();
         public AuthController(UserDataDBContext context, IConfiguration configuration)
         {
             _context = context;
@@ -36,7 +36,10 @@ namespace backendSzM.Controllers
         [HttpPost("register")]//működik
         public  async Task<IActionResult> Register(UserDataDTO request)
         {
-           // var user = _context.Users.FirstOrDefault();
+            
+            var number = RandomProfilePic();
+            // var user = _context.Users.FirstOrDefault();
+
             var banned=_context.BannedUsers.FirstOrDefault(x=>x.BannedGmail==request.Gmail);
             if (await _context.Users.AnyAsync(u => u.Name == request.Name))
             {
@@ -56,7 +59,7 @@ namespace backendSzM.Controllers
             ujUserData.Gmail=request.Gmail;
             ujUserData.Role="User";
             ujUserData.Rep = 0;
-            ujUserData.ProfileI = "";
+            ujUserData.ProfileI = $"/profilepics/random/RandomProfilePic{number}.png"; 
             ujUserData.IsSuspended = false;
             if(ujUserData.Name==""|| ujUserData.Gmail == "" || ujUserData.Hash == "" )
             {
@@ -130,10 +133,14 @@ namespace backendSzM.Controllers
             return Ok(refresh_token);
             
         }
-        
+        private int RandomProfilePic()
+        {
+            Random rnd = new Random();
+            return rnd.Next(1, 15);
+        }
 
 
-        
+
         [HttpPost("refresh")]// működik rn
         public async Task<ActionResult<TokenDTO>> RefreshToken(RefreshTokenReqDto request)
         {
@@ -868,7 +875,7 @@ namespace backendSzM.Controllers
 
         [Authorize(Roles = "User,Admin")]
         [HttpPost("WriteComment")] // fogado accese lehet csak 
-        public async Task<IActionResult> Comment(KommentDTO request)
+        public async Task<IActionResult> Comment(KommentDTO request,Guid Id)
         {
             var check = await ValidateAccesToken();
             if (check != null) return check;
@@ -884,7 +891,7 @@ namespace backendSzM.Controllers
                 return Unauthorized("User not found");
             }
 
-            var fogado = await _context.Users.FirstOrDefaultAsync(x => x.Id == request.Fogado);
+            var fogado = await _context.Users.FirstOrDefaultAsync(x => x.Id == Id);
             if (fogado == null)
                 return BadRequest("Nincs ilyen fogadó");
 
@@ -915,7 +922,12 @@ namespace backendSzM.Controllers
             if (fogado == null)
                 return BadRequest("Nincs ilyen fogadó");
             var fogadoId=_context.Komments.FirstOrDefault(x => x.FogadoUserId == Id);
-            var kommentelo = _context.Users.FirstOrDefault(x=>x.Id==fogadoId.KommentaloUserId);
+            if (fogadoId == null)
+            {
+                return BadRequest("Nincs kommented");
+            }
+            var kommentelo = _context.Users?.FirstOrDefault(x=>x.Id==fogadoId.KommentaloUserId);
+            
             var kommentek = await _context.Komments.Where(x => x.FogadoUserId == Id).Select(x => new { x.KommentSzoveg, x.KommentaloUserId,kommentelo.Name }).ToListAsync(); 
             return Ok(kommentek);
         }

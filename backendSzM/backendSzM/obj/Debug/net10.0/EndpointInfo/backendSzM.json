@@ -816,6 +816,16 @@
         "tags": [
           "Auth"
         ],
+        "parameters": [
+          {
+            "name": "Id",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
         "requestBody": {
           "content": {
             "application/json": {
@@ -1294,10 +1304,6 @@
         "properties": {
           "kommentSzoveg": {
             "type": "string"
-          },
-          "fogado": {
-            "type": "string",
-            "format": "uuid"
           }
         }
       },
