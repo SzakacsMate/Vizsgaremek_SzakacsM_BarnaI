@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("QuestBook_AdminPanel_SzM")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+fa04bdb7865d1f1d7e264e2cb7131c4784e6533f")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1682b1af829f719b39444d387a57c1c8b622368d")]
 [assembly: System.Reflection.AssemblyProductAttribute("QuestBook_AdminPanel_SzM")]
 [assembly: System.Reflection.AssemblyTitleAttribute("QuestBook_AdminPanel_SzM")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
