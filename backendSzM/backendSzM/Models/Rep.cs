@@ -5,7 +5,7 @@ namespace backendSzM.Models
     public class Rep
     {
         public Guid Id { get; set; }
-        public int RepNumber { get; set; }
+        public int Value { get; set; }
         [ForeignKey(nameof(RepAdoUser))]
         public Guid RepAdoUserId { get; set; }
         public UserData? RepAdoUser { get; set; }

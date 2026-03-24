@@ -2,6 +2,6 @@
 {
     public class RepDTO
     {
-        public int Rep {  get; set; }=0;
+        public int Rep { get; set; } = 0;
     }
 }

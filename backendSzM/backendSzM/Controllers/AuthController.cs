@@ -58,7 +58,7 @@ namespace backendSzM.Controllers
             ujUserData.Hash = hashedPassword;
             ujUserData.Gmail=request.Gmail;
             ujUserData.Role="User";
-          //  ujUserData.Rep = 0;
+          
             ujUserData.ProfileI = $"/profilepics/random/RandomProfilePic{number}.png"; 
             ujUserData.IsSuspended = false;
             if(ujUserData.Name==""|| ujUserData.Gmail == "" || ujUserData.Hash == "" )
@@ -67,7 +67,7 @@ namespace backendSzM.Controllers
             }
             _context.Users.Add(ujUserData);
             await _context.SaveChangesAsync();
-            return Ok(new { ujUserData.Id, ujUserData.Name, ujUserData.Gmail, ujUserData.Role,/*ujUserData.Rep*/ujUserData.ProfileI});
+            return Ok(new { ujUserData.Id, ujUserData.Name, ujUserData.Gmail, ujUserData.Role,ujUserData.ProfileI});
 
         }
 
@@ -261,6 +261,9 @@ namespace backendSzM.Controllers
             }
             var role = User?.FindFirst(ClaimTypes.Role)?.Value ?? currentUser.Role;
             var image = currentUser.ProfileI;
+            var rep = await _context.Reps
+                .Where(r => r.RepFogadoUserId == userId)
+                .SumAsync(r => r.Value);
 
             var resp= new CurrentUserDTO
             {
@@ -268,7 +271,7 @@ namespace backendSzM.Controllers
                 Name = name,
                 Role = role,
                 ImageUrl = image,
-              //  Rep=currentUser.Rep
+                Rep = rep
             }
             ;
             return Ok(resp);
@@ -283,9 +286,10 @@ namespace backendSzM.Controllers
                 return check;
             }
             var lookedUser = _context.Users.FirstOrDefault(x => x.Id == id);
+            var rep = await _context.Reps.Where(r => r.RepFogadoUserId == id).SumAsync(r => r.Value);
 
 
-            return Ok(new {lookedUser.Name,lookedUser.ProfileI,/*lookedUser.Rep*/lookedUser.Role});
+            return Ok(new {lookedUser.Name,lookedUser.ProfileI,lookedUser.Role,Rep=rep});
 
         }
         [Authorize(Roles = "User,Admin")]
@@ -297,14 +301,15 @@ namespace backendSzM.Controllers
             {
                 return check;
             }
-            var lookedUser = _context.Users.Select(x => new {x.Name,x.ProfileI,/*x.Rep*/x.Role}).FirstOrDefault(x => x.Name ==name );
+            var lookedUser = _context.Users.FirstOrDefault(x => x.Name == name);
             if (lookedUser == null)
             {
                 return NotFound("Nincs ilyen felhasználó");
             }
+            var rep = await _context.Reps.Where(r => r.RepFogadoUserId == lookedUser.Id).SumAsync(r => r.Value);
 
-            return Ok(lookedUser);
 
+            return Ok(new { lookedUser.Name, lookedUser.ProfileI, lookedUser.Role, Rep = rep });
         }
         [Authorize(Roles = "User,Admin")]
         [HttpGet("GetLobbies_youre_in")]
@@ -403,42 +408,63 @@ namespace backendSzM.Controllers
                 });
             }
             return Ok();
-        }/*
+        }
         [Authorize(Roles = "User,Admin")]
         [HttpPatch("Add/RemoveRep")]// működik
         public async Task<ActionResult<CurrentUserDTO>> AddRep(RepDTO rep, Guid id)
         {
-            var Tesz=0;
             var check = await ValidateAccesToken();
             if (check != null)
             {
                 return check;
             }
-            var kapoUser = _context.Users.FirstOrDefault(x => x.Id == id);
-            var currentId = User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-           // var Changeduser = _context.Users.FirstOrDefault(x => x.Id.ToString() == id);
-           if (kapoUser.Id.ToString() == currentId)
-                {
+            var idClaim = User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(idClaim) || !Guid.TryParse(idClaim, out var userId))
+                return Unauthorized();
+
+           
+            if (userId == id)
                 return BadRequest("Nem szavazhatsz magadra!");
-            }
-            if (rep.Rep == 1)
+
+            var repAdo = await _context.Users.FindAsync(userId);
+            if (repAdo == null)
+                return Unauthorized("User not found");
+
+            var kapoUser = await _context.Users.FindAsync(id);
+            if (kapoUser == null)
+                return NotFound("Nincs ilyen felhasználó");
+
+            
+            if (rep.Rep != 1 && rep.Rep != -1)
+                return BadRequest("Invalid Rep action");
+
+            
+            var existingRep = await _context.Reps
+                .FirstOrDefaultAsync(x => x.RepAdoUserId == userId && x.RepFogadoUserId == id);
+
+            if (existingRep != null)
             {
-                Tesz ++;
-            }
-            else if (rep.Rep == -1)
-            {
-                Tesz--;
+                if (existingRep.Value == rep.Rep)
+                    return BadRequest("Már szavaztál erre a felhasználóra!");
+
+                existingRep.Value = rep.Rep;
+                _context.Reps.Update(existingRep);
             }
             else
             {
-                return BadRequest("Invalid Rep action");
+                var ujRep = new Rep
+                {
+                    Id = Guid.NewGuid(),
+                    Value = rep.Rep,
+                    RepFogadoUserId = id,
+                    RepAdoUserId = userId
+                };
+                _context.Reps.Add(ujRep);
             }
-           // kapoUser.Rep+= Tesz;
-            _context.Users.Update(kapoUser);
+
             await _context.SaveChangesAsync();
-            Tesz = 0;
             return Ok();
-        }*/
+        }
         [Authorize(Roles = "User,Admin")]
         [HttpPost("AddLocation")]// működik
         public async Task<ActionResult<CurrentUserDTO>> AddLocation(LocationDTO request)
@@ -749,7 +775,8 @@ namespace backendSzM.Controllers
             }
 
             return Ok(new());
-        }/*
+        }
+           /*
            if (torlendoLobbies.Dm != currentId.Name||currentId.Role!="Admin")
             {
                 return Unauthorized("Nincs jogod ehhez!");
@@ -1085,6 +1112,7 @@ namespace backendSzM.Controllers
             var torlendoUser = _context?.Users.Where(x => x.Id == Id).FirstOrDefault();
             var torlendoUserKomments = _context?.Komments.Where(x => x.KommentaloUserId == Id || x.FogadoUserId == Id).ToList();
             var torlendoUserToken = _context?.Tokens.Where(x => x.UserDataId == Id).FirstOrDefault();
+            var torlendoUserReps = _context?.Reps.Where(x => x.RepAdoUserId == Id || x.RepFogadoUserId == Id).ToList();
 
             if (torlendoUser == null)
             {
@@ -1098,7 +1126,8 @@ namespace backendSzM.Controllers
             {
                 _context.Tokens.Remove(torlendoUserToken);
             }
-            _context.RemoveRange(torlendoUserKomments);
+            _context.Reps.RemoveRange(torlendoUserReps);
+            _context.Komments.RemoveRange(torlendoUserKomments);
             _context.Users.Remove(torlendoUser);
 
             await _context.SaveChangesAsync();
