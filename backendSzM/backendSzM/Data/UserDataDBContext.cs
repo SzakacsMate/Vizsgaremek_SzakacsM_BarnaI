@@ -18,6 +18,7 @@ namespace backendSzM.Data
         public DbSet<Lobby> Lobbies { get; set; }
         public DbSet<Komment> Komments { get; set; }
         public DbSet<Location> Locations { get; set; }
+        public DbSet<Rep> Reps { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -35,7 +36,22 @@ namespace backendSzM.Data
                 .OnDelete(DeleteBehavior.Restrict);
 
             base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<Rep>()
+        .HasOne(k => k.RepFogadoUser)
+        .WithMany(u => u.Reps)
+        .HasForeignKey(k => k.RepFogadoUserId)
+        .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Rep>()
+                .HasOne(k => k.RepAdoUser)
+                .WithMany()
+                .HasForeignKey(k => k.RepAdoUserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            base.OnModelCreating(modelBuilder);
         }
+
+
 
 
 

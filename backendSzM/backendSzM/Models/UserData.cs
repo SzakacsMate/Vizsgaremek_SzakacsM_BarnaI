@@ -12,7 +12,7 @@ namespace backendSzM.Models
         public string Hash { get; set; } = string.Empty;
         public string Gmail { get; set; } = string.Empty;
         public string Role { get; set; } = "User";
-        public int Rep { get; set; } = 0;
+        
         public int Warnings { get; set; } = 0;
         public string ProfileI { get; set; }
         public bool IsSuspended { get; set; } = false; 
@@ -22,7 +22,7 @@ namespace backendSzM.Models
         public Token? Token { get; set; }
         
         
-       
+       public ICollection<Rep>? Reps { get; set; }= new List<Rep>();
         public ICollection<Komment>? Komments { get; set; } = new List<Komment>();
 
 

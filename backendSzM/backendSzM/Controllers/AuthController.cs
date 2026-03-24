@@ -58,7 +58,7 @@ namespace backendSzM.Controllers
             ujUserData.Hash = hashedPassword;
             ujUserData.Gmail=request.Gmail;
             ujUserData.Role="User";
-            ujUserData.Rep = 0;
+          //  ujUserData.Rep = 0;
             ujUserData.ProfileI = $"/profilepics/random/RandomProfilePic{number}.png"; 
             ujUserData.IsSuspended = false;
             if(ujUserData.Name==""|| ujUserData.Gmail == "" || ujUserData.Hash == "" )
@@ -67,7 +67,7 @@ namespace backendSzM.Controllers
             }
             _context.Users.Add(ujUserData);
             await _context.SaveChangesAsync();
-            return Ok(new { ujUserData.Id, ujUserData.Name, ujUserData.Gmail, ujUserData.Role,ujUserData.Rep,ujUserData.ProfileI});
+            return Ok(new { ujUserData.Id, ujUserData.Name, ujUserData.Gmail, ujUserData.Role,/*ujUserData.Rep*/ujUserData.ProfileI});
 
         }
 
@@ -268,7 +268,7 @@ namespace backendSzM.Controllers
                 Name = name,
                 Role = role,
                 ImageUrl = image,
-                Rep=currentUser.Rep
+              //  Rep=currentUser.Rep
             }
             ;
             return Ok(resp);
@@ -285,7 +285,7 @@ namespace backendSzM.Controllers
             var lookedUser = _context.Users.FirstOrDefault(x => x.Id == id);
 
 
-            return Ok(new {lookedUser.Name,lookedUser.ProfileI,lookedUser.Rep,lookedUser.Role});
+            return Ok(new {lookedUser.Name,lookedUser.ProfileI,/*lookedUser.Rep*/lookedUser.Role});
 
         }
         [Authorize(Roles = "User,Admin")]
@@ -297,7 +297,7 @@ namespace backendSzM.Controllers
             {
                 return check;
             }
-            var lookedUser = _context.Users.Select(x => new {x.Name,x.ProfileI,x.Rep,x.Role}).FirstOrDefault(x => x.Name ==name );
+            var lookedUser = _context.Users.Select(x => new {x.Name,x.ProfileI,/*x.Rep*/x.Role}).FirstOrDefault(x => x.Name ==name );
             if (lookedUser == null)
             {
                 return NotFound("Nincs ilyen felhasználó");
@@ -403,7 +403,7 @@ namespace backendSzM.Controllers
                 });
             }
             return Ok();
-        }
+        }/*
         [Authorize(Roles = "User,Admin")]
         [HttpPatch("Add/RemoveRep")]// működik
         public async Task<ActionResult<CurrentUserDTO>> AddRep(RepDTO rep, Guid id)
@@ -433,12 +433,12 @@ namespace backendSzM.Controllers
             {
                 return BadRequest("Invalid Rep action");
             }
-            kapoUser.Rep+= Tesz;
+           // kapoUser.Rep+= Tesz;
             _context.Users.Update(kapoUser);
             await _context.SaveChangesAsync();
             Tesz = 0;
             return Ok();
-        }
+        }*/
         [Authorize(Roles = "User,Admin")]
         [HttpPost("AddLocation")]// működik
         public async Task<ActionResult<CurrentUserDTO>> AddLocation(LocationDTO request)
@@ -602,11 +602,6 @@ namespace backendSzM.Controllers
             {
                 return check;
             }
-            
-
-            
-
-
             var lobbies = await _context.Lobbies.Select(x => new { x.Id,x.LobbyName, x.Dm, x.locationName, x.TtType, x.StartDate, x.Duration, x.PlayerLimit,x.PlayerCount,x.Status,x.Location.Adress,
                 Users = x.LobbyCons
                     .Where(lc => lc.UserData.Name != x.Dm)
@@ -871,7 +866,43 @@ namespace backendSzM.Controllers
             await _context.SaveChangesAsync();
             return Ok();
         }
+        [Authorize(Roles = "User,Admin")]
+        [HttpPost("AddRep")]// működik
+        public async Task<ActionResult<CurrentUserDTO>> AddRep(Guid id)
+        {
+            
+            var check = await ValidateAccesToken();
+            if (check != null)
+            {
+                return check;
+            }
+            var idClaim = User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(idClaim) || !Guid.TryParse(idClaim, out var userId))
+                return Unauthorized();
 
+            var CurrentFogado = _context.Reps.FirstOrDefault(x => x.RepFogadoUserId == id);
+            var RepAdo = await _context.Users.FindAsync(userId);
+            if (RepAdo == null)
+            {
+                return Unauthorized("User not found");
+            }
+            var kapoUser = _context.Users.FirstOrDefault(x => x.Id == id);
+            if (CurrentFogado == null)
+            {
+                var ujRep = new Rep
+                {
+                    Id = Guid.NewGuid(),
+
+                    RepFogadoUserId = id,
+                    RepAdoUserId = RepAdo.Id
+                };
+            }
+            
+            // var Changeduser = _context.Users.FirstOrDefault(x => x.Id.ToString() == id);
+
+            await _context.SaveChangesAsync();
+            return Ok();
+        }
 
         [Authorize(Roles = "User,Admin")]
         [HttpPost("WriteComment")] // fogado accese lehet csak 
@@ -1195,7 +1226,7 @@ namespace backendSzM.Controllers
             }
             
             var users = await _context.Users
-                .Select(x => new { x.Id, x.Name, x.Rep, x.Gmail, x.Role, x.Warnings, x.IsSuspended })
+                .Select(x => new { x.Id, x.Name,/* x.Rep,*/ x.Gmail, x.Role, x.Warnings, x.IsSuspended })
                 .ToListAsync();
             
             if (users == null || !users.Any())
