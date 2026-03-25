@@ -100,6 +100,32 @@
   },
   {
     "ContainingType": "backendSzM.Controllers.AuthController",
+    "Method": "AddRep",
+    "RelativePath": "api/Auth/AddRep",
+    "HttpMethod": "PATCH",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Guid",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "backendSzM.DTOs.CurrentUserDTO",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "backendSzM.Controllers.AuthController",
     "Method": "AdminOnlyEndpoint",
     "RelativePath": "api/Auth/admin-only",
     "HttpMethod": "GET",
@@ -645,6 +671,32 @@
       }
     ],
     "ReturnTypes": []
+  },
+  {
+    "ContainingType": "backendSzM.Controllers.AuthController",
+    "Method": "RemoveRep",
+    "RelativePath": "api/Auth/RemoveRep",
+    "HttpMethod": "PATCH",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Guid",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "backendSzM.DTOs.CurrentUserDTO",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
   },
   {
     "ContainingType": "backendSzM.Controllers.AuthController",

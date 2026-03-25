@@ -289,7 +289,7 @@ namespace backendSzM.Controllers
             var rep = await _context.Reps.Where(r => r.RepFogadoUserId == id).SumAsync(r => r.Value);
 
 
-            return Ok(new {lookedUser.Name,lookedUser.ProfileI,lookedUser.Role,Rep=rep});
+            return Ok(new {lookedUser.Name,lookedUser.ProfileI,lookedUser.Role,rep});
 
         }
         [Authorize(Roles = "User,Admin")]
@@ -309,7 +309,7 @@ namespace backendSzM.Controllers
             var rep = await _context.Reps.Where(r => r.RepFogadoUserId == lookedUser.Id).SumAsync(r => r.Value);
 
 
-            return Ok(new { lookedUser.Name, lookedUser.ProfileI, lookedUser.Role, Rep = rep });
+            return Ok(new { lookedUser.Name, lookedUser.ProfileI, lookedUser.Role, rep });
         }
         [Authorize(Roles = "User,Admin")]
         [HttpGet("GetLobbies_youre_in")]
@@ -894,10 +894,10 @@ namespace backendSzM.Controllers
             return Ok();
         }
         [Authorize(Roles = "User,Admin")]
-        [HttpPost("AddRep")]// működik
+        [HttpPatch("AddRep")]// működik
         public async Task<ActionResult<CurrentUserDTO>> AddRep(Guid id)
         {
-            
+
             var check = await ValidateAccesToken();
             if (check != null)
             {
@@ -907,30 +907,100 @@ namespace backendSzM.Controllers
             if (string.IsNullOrEmpty(idClaim) || !Guid.TryParse(idClaim, out var userId))
                 return Unauthorized();
 
-            var CurrentFogado = _context.Reps.FirstOrDefault(x => x.RepFogadoUserId == id);
+            if (userId == id)
+                return BadRequest("Nem szavazhatsz magadra!");
+
             var RepAdo = await _context.Users.FindAsync(userId);
             if (RepAdo == null)
             {
                 return Unauthorized("User not found");
             }
-            var kapoUser = _context.Users.FirstOrDefault(x => x.Id == id);
-            if (CurrentFogado == null)
+            var kapoUser = await _context.Users.FindAsync(id);
+            if (kapoUser == null)
+            {
+                return NotFound("Nincs ilyen felhasználó");
+            }
+
+            var existingRep = await _context.Reps
+                .FirstOrDefaultAsync(x => x.RepAdoUserId == userId && x.RepFogadoUserId == id);
+
+            if (existingRep != null)
+            {
+                if (existingRep.Value == 1)
+                    return BadRequest("Már adtál repet ennek a felhasználónak!");
+
+                existingRep.Value = 1;
+                _context.Reps.Update(existingRep);
+            }
+            else
             {
                 var ujRep = new Rep
                 {
                     Id = Guid.NewGuid(),
-
+                    Value = 1,
                     RepFogadoUserId = id,
-                    RepAdoUserId = RepAdo.Id
+                    RepAdoUserId = userId
                 };
+                _context.Reps.Add(ujRep);
             }
-            
-            // var Changeduser = _context.Users.FirstOrDefault(x => x.Id.ToString() == id);
 
             await _context.SaveChangesAsync();
             return Ok();
         }
+        [Authorize(Roles = "User,Admin")]
+        [HttpPatch("RemoveRep")]// működik
+        public async Task<ActionResult<CurrentUserDTO>> RemoveRep(Guid id)
+        {
 
+            var check = await ValidateAccesToken();
+            if (check != null)
+            {
+                return check;
+            }
+            var idClaim = User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(idClaim) || !Guid.TryParse(idClaim, out var userId))
+                return Unauthorized();
+
+            if (userId == id)
+                return BadRequest("Nem szavazhatsz magadra!");
+
+            var RepAdo = await _context.Users.FindAsync(userId);
+            if (RepAdo == null)
+            {
+                return Unauthorized("User not found");
+            }
+            var kapoUser = await _context.Users.FindAsync(id);
+            if (kapoUser == null)
+            {
+                return NotFound("Nincs ilyen felhasználó");
+            }
+
+            var existingRep = await _context.Reps
+                .FirstOrDefaultAsync(x => x.RepAdoUserId == userId && x.RepFogadoUserId == id);
+
+            if (existingRep != null)
+            {
+                if (existingRep.Value == -1)
+                    return BadRequest("Már adtál repet ennek a felhasználónak!");
+
+                existingRep.Value = -1;
+                _context.Reps.Update(existingRep);
+            }
+            else
+            {
+                var ujRep = new Rep
+                {
+                    Id = Guid.NewGuid(),
+                    Value = -1,
+                    RepFogadoUserId = id,
+                    RepAdoUserId = userId
+                };
+                _context.Reps.Add(ujRep);
+            }
+
+            await _context.SaveChangesAsync();
+            return Ok();
+        }
         [Authorize(Roles = "User,Admin")]
         [HttpPost("WriteComment")] // fogado accese lehet csak 
         public async Task<IActionResult> Comment(KommentDTO request,Guid Id)
