@@ -13,6 +13,7 @@ export type ApiLobby = {
   playerMin: number;
   adress?: string;
   users?: string[];
+  description?: string;
 };
 
 export async function getAllLobbies() {
@@ -44,6 +45,7 @@ export async function createLobby(
     endDate: string;
     playerLimit: number;
     playerMin: number;
+    description?: string;
   }
 ) {
   return apiFetch(`/CreateLobby?Id=${locationId}`, {
@@ -55,6 +57,7 @@ export async function createLobby(
       endDate: data.endDate,
       playerLimit: data.playerLimit,
       playerMin: data.playerMin,
+      description: data.description,
     }),
   });
 }

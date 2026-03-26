@@ -1,4 +1,5 @@
 export type SessionStatus = "confirmed" | "pending";
+
 export type Session = {
   id: string;
   title: string;
@@ -8,6 +9,7 @@ export type Session = {
   dateKey: string;
   duration: string;
   location: string;
+  description: string;
 
   minPlayers: number;
   playerLimit: number;

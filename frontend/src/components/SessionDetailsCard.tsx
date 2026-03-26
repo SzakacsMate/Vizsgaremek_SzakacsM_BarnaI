@@ -53,6 +53,10 @@ export default function SessionDetailsCard({
         <p className="session-details-text">{session.location}</p>
         <p className="session-details-text">Dungeon Master: {session.dmName}</p>
 
+        {session.description && (
+          <p className="session-details-text">{session.description}</p>
+        )}
+
         <div className="session-details-players-section">
           <p className="session-details-players-title">Players:</p>
 

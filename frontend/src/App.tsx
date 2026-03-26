@@ -128,24 +128,26 @@ function App() {
   }, []);
 
   useEffect(() => {
-    async function loadSessions() {
-      try {
-        if (activeTab === "sessions" && loggedInUser) {
-          const apiLobbies = await getMyLobbies();
-          setMySessions(apiLobbies.map(mapApiLobbyToSession));
-        }
-
-        if (activeTab === "community") {
-          const communityApiLobbies = await getAllLobbies();
-          setCommunitySessions(communityApiLobbies.map(mapApiLobbyToSession));
-        }
-      } catch (error) {
-        console.error("Sessions load error:", error);
+  async function loadSessions() {
+    try {
+      if (loggedInUser) {
+        const myApiLobbies = await getMyLobbies();
+        setMySessions(myApiLobbies.map(mapApiLobbyToSession));
+      } else {
+        setMySessions([]);
       }
-    }
 
-    loadSessions();
-  }, [activeTab, loggedInUser]);
+      if (activeTab === "community") {
+        const communityApiLobbies = await getAllLobbies();
+        setCommunitySessions(communityApiLobbies.map(mapApiLobbyToSession));
+      }
+    } catch (error) {
+      console.error("Sessions load error:", error);
+    }
+  }
+
+  loadSessions();
+}, [activeTab, loggedInUser]);
 
   const handleShowLocations = () => {
     setActiveTab("locations");

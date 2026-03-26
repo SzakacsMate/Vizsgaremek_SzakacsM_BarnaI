@@ -8,6 +8,7 @@ type ReservationDetailsCardProps = {
   onFinalize: (reservationData: {
     location: Location;
     sessionTitle: string;
+    description: string;
     gameSystem: string;
     minPlayers: number;
     maxPlayers: number;
@@ -23,6 +24,7 @@ export default function ReservationDetailsCard({
 }: ReservationDetailsCardProps) {
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [sessionTitle, setSessionTitle] = useState("");
+  const [description, setDescription] = useState("");
   const [gameSystem, setGameSystem] = useState("");
   const [minPlayers, setMinPlayers] = useState("");
   const [maxPlayers, setMaxPlayers] = useState("");
@@ -71,6 +73,7 @@ export default function ReservationDetailsCard({
     onFinalize({
       location,
       sessionTitle,
+      description,
       gameSystem,
       minPlayers: minPlayersNumber,
       maxPlayers: maxPlayersNumber,
@@ -101,6 +104,13 @@ export default function ReservationDetailsCard({
               placeholder="Session Title"
               value={sessionTitle}
               onChange={(e) => setSessionTitle(e.target.value)}
+            />
+
+            <textarea
+              className="reservation-input reservation-description-input"
+              placeholder="Session description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
             />
 
             <select

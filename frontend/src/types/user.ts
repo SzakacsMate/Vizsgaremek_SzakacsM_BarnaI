@@ -1,3 +1,9 @@
+export type UserComment = {
+  id: string;
+  text: string;
+  authorName: string;
+};
+
 export type User = {
   id: string;
   name: string;
@@ -5,10 +11,4 @@ export type User = {
   rep: number;
   role?: string;
   comments: UserComment[];
-};
-
-export type UserComment = {
-  id: string;
-  text: string;
-  authorName: string;
 };
