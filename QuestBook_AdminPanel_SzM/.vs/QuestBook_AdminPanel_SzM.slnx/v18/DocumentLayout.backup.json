@@ -7,8 +7,8 @@
       "RelativeMoniker": "D:0:0:{22A7AEF0-2A96-2859-78CD-6C1625AE84CE}|QuestBook_AdminPanel_SzM\\QuestBook_AdminPanel_SzM.csproj|solutionrelative:questbook_adminpanel_szm\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{22A7AEF0-2A96-2859-78CD-6C1625AE84CE}|QuestBook_AdminPanel_SzM\\QuestBook_AdminPanel_SzM.csproj|c:\\users\\szakacs.mate\\source\\repos\\vizsgaremek_szakacsm_barnai\\questbook_adminpanel_szm\\questbook_adminpanel_szm\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
-      "RelativeMoniker": "D:0:0:{22A7AEF0-2A96-2859-78CD-6C1625AE84CE}|QuestBook_AdminPanel_SzM\\QuestBook_AdminPanel_SzM.csproj|solutionrelative:questbook_adminpanel_szm\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+      "AbsoluteMoniker": "D:0:0:{22A7AEF0-2A96-2859-78CD-6C1625AE84CE}|QuestBook_AdminPanel_SzM\\QuestBook_AdminPanel_SzM.csproj|c:\\users\\szakacs.mate\\source\\repos\\vizsgaremek_szakacsm_barnai\\questbook_adminpanel_szm\\questbook_adminpanel_szm\\usermodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{22A7AEF0-2A96-2859-78CD-6C1625AE84CE}|QuestBook_AdminPanel_SzM\\QuestBook_AdminPanel_SzM.csproj|solutionrelative:questbook_adminpanel_szm\\usermodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{22A7AEF0-2A96-2859-78CD-6C1625AE84CE}|QuestBook_AdminPanel_SzM\\QuestBook_AdminPanel_SzM.csproj|c:\\users\\szakacs.mate\\source\\repos\\vizsgaremek_szakacsm_barnai\\questbook_adminpanel_szm\\questbook_adminpanel_szm\\lobbies.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -19,12 +19,12 @@
       "RelativeMoniker": "D:0:0:{22A7AEF0-2A96-2859-78CD-6C1625AE84CE}|QuestBook_AdminPanel_SzM\\QuestBook_AdminPanel_SzM.csproj|solutionrelative:questbook_adminpanel_szm\\loginwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{22A7AEF0-2A96-2859-78CD-6C1625AE84CE}|QuestBook_AdminPanel_SzM\\QuestBook_AdminPanel_SzM.csproj|c:\\users\\szakacs.mate\\source\\repos\\vizsgaremek_szakacsm_barnai\\questbook_adminpanel_szm\\questbook_adminpanel_szm\\usermodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{22A7AEF0-2A96-2859-78CD-6C1625AE84CE}|QuestBook_AdminPanel_SzM\\QuestBook_AdminPanel_SzM.csproj|solutionrelative:questbook_adminpanel_szm\\usermodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{22A7AEF0-2A96-2859-78CD-6C1625AE84CE}|QuestBook_AdminPanel_SzM\\QuestBook_AdminPanel_SzM.csproj|c:\\users\\szakacs.mate\\source\\repos\\vizsgaremek_szakacsm_barnai\\questbook_adminpanel_szm\\questbook_adminpanel_szm\\locationmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{22A7AEF0-2A96-2859-78CD-6C1625AE84CE}|QuestBook_AdminPanel_SzM\\QuestBook_AdminPanel_SzM.csproj|solutionrelative:questbook_adminpanel_szm\\locationmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{22A7AEF0-2A96-2859-78CD-6C1625AE84CE}|QuestBook_AdminPanel_SzM\\QuestBook_AdminPanel_SzM.csproj|c:\\users\\szakacs.mate\\source\\repos\\vizsgaremek_szakacsm_barnai\\questbook_adminpanel_szm\\questbook_adminpanel_szm\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{22A7AEF0-2A96-2859-78CD-6C1625AE84CE}|QuestBook_AdminPanel_SzM\\QuestBook_AdminPanel_SzM.csproj|solutionrelative:questbook_adminpanel_szm\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
     }
   ],
   "DocumentGroupContainers": [
@@ -38,15 +38,14 @@
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 5,
               "Title": "MainWindow.xaml",
               "DocumentMoniker": "C:\\Users\\szakacs.mate\\source\\repos\\Vizsgaremek_SzakacsM_BarnaI\\QuestBook_AdminPanel_SzM\\QuestBook_AdminPanel_SzM\\MainWindow.xaml",
               "RelativeDocumentMoniker": "QuestBook_AdminPanel_SzM\\MainWindow.xaml",
               "ToolTip": "C:\\Users\\szakacs.mate\\source\\repos\\Vizsgaremek_SzakacsM_BarnaI\\QuestBook_AdminPanel_SzM\\QuestBook_AdminPanel_SzM\\MainWindow.xaml",
               "RelativeToolTip": "QuestBook_AdminPanel_SzM\\MainWindow.xaml",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
-              "WhenOpened": "2026-03-12T10:25:27.087Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-03-12T10:25:27.087Z"
             },
             {
               "$type": "Document",
@@ -56,14 +55,14 @@
               "RelativeDocumentMoniker": "QuestBook_AdminPanel_SzM\\MainWindow.xaml.cs",
               "ToolTip": "C:\\Users\\szakacs.mate\\source\\repos\\Vizsgaremek_SzakacsM_BarnaI\\QuestBook_AdminPanel_SzM\\QuestBook_AdminPanel_SzM\\MainWindow.xaml.cs",
               "RelativeToolTip": "QuestBook_AdminPanel_SzM\\MainWindow.xaml.cs",
-              "ViewState": "AgIAAPIBAAAAAAAAAADwv4UAAAAIAAAAAAAAAA==",
+              "ViewState": "AgIAAGoBAAAAAAAAAAAAAIUAAAAIAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-03-11T07:16:28.996Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 4,
               "Title": "LocationModel.cs",
               "DocumentMoniker": "C:\\Users\\szakacs.mate\\source\\repos\\Vizsgaremek_SzakacsM_BarnaI\\QuestBook_AdminPanel_SzM\\QuestBook_AdminPanel_SzM\\LocationModel.cs",
               "RelativeDocumentMoniker": "QuestBook_AdminPanel_SzM\\LocationModel.cs",
@@ -81,10 +80,9 @@
               "RelativeDocumentMoniker": "QuestBook_AdminPanel_SzM\\LoginWindow.xaml.cs",
               "ToolTip": "C:\\Users\\szakacs.mate\\source\\repos\\Vizsgaremek_SzakacsM_BarnaI\\QuestBook_AdminPanel_SzM\\QuestBook_AdminPanel_SzM\\LoginWindow.xaml.cs",
               "RelativeToolTip": "QuestBook_AdminPanel_SzM\\LoginWindow.xaml.cs",
-              "ViewState": "AgIAAGUAAAAAAAAAAAAswAAAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAADIAAAAAAAAAAAAswAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-12T09:39:20.376Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-03-12T09:39:20.376Z"
             },
             {
               "$type": "Document",
@@ -94,14 +92,13 @@
               "RelativeDocumentMoniker": "QuestBook_AdminPanel_SzM\\Lobbies.cs",
               "ToolTip": "C:\\Users\\szakacs.mate\\source\\repos\\Vizsgaremek_SzakacsM_BarnaI\\QuestBook_AdminPanel_SzM\\QuestBook_AdminPanel_SzM\\Lobbies.cs",
               "RelativeToolTip": "QuestBook_AdminPanel_SzM\\Lobbies.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABEAAAAeAAAAAAAAAA==",
+              "ViewState": "AgIAABAAAAAAAAAAAAAgwBEAAAAeAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-12T10:15:39.829Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-03-12T10:15:39.829Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 1,
               "Title": "UserModel.cs",
               "DocumentMoniker": "C:\\Users\\szakacs.mate\\source\\repos\\Vizsgaremek_SzakacsM_BarnaI\\QuestBook_AdminPanel_SzM\\QuestBook_AdminPanel_SzM\\UserModel.cs",
               "RelativeDocumentMoniker": "QuestBook_AdminPanel_SzM\\UserModel.cs",

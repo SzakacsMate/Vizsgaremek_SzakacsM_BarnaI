@@ -319,65 +319,6 @@
         }
       }
     },
-    "/api/Auth/Add/RemoveRep": {
-      "patch": {
-        "tags": [
-          "Auth"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "query",
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/RepDTO"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/RepDTO"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/RepDTO"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/CurrentUserDTO"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CurrentUserDTO"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CurrentUserDTO"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/api/Auth/AddLocation": {
       "post": {
         "tags": [
@@ -1404,6 +1345,9 @@
           "status": {
             "type": "string"
           },
+          "description": {
+            "type": "string"
+          },
           "locationName": {
             "type": "string"
           },
@@ -1442,9 +1386,6 @@
               "string"
             ],
             "format": "int32"
-          },
-          "image": {
-            "type": "string"
           },
           "lobbyCons": {
             "type": [
@@ -1518,6 +1459,9 @@
             "type": "string"
           },
           "lobbyName": {
+            "type": "string"
+          },
+          "description": {
             "type": "string"
           },
           "startDate": {
@@ -1603,10 +1547,6 @@
         ],
         "type": "object",
         "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
           "refreshToken": {
             "type": "string"
           }
@@ -1654,19 +1594,6 @@
                 "$ref": "#/components/schemas/UserData"
               }
             ]
-          }
-        }
-      },
-      "RepDTO": {
-        "type": "object",
-        "properties": {
-          "rep": {
-            "pattern": "^-?(?:0|[1-9]\\d*)$",
-            "type": [
-              "integer",
-              "string"
-            ],
-            "format": "int32"
           }
         }
       },

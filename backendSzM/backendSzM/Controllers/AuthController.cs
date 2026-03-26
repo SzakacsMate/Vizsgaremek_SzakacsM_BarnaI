@@ -45,8 +45,11 @@ namespace backendSzM.Controllers
             {
                 return BadRequest("Már van ilyen felhasználó");
             }
-            
-            if(banned!=null)
+            if (await _context.Users.AnyAsync(u => u.Gmail == request.Gmail))
+            {
+                return BadRequest("Már van ilyen felhasználó ilyen Gmaillel");
+            }
+            if (banned!=null)
             {
                 return Unauthorized("Ez a Gmail ki van bannolva");
             }
@@ -140,18 +143,16 @@ namespace backendSzM.Controllers
         }
 
 
-
+        [Authorize(Roles = "User,Admin")]
         [HttpPost("refresh")]// működik rn
         public async Task<ActionResult<TokenDTO>> RefreshToken(RefreshTokenReqDto request)
         {
-            
-            var result = await RefreshTokenAsync(request);
-            var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == request.Id);
-            if (result == null||result.AccesToken is null) { return Unauthorized("Invalid refresh token"); }
-           /* if (user.Name!=request.name|| user.Gmail!=request.email)
-            {
-                return Unauthorized("Téves felhasználói adat");
-            }*/
+            var idClaim = User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(idClaim) || !Guid.TryParse(idClaim, out var userId))
+                return Unauthorized();
+
+            var result = await RefreshTokenAsync(userId, request.RefreshToken);
+            if (result == null || result.AccesToken is null) { return Unauthorized("Invalid refresh token"); }
             return Ok(result);
         }
         private string GenRefreshToken()
@@ -213,11 +214,11 @@ namespace backendSzM.Controllers
             return null;
         }
 
-        public async Task<TokenDTO?> RefreshTokenAsync(RefreshTokenReqDto request)
+        public async Task<TokenDTO?> RefreshTokenAsync(Guid userId, string refreshToken)
         {
-            var token = await ValidateRefreshTokenAsync(request.Id, request.RefreshToken);
+            var token = await ValidateRefreshTokenAsync(userId, refreshToken);
             if (token == null) return null;
-            var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == request.Id);
+            var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == userId);
             if (user == null) return null;
             var newAccesToken = CreateToken(user);
             token.AccesToken = newAccesToken;
@@ -261,19 +262,16 @@ namespace backendSzM.Controllers
             }
             var role = User?.FindFirst(ClaimTypes.Role)?.Value ?? currentUser.Role;
             var image = currentUser.ProfileI;
-            var rep = await _context.Reps
-                .Where(r => r.RepFogadoUserId == userId)
-                .SumAsync(r => r.Value);
+            var rep = await _context.Reps.Where(r => r.RepFogadoUserId == userId).SumAsync(r => r.Value);
 
-            var resp= new CurrentUserDTO
-            {
-                Id=idClaim,
-                Name = name,
-                Role = role,
-                ImageUrl = image,
-                Rep = rep
-            }
-            ;
+            var resp = new CurrentUserDTO();
+
+            resp.Id = idClaim;
+            resp.Name = name;
+            resp.Role = role;
+            resp.ImageUrl = image;
+            resp.Rep = rep;
+            
             return Ok(resp);
         }
         [Authorize(Roles = "User,Admin")]
@@ -329,20 +327,7 @@ namespace backendSzM.Controllers
                 return NotFound("User not found");
             
           
-            var lobbies = await _context.LobbyCons
-                .Where(x => x.UserDataId == userId)
-                .Select(x => new 
-                {
-                     x.Lobby.Dm,x.Lobby.locationName,x.Lobby.TtType,x.Lobby.StartDate,x.Lobby.Duration,x.Lobby.PlayerLimit,x.Lobby.PlayerCount,x.Lobby.Status,x.Lobby.PlayerMin,x.Lobby.Location.Adress,
-                    Users = x.Lobby.LobbyCons
-                        .Where(lc => lc.UserData.Name != x.Lobby.Dm)
-                        .Select(lc => lc.UserData.Name)
-                        .ToList(),
-                   
-                })
-                .ToListAsync();
-
-
+            var lobbies = await _context.LobbyCons.Where(x => x.UserDataId == userId).Select(x => new  {x.Lobby.Dm,x.Lobby.locationName,x.Lobby.TtType,x.Lobby.StartDate,x.Lobby.Duration,x.Lobby.PlayerLimit,x.Lobby.PlayerCount,x.Lobby.Status,x.Lobby.PlayerMin,x.Lobby.Location.Adress,Users = x.Lobby.LobbyCons.Where(x => x.UserData.Name != x.Lobby.Dm).Select(x => x.UserData.Name).ToList()}).ToListAsync();
 
             return Ok(lobbies);
         }
@@ -409,62 +394,7 @@ namespace backendSzM.Controllers
             }
             return Ok();
         }
-        [Authorize(Roles = "User,Admin")]
-        [HttpPatch("Add/RemoveRep")]// működik
-        public async Task<ActionResult<CurrentUserDTO>> AddRep(RepDTO rep, Guid id)
-        {
-            var check = await ValidateAccesToken();
-            if (check != null)
-            {
-                return check;
-            }
-            var idClaim = User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (string.IsNullOrEmpty(idClaim) || !Guid.TryParse(idClaim, out var userId))
-                return Unauthorized();
-
-           
-            if (userId == id)
-                return BadRequest("Nem szavazhatsz magadra!");
-
-            var repAdo = await _context.Users.FindAsync(userId);
-            if (repAdo == null)
-                return Unauthorized("User not found");
-
-            var kapoUser = await _context.Users.FindAsync(id);
-            if (kapoUser == null)
-                return NotFound("Nincs ilyen felhasználó");
-
-            
-            if (rep.Rep != 1 && rep.Rep != -1)
-                return BadRequest("Invalid Rep action");
-
-            
-            var existingRep = await _context.Reps
-                .FirstOrDefaultAsync(x => x.RepAdoUserId == userId && x.RepFogadoUserId == id);
-
-            if (existingRep != null)
-            {
-                if (existingRep.Value == rep.Rep)
-                    return BadRequest("Már szavaztál erre a felhasználóra!");
-
-                existingRep.Value = rep.Rep;
-                _context.Reps.Update(existingRep);
-            }
-            else
-            {
-                var ujRep = new Rep
-                {
-                    Id = Guid.NewGuid(),
-                    Value = rep.Rep,
-                    RepFogadoUserId = id,
-                    RepAdoUserId = userId
-                };
-                _context.Reps.Add(ujRep);
-            }
-
-            await _context.SaveChangesAsync();
-            return Ok();
-        }
+        
         [Authorize(Roles = "User,Admin")]
         [HttpPost("AddLocation")]// működik
         public async Task<ActionResult<CurrentUserDTO>> AddLocation(LocationDTO request)
@@ -583,6 +513,7 @@ namespace backendSzM.Controllers
             ujLobby.LocationId = locationId.Id;
             ujLobby.Status = "Pending";
             ujLobby.PlayerMin = request.PlayerMin;
+            ujLobby.Description = request.Description;
             /*
             if(ujLobby.PlayerLimit<=2)
             {
@@ -610,8 +541,6 @@ namespace backendSzM.Controllers
                 return BadRequest("Ezen a helyen és időpontban már van egy foglalt lobby!");
             }
 
-
-
             _context.Lobbies.Add(ujLobby);
             await _context.SaveChangesAsync();
             _context.LobbyCons.Add(newLobbyCon);
@@ -628,12 +557,7 @@ namespace backendSzM.Controllers
             {
                 return check;
             }
-            var lobbies = await _context.Lobbies.Select(x => new { x.Id,x.LobbyName, x.Dm, x.locationName, x.TtType, x.StartDate, x.Duration, x.PlayerLimit,x.PlayerCount,x.Status,x.Location.Adress,
-                Users = x.LobbyCons
-                    .Where(lc => lc.UserData.Name != x.Dm)
-                    .Select(lc => lc.UserData.Name)
-                    .ToList()
-            }).ToListAsync();
+            var lobbies = await _context.Lobbies.Select(x => new { x.Id,x.LobbyName, x.Dm, x.locationName, x.TtType, x.StartDate, x.Duration, x.PlayerLimit,x.PlayerCount,x.Status,x.Location.Adress,x.Description,Users = x.LobbyCons.Where(y => y.UserData.Name != x.Dm).Select(x => x.UserData.Name) .ToList()}).ToListAsync();
             if (lobbies == null)
             {
                 return NotFound();
@@ -649,14 +573,7 @@ namespace backendSzM.Controllers
             {
                 return check;
             }
-            var lobbies = _context.Lobbies.Select(x => new { x.LobbyName, x.Dm, x.locationName, x.TtType, x.StartDate, x.Duration, x.PlayerLimit, x.PlayerCount, x.Id, x.Status,x.Location.Adress ,
-                Users = x.LobbyCons
-                    .Where(lc => lc.UserData.Name != x.Dm)
-                    .Select(lc => lc.UserData.Name)
-                    .ToList()
-            }).Where(x => x.Id == Id);  
-
-
+            var lobbies = _context.Lobbies.Select(x => new { x.LobbyName, x.Dm, x.locationName, x.TtType, x.StartDate, x.Duration, x.PlayerLimit, x.PlayerCount, x.Id, x.Status,x.Location.Adress , x.Description, Users = x.LobbyCons.Where(y => y.UserData.Name != x.Dm).Select(x => x.UserData.Name).ToList()}).Where(x => x.Id == Id);  
 
             if (lobbies == null)
             {
@@ -825,35 +742,6 @@ namespace backendSzM.Controllers
             await _context.SaveChangesAsync();
             return Ok();
         }
-        /*
-        [Authorize(Roles = "User,Admin")]
-        [HttpDelete("LeavFromLobby")] //DM saját lobbyban/Admin bárkit player csak magát- tesztelendő
-        public async Task<ActionResult<CurrentUserDTO>> LeavFromLobby(Guid Id)
-        {
-            var check = await ValidateAccesToken();
-            if (check != null)
-            {
-                return check;
-            }
-            var idClaim = User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            var currentId = _context.Users.FirstOrDefault(x => x.Id.ToString() == idClaim);
-            var torlendoLobbyCon = _context?.LobbyCons.Where(x => x.LobbyId == Id).FirstOrDefault();
-            var torlendoLobbies = _context?.Lobbies.Where(x => x.Id == Id).FirstOrDefault();
-            //admin /dm törölhet játékost
-            if (torlendoLobbies == null)
-            {
-                return NotFound();
-            }
-            if (idClaim!=currentId.ToString())
-            {
-                return Unauthorized("Nincs jogod ehhez!");
-            }
-
-            _context.LobbyCons.Remove(torlendoLobbyCon);
-            _context.Lobbies.Remove(torlendoLobbies);
-            await _context.SaveChangesAsync();
-            return Ok();
-        }*/
         [Authorize(Roles = "User,Admin")]
         [HttpDelete("LeaveLobby")]//tesztelendő
         public async Task<ActionResult<CurrentUserDTO>> LeaveLobby(Guid Id)
@@ -1120,9 +1008,13 @@ namespace backendSzM.Controllers
             {
                 return BadRequest("Nincs ilyen felhasználó");
             }
-            if (suspendedUser.Warnings % 3 == 0 && suspendedUser.Warnings<=3)
+            if (suspendedUser.Warnings < 3)
             {
                 return BadRequest("Ennek a felhasználónak nincs elég warningja");
+            }
+            if (suspendedUser.Warnings % 3 != 0)
+            {
+                return BadRequest("Csak minden harmadik figyelmeztetésnél lehet felfüggezteni felhasználót ");
             }
             suspendedUser.IsSuspended = true;
             _context.Users.Update(suspendedUser);
@@ -1315,7 +1207,7 @@ namespace backendSzM.Controllers
             return Ok();
         }
         [Authorize(Roles = "Admin")]
-        [HttpGet("GetAllUsers")] //müködik
+        [HttpGet("GetAllUsers")]
         public async Task<ActionResult<List<UserData>>> GetAllUsers()
         {
             var check = await ValidateAccesToken();
@@ -1323,10 +1215,7 @@ namespace backendSzM.Controllers
             {
                 return check;
             }
-            
-            var users = await _context.Users
-                .Select(x => new { x.Id, x.Name,/* x.Rep,*/ x.Gmail, x.Role, x.Warnings, x.IsSuspended })
-                .ToListAsync();
+            var users = await _context.Users.Select(x => new { x.Id, x.Name, x.Gmail ,x.Role, x.Warnings, x.IsSuspended, Rep = _context.Reps.Where(r => r.RepFogadoUserId == x.Id).Sum(r => r.Value) }).ToListAsync();
             
             if (users == null || !users.Any())
             {

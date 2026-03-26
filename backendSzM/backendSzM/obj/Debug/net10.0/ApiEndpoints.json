@@ -8,45 +8,19 @@
     "Order": 0,
     "Parameters": [
       {
-        "Name": "request",
-        "Type": "backendSzM.DTOs.RefreshTokenReqDto",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": [
-      {
-        "Type": "backendSzM.DTOs.TokenDTO",
-        "MediaTypes": [
-          "text/plain",
-          "application/json",
-          "text/json"
-        ],
-        "StatusCode": 200
-      }
-    ]
-  },
-  {
-    "ContainingType": "backendSzM.Controllers.AuthController",
-    "Method": "AddRep",
-    "RelativePath": "api/Auth/Add/RemoveRep",
-    "HttpMethod": "PATCH",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "rep",
-        "Type": "backendSzM.DTOs.RepDTO",
-        "IsRequired": true
+        "Name": "userId",
+        "Type": "System.Guid",
+        "IsRequired": false
       },
       {
-        "Name": "id",
-        "Type": "System.Guid",
+        "Name": "refreshToken",
+        "Type": "System.String",
         "IsRequired": false
       }
     ],
     "ReturnTypes": [
       {
-        "Type": "backendSzM.DTOs.CurrentUserDTO",
+        "Type": "backendSzM.DTOs.TokenDTO",
         "MediaTypes": [
           "text/plain",
           "application/json",

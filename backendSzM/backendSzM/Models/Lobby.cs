@@ -12,13 +12,14 @@ namespace backendSzM.Models
         public string LobbyName { get; set; } = string.Empty;
         public string TtType { get; set; }= string.Empty;
         public string Status { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
         public string locationName { get; set; } = string.Empty;
         public DateTime StartDate { get; set; } = new DateTime();
         public int Duration { get; set; } = 0;
         public int PlayerLimit { get; set; } = 0;
         public int PlayerMin { get; set; } = 1;
         public int PlayerCount { get; set; }= 0;
-        public string Image { get; set; } = string.Empty;
+      //  public string Image { get; set; } = string.Empty;
         public ICollection<LobbyCon>?LobbyCons { get; set; } = new List<LobbyCon>();
         [ForeignKey(nameof(Location))]
         public Guid? LocationId { get; set; }
