@@ -62,7 +62,7 @@ namespace backendSzM.Controllers
             ujUserData.Gmail=request.Gmail;
             ujUserData.Role="User";
           
-            ujUserData.ProfileI = $"/profilepics/random/RandomProfilePic{number}.png"; 
+            ujUserData.ProfileI = $"/assets/profilepics/random/RandomProfilePic{number}.png"; 
             ujUserData.IsSuspended = false;
             if(ujUserData.Name==""|| ujUserData.Gmail == "" || ujUserData.Hash == "" )
             {
@@ -143,30 +143,26 @@ namespace backendSzM.Controllers
         }
 
 
-        [Authorize(Roles = "User,Admin")]
         [HttpPost("refresh")]// működik rn
         public async Task<ActionResult<TokenDTO>> RefreshToken(RefreshTokenReqDto request)
         {
-            var idClaim = User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (string.IsNullOrEmpty(idClaim) || !Guid.TryParse(idClaim, out var userId))
-                return Unauthorized();
-
-            var result = await RefreshTokenAsync(userId, request.RefreshToken);
+            var result = await RefreshTokenAsync(request.RefreshToken);
             if (result == null || result.AccesToken is null) { return Unauthorized("Invalid refresh token"); }
             return Ok(result);
         }
+        /*
         private string GenRefreshToken()
         {
             var randomN = new byte[32];
             using var rng = RandomNumberGenerator.Create();
             rng.GetBytes(randomN);
             return Convert.ToBase64String(randomN);
-        }
+        }*/
         private async Task<string> GenAndSaveRefreshTokenAsync(Token token)
         {
-            var refreshToken = GenRefreshToken();
+            var refreshToken = token.RefreshToken; 
             token.RefreshToken = refreshToken;
-            token.RefreshTokenExpiryTime = DateTime.UtcNow.Add(_refreshTokenLifetime);
+            token.RefreshTokenExpiryTime = token.RefreshTokenExpiryTime;
             await _context.SaveChangesAsync();
             return refreshToken;
         }
@@ -191,9 +187,9 @@ namespace backendSzM.Controllers
         }
 
         
-        private async Task<Token> ValidateRefreshTokenAsync(Guid Id, string refreskToken)
+        private async Task<Token> ValidateRefreshTokenAsync( string refreskToken)
         {
-            var token = await _context.Tokens.FirstOrDefaultAsync(u => u.UserDataId== Id);
+            var token = await _context.Tokens.FirstOrDefaultAsync(u => u.RefreshToken== refreskToken);
             if (token == null || token.RefreshToken != refreskToken || token.RefreshTokenExpiryTime <= DateTime.UtcNow)
             {
                 return null;
@@ -214,11 +210,11 @@ namespace backendSzM.Controllers
             return null;
         }
 
-        public async Task<TokenDTO?> RefreshTokenAsync(Guid userId, string refreshToken)
+        public async Task<TokenDTO?> RefreshTokenAsync( string refreshToken)
         {
-            var token = await ValidateRefreshTokenAsync(userId, refreshToken);
+            var token = await ValidateRefreshTokenAsync(refreshToken);
             if (token == null) return null;
-            var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == userId);
+            var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == token.UserDataId);
             if (user == null) return null;
             var newAccesToken = CreateToken(user);
             token.AccesToken = newAccesToken;
@@ -229,7 +225,7 @@ namespace backendSzM.Controllers
             {
                 AccesToken = newAccesToken,
                 AccessTokenExpiryTime = token.AccessTokenExpiryTime,
-                RefreshToken = newRefreshToken,
+                RefreshToken = refreshToken,
                 RefreshTokenExpiryTime = token.RefreshTokenExpiryTime
 
             };
@@ -304,6 +300,7 @@ namespace backendSzM.Controllers
             {
                 return NotFound("Nincs ilyen felhasználó");
             }
+            
             var rep = await _context.Reps.Where(r => r.RepFogadoUserId == lookedUser.Id).SumAsync(r => r.Value);
 
 
@@ -940,7 +937,7 @@ namespace backendSzM.Controllers
             var fogadoId=_context.Komments.FirstOrDefault(x => x.FogadoUserId == Id);
             if (fogadoId == null)
             {
-                return BadRequest("Nincs kommented");
+                return Ok(new List<string> ());
             }
             var kommentelo = _context.Users?.FirstOrDefault(x=>x.Id==fogadoId.KommentaloUserId);
             
@@ -1120,6 +1117,27 @@ namespace backendSzM.Controllers
             changedUser.Role = "Admin";
             _context.Users.Update(changedUser);
             await _context.SaveChangesAsync();
+            var newAccessToken = CreateToken(changedUser);
+            var tokenRow = await _context.Tokens.FirstOrDefaultAsync(t => t.UserDataId == changedUser.Id);
+
+            if (tokenRow != null)
+            {
+                tokenRow.AccesToken = newAccessToken;
+                tokenRow.AccessTokenExpiryTime = DateTime.UtcNow.Add(_accessTokenLifetime);
+                _context.Tokens.Update(tokenRow);
+
+                var newRefreshToken = await GenAndSaveRefreshTokenAsync(tokenRow);
+
+                await _context.SaveChangesAsync();
+
+                return Ok(new TokenDTO
+                {
+                    AccesToken = newAccessToken,
+                    AccessTokenExpiryTime = tokenRow.AccessTokenExpiryTime,
+                    RefreshToken = newRefreshToken,
+                    RefreshTokenExpiryTime = tokenRow.RefreshTokenExpiryTime
+                });
+            }
             return Ok();
         }
         [Authorize(Roles = "Admin")]
