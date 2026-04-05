@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import "./App.css";
 
 import LocationCard from "./components/LocationCard";
@@ -9,6 +9,7 @@ import SessionDetailsCard from "./components/SessionDetailsCard";
 import UpcomingSessionCard from "./components/UpcomingSessionCard";
 import AuthPage from "./components/AuthPage";
 import ProfilePage from "./components/ProfilePage";
+import AboutPage from "./components/AboutPage";
 
 import type { Location } from "./types/location";
 import type { Session } from "./types/session";
@@ -24,15 +25,18 @@ import {
   login,
   logout,
   register,
-  setStoredAccessToken,
+  
 } from "./services/authService";
+import { setAccessToken, setOnAuthFailure, setRefreshToken, setTokenExpiries } from "./services/api";
 import { getLocations } from "./services/locationService";
 import {
   createLobby,
+  deleteLobby,
   getAllLobbies,
   getMyLobbies,
   joinLobby,
   leaveLobby,
+  removePlayerFromLobby,
 } from "./services/lobbyService";
 import {
   addOrRemoveRep,
@@ -56,7 +60,8 @@ type ActiveTab =
   | "community"
   | "login"
   | "register"
-  | "profile";
+  | "profile"
+  | "about";
 
 type ViewMode =
   | "location-list"
@@ -65,12 +70,44 @@ type ViewMode =
   | "session-list"
   | "session-details";
 
+const backgroundImages = [
+  "/assets/backgrounds/ChangingBackground/change1.png",
+  "/assets/backgrounds/ChangingBackground/change2.jpg",
+  "/assets/backgrounds/ChangingBackground/change3.jpg",
+  "/assets/backgrounds/ChangingBackground/change4.png",
+  "/assets/backgrounds/ChangingBackground/change5.png",
+  "/assets/backgrounds/ChangingBackground/change6.png",
+  "/assets/backgrounds/ChangingBackground/change7.jpg",
+  "/assets/backgrounds/ChangingBackground/change8.jpg",
+  "/assets/backgrounds/ChangingBackground/change9.jpg",
+  "/assets/backgrounds/ChangingBackground/change10.jpg",
+  "/assets/backgrounds/ChangingBackground/change11.jpg",
+];
+
 function App() {
-  const [activeTab, setActiveTab] = useState<ActiveTab>("locations");
+  const [activeTab, setActiveTab] = useState<ActiveTab>("about");
   const [viewMode, setViewMode] = useState<ViewMode>("location-list");
+  const [bgIndex, setBgIndex] = useState(0);
+  const [nextBgIndex, setNextBgIndex] = useState(0);
+  const [bgFading, setBgFading] = useState(false);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const next = (bgIndex + 1) % backgroundImages.length;
+      setNextBgIndex(next);
+      setBgFading(true);
+      setTimeout(() => {
+        setBgIndex(next);
+        setBgFading(false);
+      }, 1200);
+    }, 30000);
+    return () => clearInterval(interval);
+  }, [bgIndex]);
 
   const [selectedLocation, setSelectedLocation] = useState<Location | null>(null);
   const [selectedSession, setSelectedSession] = useState<Session | null>(null);
+
+  const [sidebarOpen, setSidebarOpen] = useState(true);
 
   const [locationsState, setLocationsState] = useState<Location[]>([]);
   const [mySessions, setMySessions] = useState<Session[]>([]);
@@ -174,6 +211,14 @@ function App() {
     setError("");
   };
 
+  const handleShowAbout = () => {
+    setActiveTab("about");
+    setViewMode("location-list");
+    setSelectedLocation(null);
+    setSelectedSession(null);
+    setError("");
+  };
+
   const handleShowLogin = () => {
     setActiveTab("login");
     setError("");
@@ -271,7 +316,7 @@ function App() {
     }
   };
 
-  const handleLogout = () => {
+  const handleLogout = useCallback(() => {
     logout();
     setLoggedInUser(null);
     setSelectedProfileUser(null);
@@ -281,7 +326,11 @@ function App() {
     setViewMode("location-list");
     setSelectedLocation(null);
     setSelectedSession(null);
-  };
+  }, []);
+
+  useEffect(() => {
+    setOnAuthFailure(handleLogout);
+  }, [handleLogout]);
 
   const handleOpenLocation = (location: Location) => {
     setSelectedLocation(location);
@@ -390,6 +439,65 @@ function App() {
     }
   };
 
+  const handleDeleteLobby = async (sessionId: string) => {
+    try {
+      await deleteLobby(sessionId);
+    } catch (error) {
+      console.error(error);
+      setError("Deleting lobby failed.");
+      return;
+    }
+
+    try {
+      const refreshedCommunity = await getAllLobbies();
+      setCommunitySessions(refreshedCommunity.map(mapApiLobbyToSession));
+    } catch {
+      setCommunitySessions((prev) => prev.filter((s) => s.id !== sessionId));
+    }
+
+    try {
+      if (loggedInUser) {
+        const refreshedMine = await getMyLobbies();
+        setMySessions(refreshedMine.map(mapApiLobbyToSession));
+      }
+    } catch {
+      setMySessions((prev) => prev.filter((s) => s.id !== sessionId));
+    }
+
+    setSelectedSession(null);
+    setViewMode("session-list");
+    setError("");
+  };
+
+  const handleKickPlayer = async (lobbyId: string, userId: string) => {
+    try {
+      await removePlayerFromLobby(lobbyId, userId);
+
+      const refreshedCommunity = await getAllLobbies();
+      setCommunitySessions(refreshedCommunity.map(mapApiLobbyToSession));
+
+      if (loggedInUser) {
+        const refreshedMine = await getMyLobbies();
+        setMySessions(refreshedMine.map(mapApiLobbyToSession));
+      }
+
+      if (selectedSession && selectedSession.id === lobbyId) {
+        setSelectedSession((prev) => {
+          if (!prev) return prev;
+          return {
+            ...prev,
+            players: prev.players.filter((p) => p.id !== userId),
+          };
+        });
+      }
+
+      setError("");
+    } catch (error) {
+      console.error(error);
+      setError("Kicking player failed.");
+    }
+  };
+
   const handleToggleProfileEdit = () => {
     setIsProfileEditOpen((prev) => !prev);
   };
@@ -406,6 +514,24 @@ function App() {
     if (!trimmed) return;
 
     try {
+      if (loggedInUser && trimmed.toLowerCase() === loggedInUser.name.toLowerCase()) {
+        const apiUser = await getCurrentUser();
+        const mappedUser = mapApiCurrentUserToUser(apiUser);
+
+        try {
+          const comments = await getUserComments(mappedUser.id);
+          mappedUser.comments = mapProfileCommentsToUserComments(comments);
+        } catch {
+          mappedUser.comments = [];
+        }
+
+        setSelectedProfileUser(mappedUser);
+        setIsProfileEditOpen(false);
+        setActiveTab("profile");
+        setError("");
+        return;
+      }
+
       const result = await searchUserByName(trimmed);
 
       let profileUser = mapSearchUserToUser(
@@ -438,7 +564,8 @@ function App() {
   const handleRepAction = async (value: 1 | -1) => {
     if (!loggedInUser || !currentProfileUser) return;
     if (loggedInUser.id === currentProfileUser.id) return;
-    if (repActions[currentProfileUser.id]) return;
+    const prevAction = repActions[currentProfileUser.id] ?? null;
+    if (prevAction === value) return;
 
     try {
       if (
@@ -456,11 +583,12 @@ function App() {
         [currentProfileUser.id]: value,
       }));
 
+      const delta = prevAction !== null ? value - prevAction : value;
       setSelectedProfileUser((prev) => {
         if (!prev) return prev;
         return {
           ...prev,
-          rep: prev.rep + value,
+          rep: prev.rep + delta,
         };
       });
 
@@ -538,7 +666,9 @@ function App() {
 
     try {
       const tokenResponse = await changeUserData(data);
-      setStoredAccessToken(tokenResponse.accesToken);
+      setAccessToken(tokenResponse.accesToken);
+      setRefreshToken(tokenResponse.refreshToken);
+      setTokenExpiries(tokenResponse.accessTokenExpiryTime, tokenResponse.refreshTokenExpiryTime);
 
       const apiUser = await getCurrentUser();
       const mappedUser = mapApiCurrentUserToUser(apiUser);
@@ -584,7 +714,10 @@ function App() {
           <div className="navbar-divider" />
 
           <nav className="navbar-links">
-            <button className="navbar-link-button" onClick={handleShowLocations}>
+            <button
+              className="navbar-link-button"
+              onClick={handleShowLocations}
+            >
               Locations
             </button>
 
@@ -597,8 +730,17 @@ function App() {
               My Sessions
             </button>
 
-            <button className="navbar-link-button" onClick={handleShowCommunity}>
+            <button
+              className={`navbar-link-button ${!loggedInUser ? "disabled-link" : ""}`}
+              onClick={() => {
+                if (loggedInUser) handleShowCommunity();
+              }}
+            >
               Community
+            </button>
+
+            <button className="navbar-link-button" onClick={handleShowAbout}>
+              About us
             </button>
           </nav>
 
@@ -639,14 +781,30 @@ function App() {
         {error && <div className="global-error-banner">{error}</div>}
 
         <div className="content-layout">
-          <main className="main-content">
+          <main className={`main-content${activeTab === "about" ? " main-content--about" : ""}`}>
+            {activeTab !== "about" && (
+              <>
+                <div
+                  className="main-bg-layer"
+                  style={{ backgroundImage: `url(${backgroundImages[bgIndex]})` }}
+                />
+                <div
+                  className={`main-bg-layer main-bg-next${bgFading ? " fade-in" : ""}`}
+                  style={{ backgroundImage: `url(${backgroundImages[nextBgIndex]})` }}
+                />
+              </>
+            )}
             <div className="main-overlay">
+              {activeTab === "about" && (
+                <AboutPage />
+              )}
+
               {activeTab === "profile" && currentProfileUser && (
                 <ProfilePage
                   user={currentProfileUser}
                   viewerId={loggedInUser?.id ?? null}
                   isEditOpen={isProfileEditOpen}
-                  hasRepAction={!!repActions[currentProfileUser.id]}
+                  currentRepAction={repActions[currentProfileUser.id] ?? null}
                   onBack={handleBackFromProfile}
                   onToggleEdit={handleToggleProfileEdit}
                   onDeleteComment={handleDeleteComment}
@@ -702,6 +860,9 @@ function App() {
                         session={session}
                         onOpen={handleOpenSession}
                         onLeave={handleLeaveSession}
+                        onDeleteLobby={handleDeleteLobby}
+                        currentUserName={loggedInUser?.name}
+                        currentUserId={loggedInUser?.id}
                       />
                     ))}
                   </section>
@@ -719,6 +880,9 @@ function App() {
                         session={session}
                         onOpen={handleOpenSession}
                         onJoin={handleJoinSession}
+                        onDeleteLobby={handleDeleteLobby}
+                        currentUserName={loggedInUser?.name}
+                        currentUserId={loggedInUser?.id}
                       />
                     ))}
                   </section>
@@ -730,12 +894,24 @@ function App() {
                   session={selectedSession}
                   onBack={handleBackFromSessionDetails}
                   onLeave={handleLeaveSession}
+                  onDeleteLobby={handleDeleteLobby}
+                  onKick={handleKickPlayer}
+                  currentUserName={loggedInUser?.name}
+                  currentUserId={loggedInUser?.id}
                 />
               )}
             </div>
           </main>
 
-          <aside className="sidebar">
+          <button
+            className={`sidebar-toggle ${sidebarOpen ? "" : "sidebar-hidden"}`}
+            onClick={() => setSidebarOpen((prev) => !prev)}
+            title={sidebarOpen ? "Hide sidebar" : "Show sidebar"}
+          >
+            {sidebarOpen ? "\u203a" : "\u2039"}
+          </button>
+
+          <aside className={`sidebar ${sidebarOpen ? "" : "collapsed"}`}>
             <div className="sidebar-overlay">
               {loggedInUser ? (
                 <>

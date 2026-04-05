@@ -1,5 +1,10 @@
 import { apiFetch } from "./api";
 
+export type LobbyUser = {
+  id: string;
+  name: string;
+};
+
 export type ApiLobby = {
   id: string;
   lobbyName: string;
@@ -11,8 +16,9 @@ export type ApiLobby = {
   playerLimit: number;
   playerCount: number;
   playerMin: number;
+  status: string;
   adress?: string;
-  users?: string[];
+  users?: LobbyUser[];
   description?: string;
 };
 
@@ -32,6 +38,18 @@ export async function joinLobby(id: string) {
 
 export async function leaveLobby(id: string) {
   return apiFetch(`/LeaveLobby?Id=${id}`, {
+    method: "DELETE",
+  });
+}
+
+export async function deleteLobby(id: string) {
+  return apiFetch(`/DeleteLobby/${id}`, {
+    method: "DELETE",
+  });
+}
+
+export async function removePlayerFromLobby(lobbyId: string, userId: string) {
+  return apiFetch(`/RemovePlayerFromLobby?lobbyId=${lobbyId}&userId=${userId}`, {
     method: "DELETE",
   });
 }

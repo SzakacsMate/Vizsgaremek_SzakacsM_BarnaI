@@ -1,5 +1,10 @@
 export type SessionStatus = "confirmed" | "pending";
 
+export type Player = {
+  id: string;
+  name: string;
+};
+
 export type Session = {
   id: string;
   title: string;
@@ -13,7 +18,7 @@ export type Session = {
 
   minPlayers: number;
   playerLimit: number;
-  players: string[];
+  players: Player[];
 
   systemColor: string;
   dmName: string;

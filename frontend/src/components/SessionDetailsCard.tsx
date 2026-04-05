@@ -4,14 +4,25 @@ type SessionDetailsCardProps = {
   session: Session;
   onBack: () => void;
   onLeave?: (sessionId: string) => void;
+  onDeleteLobby?: (sessionId: string) => void;
+  onKick?: (lobbyId: string, userId: string) => void;
+  currentUserName?: string;
+  currentUserId?: string;
 };
 
 export default function SessionDetailsCard({
   session,
   onBack,
   onLeave,
+  onDeleteLobby,
+  onKick,
+  currentUserName,
+  currentUserId,
 }: SessionDetailsCardProps) {
   const currentPlayerCount = session.players.length;
+  const isDm =
+    (currentUserName != null && session.dmName === currentUserName) ||
+    (currentUserId != null && session.dmName === currentUserId);
 
   return (
     <section className="session-details-card">
@@ -62,7 +73,17 @@ export default function SessionDetailsCard({
 
           <ul className="session-details-player-list">
             {session.players.map((player) => (
-              <li key={player}>{player}</li>
+              <li key={player.id || player.name}>
+                {player.name}
+                {isDm && onKick && player.id && (
+                  <button
+                    className="session-action-button kick"
+                    onClick={() => onKick(session.id, player.id)}
+                  >
+                    KICK
+                  </button>
+                )}
+              </li>
             ))}
           </ul>
         </div>
@@ -96,12 +117,21 @@ export default function SessionDetailsCard({
             BACK
           </button>
 
-          {onLeave && (
+          {onLeave && !isDm && (
             <button
               className="session-action-button leave"
               onClick={() => onLeave(session.id)}
             >
               LEAVE PARTY
+            </button>
+          )}
+
+          {isDm && onDeleteLobby && (
+            <button
+              className="session-action-button leave"
+              onClick={() => onDeleteLobby(session.id)}
+            >
+              DELETE LOBBY
             </button>
           )}
         </div>

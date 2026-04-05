@@ -96,12 +96,12 @@ export function mapApiLobbyToSession(apiLobby: ApiLobby): Session {
     location: apiLobby.locationName,
     minPlayers: apiLobby.playerMin,
     playerLimit: apiLobby.playerLimit,
-    players: users,
+    players: users.map((u) => typeof u === "string" ? { id: "", name: u } : { id: u.id, name: u.name }),
     systemColor: systemColorMap[apiLobby.ttType] ?? "#999999",
     dmName: apiLobby.dm,
     description: apiLobby.description ?? "",
     status:
-      apiLobby.playerCount >= apiLobby.playerMin ? "confirmed" : "pending",
+      apiLobby.status?.toLowerCase() === "confirmed" ? "confirmed" : "pending",
   };
 }
 
@@ -145,9 +145,9 @@ export function mapProfileCommentsToUserComments(
     return [];
   }
 
-  return comments.map((comment, index) => ({
-    id: `${comment.kommentaloUserId}-${index}`,
-    text: comment.kommentSzoveg,
-    authorName: comment.name,
-  }));
+    return comments.map((comment, index) => ({
+      id: `${comment.kommentaloUserId}-${index}`,
+      text: comment.kommentSzoveg,
+      authorName: comment.kommentaloName,
+    }));
 }

@@ -6,7 +6,7 @@ type ProfilePageProps = {
   user: User;
   viewerId: string | null;
   isEditOpen: boolean;
-  hasRepAction: boolean;
+  currentRepAction: 1 | -1 | null;
   onBack: () => void;
   onToggleEdit: () => void;
   onDeleteComment: (commentId: string) => void;
@@ -25,7 +25,7 @@ export default function ProfilePage({
   user,
   viewerId,
   isEditOpen,
-  hasRepAction,
+  currentRepAction,
   onBack,
   onToggleEdit,
   onDeleteComment,
@@ -34,7 +34,8 @@ export default function ProfilePage({
   onWriteComment,
 }: ProfilePageProps) {
   const isOwnProfile = viewerId === user.id;
-  const canRep = !!viewerId && !isOwnProfile && !hasRepAction;
+  const canGivePlus = !!viewerId && !isOwnProfile && currentRepAction !== 1;
+  const canGiveMinus = !!viewerId && !isOwnProfile && currentRepAction !== -1;
   const [newComment, setNewComment] = useState("");
 
   return (
@@ -73,7 +74,7 @@ export default function ProfilePage({
                 <>
                   <button
                     className="profile-rep-button plus"
-                    disabled={!canRep}
+                    disabled={!canGivePlus}
                     onClick={() => onRepAction(1)}
                   >
                     +
@@ -81,7 +82,7 @@ export default function ProfilePage({
 
                   <button
                     className="profile-rep-button minus"
-                    disabled={!canRep}
+                    disabled={!canGiveMinus}
                     onClick={() => onRepAction(-1)}
                   >
                     -
@@ -90,9 +91,9 @@ export default function ProfilePage({
               )}
             </div>
 
-            {!isOwnProfile && hasRepAction && (
+            {!isOwnProfile && currentRepAction !== null && (
               <p className="profile-rep-note">
-                You already used your rep action on this user.
+                You gave {currentRepAction === 1 ? "+1" : "-1"} rep to this user.
               </p>
             )}
           </div>
@@ -178,6 +179,19 @@ function ProfileEditPanel({ user, onUpdateProfile }: ProfileEditPanelProps) {
   const [changeName, setChangeName] = useState(user.name);
   const [changePassword, setChangePassword] = useState("");
   const [changeProfileI, setChangeProfileI] = useState(user.image);
+  const [previewImage, setPreviewImage] = useState<string | null>(user.image);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      const result = reader.result as string;
+      setChangeProfileI(result);
+      setPreviewImage(result);
+    };
+    reader.readAsDataURL(file);
+  };
 
   return (
     <div className="profile-edit-card">
@@ -218,13 +232,26 @@ function ProfileEditPanel({ user, onUpdateProfile }: ProfileEditPanelProps) {
           onChange={(e) => setChangeName(e.target.value)}
         />
 
-        <input
-          className="profile-edit-input"
-          type="text"
-          placeholder="New image path / url"
-          value={changeProfileI}
-          onChange={(e) => setChangeProfileI(e.target.value)}
-        />
+        <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+          <label htmlFor="profile-image-upload" className="profile-image-upload-btn">
+            Change Image
+            <input
+              id="profile-image-upload"
+              type="file"
+              accept="image/*"
+              style={{ display: "none" }}
+              onChange={handleFileChange}
+            />
+          </label>
+          {previewImage && (
+            <img
+              src={previewImage}
+              alt="Preview"
+              className="profile-image-preview"
+              style={{ width: 80, height: 80, borderRadius: "50%", objectFit: "cover", border: "2.5px solid #ccc" }}
+            />
+          )}
+        </div>
 
         <input
           className="profile-edit-input"

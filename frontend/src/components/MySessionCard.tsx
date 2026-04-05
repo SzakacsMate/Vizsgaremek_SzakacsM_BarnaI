@@ -5,6 +5,9 @@ type MySessionCardProps = {
   onOpen: (session: Session) => void;
   onJoin?: (sessionId: string) => void;
   onLeave?: (sessionId: string) => void;
+  onDeleteLobby?: (sessionId: string) => void;
+  currentUserName?: string;
+  currentUserId?: string;
 };
 
 export default function MySessionCard({
@@ -12,11 +15,22 @@ export default function MySessionCard({
   onOpen,
   onJoin,
   onLeave,
+  onDeleteLobby,
+  currentUserName,
+  currentUserId,
 }: MySessionCardProps) {
+  const isDm =
+    (currentUserName != null && session.dmName === currentUserName) ||
+    (currentUserId != null && session.dmName === currentUserId);
   const currentPlayerCount = session.players.length;
 
   return (
-    <article className="my-session-card" onClick={() => onOpen(session)}>
+    <article
+      className={`my-session-card ${
+        session.status === "confirmed" ? "card-confirmed" : "card-pending"
+      }`}
+      onClick={() => onOpen(session)}
+    >
       <div
         className="my-session-left-bar"
         style={{ backgroundColor: session.systemColor }}
@@ -79,7 +93,7 @@ export default function MySessionCard({
           </p>
         </div>
 
-        {(onJoin || onLeave) && (
+        {(onJoin || onLeave || onDeleteLobby) && (
           <div className="my-session-action-row">
             {onJoin && (
               <button
@@ -93,7 +107,19 @@ export default function MySessionCard({
               </button>
             )}
 
-            {onLeave && (
+            {isDm && onDeleteLobby && (
+              <button
+                className="session-action-button leave"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  onDeleteLobby(session.id);
+                }}
+              >
+                DELETE LOBBY
+              </button>
+            )}
+
+            {!isDm && onLeave && (
               <button
                 className="session-action-button leave"
                 onClick={(event) => {

@@ -33,25 +33,24 @@ namespace backendSzM.Controllers
             _configuration = configuration;
         }
         
-        [HttpPost("register")]//működik
+        [HttpPost("register")]
         public  async Task<IActionResult> Register(UserDataDTO request)
         {
             
             var number = RandomProfilePic();
-            // var user = _context.Users.FirstOrDefault();
 
             var banned=_context.BannedUsers.FirstOrDefault(x=>x.BannedGmail==request.Gmail);
             if (await _context.Users.AnyAsync(u => u.Name == request.Name))
             {
-                return BadRequest("Már van ilyen felhasználó");
+                return BadRequest("There's an user with this name already");
             }
             if (await _context.Users.AnyAsync(u => u.Gmail == request.Gmail))
             {
-                return BadRequest("Már van ilyen felhasználó ilyen Gmaillel");
+                return BadRequest("There's a user already with this gmail");
             }
             if (banned!=null)
             {
-                return Unauthorized("Ez a Gmail ki van bannolva");
+                return Unauthorized("This gmail has been banned");
             }
             UserData ujUserData=new UserData();
             var hashedPassword=new PasswordHasher<UserData>()
@@ -66,7 +65,7 @@ namespace backendSzM.Controllers
             ujUserData.IsSuspended = false;
             if(ujUserData.Name==""|| ujUserData.Gmail == "" || ujUserData.Hash == "" )
             {
-                return BadRequest("Név, Gmail vagy jelszó hiányzik");
+                return BadRequest("Missing username,password or gmail");
             }
             _context.Users.Add(ujUserData);
             await _context.SaveChangesAsync();
@@ -84,21 +83,21 @@ namespace backendSzM.Controllers
             var user = _context?.Users.FirstOrDefault(u => u.Gmail == request.Gmail && u.Name == request.Name);
             if (user == null)
             {
-                return Unauthorized("Nincs ilyen felhasználó");
+                return Unauthorized("User not found");
             }
             if (user.IsSuspended==true)
             {
-                return Unauthorized("Ez a felhasználó fel van függesztve!");
+                return Unauthorized("This user is suspended!");
             }
 
             
             if (new PasswordHasher<UserData>().VerifyHashedPassword(user,user.Hash,request.Password)==PasswordVerificationResult.Failed)
             {
-                return Unauthorized("Rossz jelszó");
+                return Unauthorized("Wrong password");
             }
             if (banned != null)
             {
-                return Unauthorized("Ez a Gmail ki van bannolva");
+                return Unauthorized("This gmail has been banned");
             }
             var CurrentToken = _context.Tokens.FirstOrDefault(x => x.UserDataId ==user.Id);
             var accessToken = CreateToken(user);
@@ -123,13 +122,17 @@ namespace backendSzM.Controllers
                 CurrentToken.AccessTokenExpiryTime = accessExpiry;
                 _context.Tokens.Update(CurrentToken);
             }
+
+            CurrentToken.RefreshToken = GenRefreshToken();
+            CurrentToken.RefreshTokenExpiryTime = DateTime.UtcNow.Add(_refreshTokenLifetime);
+
             await _context.SaveChangesAsync();
             var refresh_token = new TokenDTO
             {
 
                 AccesToken = accessToken,
                 AccessTokenExpiryTime = CurrentToken.AccessTokenExpiryTime,
-                RefreshToken = await GenAndSaveRefreshTokenAsync(CurrentToken),
+                RefreshToken = CurrentToken.RefreshToken,
                 RefreshTokenExpiryTime = CurrentToken.RefreshTokenExpiryTime
 
             };
@@ -143,21 +146,14 @@ namespace backendSzM.Controllers
         }
 
 
-        [HttpPost("refresh")]// működik rn
+        [HttpPost("refresh")]
         public async Task<ActionResult<TokenDTO>> RefreshToken(RefreshTokenReqDto request)
         {
             var result = await RefreshTokenAsync(request.RefreshToken);
             if (result == null || result.AccesToken is null) { return Unauthorized("Invalid refresh token"); }
             return Ok(result);
         }
-        /*
-        private string GenRefreshToken()
-        {
-            var randomN = new byte[32];
-            using var rng = RandomNumberGenerator.Create();
-            rng.GetBytes(randomN);
-            return Convert.ToBase64String(randomN);
-        }*/
+       
         private async Task<string> GenAndSaveRefreshTokenAsync(Token token)
         {
             var refreshToken = token.RefreshToken; 
@@ -185,8 +181,14 @@ namespace backendSzM.Controllers
                 );
             return new JwtSecurityTokenHandler().WriteToken(tokenDescriptor);
         }
-
-        
+        private string GenRefreshToken()
+        {
+            var randomN = new byte[32];
+            using var rng = RandomNumberGenerator.Create();
+            rng.GetBytes(randomN);
+            return Convert.ToBase64String(randomN);
+        }
+            
         private async Task<Token> ValidateRefreshTokenAsync( string refreskToken)
         {
             var token = await _context.Tokens.FirstOrDefaultAsync(u => u.RefreshToken== refreskToken);
@@ -244,7 +246,7 @@ namespace backendSzM.Controllers
             var name= User?.FindFirst(ClaimTypes.Name)?.Value;
             if (name == null)
             {
-                return Unauthorized("Nincs ilyen felhasználó");
+                return Unauthorized("User not found");
             }
             var idClaim = User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (string.IsNullOrEmpty(idClaim) || !Guid.TryParse(idClaim, out var userId))
@@ -254,7 +256,7 @@ namespace backendSzM.Controllers
             var currentUser = await _context.Users.FirstOrDefaultAsync(x => x.Id == userId);
             if (currentUser == null)
             {
-                return Unauthorized("Nincs ilyen felhasználó");
+                return Unauthorized("User not found");
             }
             var role = User?.FindFirst(ClaimTypes.Role)?.Value ?? currentUser.Role;
             var image = currentUser.ProfileI;
@@ -298,13 +300,13 @@ namespace backendSzM.Controllers
             var lookedUser = _context.Users.FirstOrDefault(x => x.Name == name);
             if (lookedUser == null)
             {
-                return NotFound("Nincs ilyen felhasználó");
+                return NotFound("User not found");
             }
             
             var rep = await _context.Reps.Where(r => r.RepFogadoUserId == lookedUser.Id).SumAsync(r => r.Value);
 
 
-            return Ok(new { lookedUser.Name, lookedUser.ProfileI, lookedUser.Role, rep });
+            return Ok(new { lookedUser.Id, lookedUser.Name, lookedUser.ProfileI, lookedUser.Role, rep });
         }
         [Authorize(Roles = "User,Admin")]
         [HttpGet("GetLobbies_youre_in")]
@@ -324,7 +326,7 @@ namespace backendSzM.Controllers
                 return NotFound("User not found");
             
           
-            var lobbies = await _context.LobbyCons.Where(x => x.UserDataId == userId).Select(x => new  {x.Lobby.Dm,x.Lobby.locationName,x.Lobby.TtType,x.Lobby.StartDate,x.Lobby.Duration,x.Lobby.PlayerLimit,x.Lobby.PlayerCount,x.Lobby.Status,x.Lobby.PlayerMin,x.Lobby.Location.Adress,Users = x.Lobby.LobbyCons.Where(x => x.UserData.Name != x.Lobby.Dm).Select(x => x.UserData.Name).ToList()}).ToListAsync();
+            var lobbies = await _context.LobbyCons.Where(x => x.UserDataId == userId).Select(x => new  {x.Lobby.Id,x.Lobby.LobbyName,x.Lobby.Dm,x.Lobby.locationName,x.Lobby.TtType,x.Lobby.StartDate,x.Lobby.Duration,x.Lobby.PlayerLimit,x.Lobby.PlayerCount,x.Lobby.Status,x.Lobby.PlayerMin,x.Lobby.Location.Adress,x.Lobby.Description,Users = x.Lobby.LobbyCons.Where(x => x.UserData.Name != x.Lobby.Dm).Select(x => new { x.UserData.Id, x.UserData.Name }).ToList()}).ToListAsync();
 
             return Ok(lobbies);
         }
@@ -345,20 +347,20 @@ namespace backendSzM.Controllers
 
             
             if (changedUser.Id != userId)
-                return Unauthorized("Csak saját profilodat módosíthatod");
+                return Unauthorized("You can only change your profile");
 
             
             var pwVerify = new PasswordHasher<UserData>()
                 .VerifyHashedPassword(changedUser, changedUser.Hash, profile.CurrentPassword);
             if (pwVerify == PasswordVerificationResult.Failed || profile.CurrentName != changedUser.Name)
-                return Unauthorized("rossz eredeti név vagy jelszó");
+                return Unauthorized("Wrong original password or username");
 
             if (string.IsNullOrWhiteSpace(profile.ChangeName) || string.IsNullOrWhiteSpace(profile.ChangePassword))
-                return BadRequest("Valamelyik mező üres");
+                return BadRequest("Some fields are empty");
 
             
             if (await _context.Users.AnyAsync(u => u.Name == profile.ChangeName && u.Id != userId))
-                return BadRequest("Már van ilyen felhasználónév");
+                return BadRequest("There's a user already with this gmail ");
 
             
             changedUser.Name = profile.ChangeName;
@@ -486,8 +488,7 @@ namespace backendSzM.Controllers
             {
                 return check;
             }
-            
-            var name = User?.FindFirst(ClaimTypes.Name)?.Value;
+             var name = User?.FindFirst(ClaimTypes.Name)?.Value;
             var user = _context?.Users.FirstOrDefault(x => x.Name == name);
             var locationId = _context?.Locations.FirstOrDefault(x => x.Id == Id);
             var location = locationId.LocationName;
@@ -496,8 +497,7 @@ namespace backendSzM.Controllers
             {
                 return BadRequest("Nincs ilyen felhasználó");
             }
-            
-            Lobby ujLobby = new Lobby();
+             Lobby ujLobby = new Lobby();
             ujLobby.Id = Guid.NewGuid();
             ujLobby.Dm = user.Name;
             ujLobby.LobbyName = request.LobbyName;
@@ -511,19 +511,12 @@ namespace backendSzM.Controllers
             ujLobby.Status = "Pending";
             ujLobby.PlayerMin = request.PlayerMin;
             ujLobby.Description = request.Description;
-            /*
-            if(ujLobby.PlayerLimit<=2)
-            {
-                return BadRequest("Legalább 3-nak kell lennie a Játékos limitnek");
-            }*/
+          
             if (ujLobby.PlayerMin > ujLobby.PlayerLimit)
             {
                 return BadRequest("Minimum játékosszám nem lehet nagyobb a maximumnál");
             }
-            if(locationId.Id ==null)
-            {
-                return BadRequest("Nincs ilyen helyszín");
-            }
+            
             LobbyCon newLobbyCon = new LobbyCon();
             newLobbyCon.Id = Guid.NewGuid();
             newLobbyCon.UserDataId = user.Id;
@@ -532,10 +525,13 @@ namespace backendSzM.Controllers
             {
                 return BadRequest("Nincs ilyen helyszín");
             }
-            var reserved = await _context.Lobbies.FirstOrDefaultAsync(x => x.LocationId == locationId.Id && x.StartDate <= request.StartDate.AddHours(request.Duration) && request.StartDate <= x.StartDate.AddHours(x.Duration));
+            var reserved = await _context.Lobbies.FirstOrDefaultAsync(x => x.LocationId == locationId.Id && 
+            x.StartDate <= request.StartDate.AddHours(request.Duration) &&
+            request.StartDate <= x.StartDate.AddHours(x.Duration));
+
             if (reserved != null)
             {
-                return BadRequest("Ezen a helyen és időpontban már van egy foglalt lobby!");
+                return BadRequest("There's a lobby reserved for this date already!");
             }
 
             _context.Lobbies.Add(ujLobby);
@@ -554,7 +550,7 @@ namespace backendSzM.Controllers
             {
                 return check;
             }
-            var lobbies = await _context.Lobbies.Select(x => new { x.Id,x.LobbyName, x.Dm, x.locationName, x.TtType, x.StartDate, x.Duration, x.PlayerLimit,x.PlayerCount,x.Status,x.Location.Adress,x.Description,Users = x.LobbyCons.Where(y => y.UserData.Name != x.Dm).Select(x => x.UserData.Name) .ToList()}).ToListAsync();
+            var lobbies = await _context.Lobbies.Select(x => new { x.Id,x.LobbyName, x.Dm, x.locationName, x.TtType, x.StartDate, x.Duration, x.PlayerLimit,x.PlayerCount,x.Status,x.Location.Adress,x.Description,Users = x.LobbyCons.Where(y => y.UserData.Name != x.Dm).Select(x => new { x.UserData.Id, x.UserData.Name }) .ToList()}).ToListAsync();
             if (lobbies == null)
             {
                 return NotFound();
@@ -570,7 +566,7 @@ namespace backendSzM.Controllers
             {
                 return check;
             }
-            var lobbies = _context.Lobbies.Select(x => new { x.LobbyName, x.Dm, x.locationName, x.TtType, x.StartDate, x.Duration, x.PlayerLimit, x.PlayerCount, x.Id, x.Status,x.Location.Adress , x.Description, Users = x.LobbyCons.Where(y => y.UserData.Name != x.Dm).Select(x => x.UserData.Name).ToList()}).Where(x => x.Id == Id);  
+            var lobbies = _context.Lobbies.Select(x => new { x.LobbyName, x.Dm, x.locationName, x.TtType, x.StartDate, x.Duration, x.PlayerLimit, x.PlayerCount, x.Id, x.Status,x.Location.Adress , x.Description, Users = x.LobbyCons.Where(y => y.UserData.Name != x.Dm).Select(x => new { x.UserData.Id, x.UserData.Name }).ToList()}).Where(x => x.Id == Id);  
 
             if (lobbies == null)
             {
@@ -628,73 +624,54 @@ namespace backendSzM.Controllers
             {
                 return check;
             }
-
             var claimId = User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (string.IsNullOrEmpty(claimId) || !Guid.TryParse(claimId, out var userId))
             {
                 return Unauthorized();
             }
-
             var user = await _context.Users.FindAsync(userId);
             if (user == null)
             {
                 return Unauthorized("User not found");
             }
-
             var lobby = await _context.Lobbies.FindAsync(Id);
             if (lobby == null)
             {
                 return NotFound("Lobby not found");
-            }
-
-            
+            }           
             if (lobby.Dm == user.Name)
             {
-                return BadRequest("A DM nem csatlakozhat a saját lobbyjához.");
+                return BadRequest("The DM cannot join into his own lobby.");
             }
-
-            
             var alreadyInLobby = await _context.LobbyCons
                 .AnyAsync(x => x.LobbyId == Id && x.UserDataId == user.Id);
             if (alreadyInLobby)
             {
-                return BadRequest("Már csatlakoztál ehhez a lobbyhoz.");
+                return BadRequest("You have already joined to this lobby.");
             }
-
             
             if (lobby.PlayerCount >= lobby.PlayerLimit)
             {
                 return BadRequest("A lobby elérte a maximum játékosszámot.");
             }
-
             lobby.PlayerCount++;
-
             var newLobbyCon = new LobbyCon
             {
                 Id = Guid.NewGuid(),
                 UserDataId = user.Id,
                 LobbyId = lobby.Id
             };
-
             _context.LobbyCons.Add(newLobbyCon);
             _context.Lobbies.Update(lobby);
-
             await _context.SaveChangesAsync();
-
             if (lobby.PlayerCount >= lobby.PlayerMin)
             {
                 lobby.Status = "Confirmed";
                 _context.Lobbies.Update(lobby);
                 await _context.SaveChangesAsync();
             }
-
             return Ok(new());
         }
-           /*
-           if (torlendoLobbies.Dm != currentId.Name||currentId.Role!="Admin")
-            {
-                return Unauthorized("Nincs jogod ehhez!");
-            }*/
         [Authorize(Roles = "User,Admin")]
         [HttpDelete("RemovePlayerFromLobby")] // működik
         public async Task<IActionResult> RemovePlayerFromLobby([FromQuery] Guid lobbyId, [FromQuery] Guid userId)
@@ -793,7 +770,7 @@ namespace backendSzM.Controllers
                 return Unauthorized();
 
             if (userId == id)
-                return BadRequest("Nem szavazhatsz magadra!");
+                return BadRequest("You can't vote on yourself!");
 
             var RepAdo = await _context.Users.FindAsync(userId);
             if (RepAdo == null)
@@ -803,7 +780,7 @@ namespace backendSzM.Controllers
             var kapoUser = await _context.Users.FindAsync(id);
             if (kapoUser == null)
             {
-                return NotFound("Nincs ilyen felhasználó");
+                return NotFound("User not found");
             }
 
             var existingRep = await _context.Reps
@@ -812,7 +789,7 @@ namespace backendSzM.Controllers
             if (existingRep != null)
             {
                 if (existingRep.Value == 1)
-                    return BadRequest("Már adtál repet ennek a felhasználónak!");
+                    return BadRequest("You already gave reputation to this user!");
 
                 existingRep.Value = 1;
                 _context.Reps.Update(existingRep);
@@ -934,14 +911,24 @@ namespace backendSzM.Controllers
             var fogado = await _context.Users.FindAsync(Id);
             if (fogado == null)
                 return BadRequest("Nincs ilyen fogadó");
-            var fogadoId=_context.Komments.FirstOrDefault(x => x.FogadoUserId == Id);
-            if (fogadoId == null)
-            {
-                return Ok(new List<string> ());
-            }
-            var kommentelo = _context.Users?.FirstOrDefault(x=>x.Id==fogadoId.KommentaloUserId);
             
-            var kommentek = await _context.Komments.Where(x => x.FogadoUserId == Id).Select(x => new { x.KommentSzoveg, x.KommentaloUserId,kommentelo.Name }).ToListAsync(); 
+            var kommentek = await _context.Komments
+                .Where(x => x.FogadoUserId == Id)
+                .Join(
+                    _context.Users,
+                    komment => komment.KommentaloUserId,
+                    user => user.Id,
+                    (komment, kommentaloUser) => new
+                    {
+                        komment.Id,
+                        komment.KommentSzoveg,
+                        komment.KommentaloUserId,
+                        KommentaloName = kommentaloUser.Name,
+                        komment.FogadoUserId,
+                        FogadoName = fogado.Name
+                    }
+                )
+                .ToListAsync();
             return Ok(kommentek);
         }
 

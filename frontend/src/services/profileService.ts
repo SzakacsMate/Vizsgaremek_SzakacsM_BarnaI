@@ -12,7 +12,7 @@ export type SearchUserResponse = {
 export type ProfileCommentResponse = {
   kommentSzoveg: string;
   kommentaloUserId: string;
-  name: string;
+  kommentaloName: string;
 };
 
 export async function searchUserByName(name: string) {
@@ -34,9 +34,9 @@ export async function getUserComments(userId: string) {
 }
 
 export async function addOrRemoveRep(userId: string, rep: 1 | -1) {
-  return apiFetch<void>(`/Add%2FRemoveRep?id=${encodeURIComponent(userId)}`, {
+  const endpoint = rep === 1 ? "AddRep" : "RemoveRep";
+  return apiFetch<void>(`/${endpoint}?id=${encodeURIComponent(userId)}`, {
     method: "PATCH",
-    body: JSON.stringify({ rep }),
   });
 }
 
@@ -50,9 +50,9 @@ export async function writeComment(data: {
   fogado: string;
   kommentSzoveg: string;
 }) {
-  return apiFetch<void>("/WriteComment", {
+  return apiFetch<void>(`/WriteComment?Id=${encodeURIComponent(data.fogado)}`, {
     method: "POST",
-    body: JSON.stringify(data),
+    body: JSON.stringify({ kommentSzoveg: data.kommentSzoveg }),
   });
 }
 

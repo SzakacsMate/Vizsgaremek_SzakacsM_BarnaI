@@ -1,4 +1,4 @@
-import { apiFetch, clearAccessToken, setAccessToken } from "./api";
+import { apiFetch, clearAccessToken, clearRefreshToken, clearTokenExpiries, setAccessToken, setRefreshToken, setTokenExpiries } from "./api";
 
 type LoginRequest = {
   name: string;
@@ -38,6 +38,8 @@ export async function login(data: LoginRequest) {
   });
 
   setAccessToken(result.accesToken);
+  setRefreshToken(result.refreshToken);
+  setTokenExpiries(result.accessTokenExpiryTime, result.refreshTokenExpiryTime);
   return result;
 }
 
@@ -56,10 +58,8 @@ export async function getCurrentUser() {
   return apiFetch<CurrentUserResponse>("/CurrentUser");
 }
 
-export function setStoredAccessToken(token: string) {
-  setAccessToken(token);
-}
-
 export function logout() {
   clearAccessToken();
+  clearRefreshToken();
+  clearTokenExpiries();
 }

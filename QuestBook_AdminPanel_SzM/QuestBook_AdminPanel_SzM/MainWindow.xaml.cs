@@ -482,8 +482,8 @@ namespace QuestBook_AdminPanel_SzM
             var dialog = new Window
             {
                 Title = "Helyszín hozzáadása",
-                Width = 350,
-                Height = 300,
+                Width = 400,
+                Height = 350,
                 WindowStartupLocation = WindowStartupLocation.CenterOwner,
                 Owner = this
             };
@@ -493,7 +493,37 @@ namespace QuestBook_AdminPanel_SzM
             var txtName = new TextBox { Margin = new Thickness(0, 0, 0, 5) };
             var txtAdress = new TextBox { Margin = new Thickness(0, 0, 0, 5) };
             var txtDescription = new TextBox { Margin = new Thickness(0, 0, 0, 5) };
-            var txtImage = new TextBox { Margin = new Thickness(0, 0, 0, 10) };
+
+            // Image file picker
+            var txtImagePath = new TextBox
+            {
+                Margin = new Thickness(0, 0, 0, 5),
+                IsReadOnly = true
+            };
+            var btnBrowse = new Button
+            {
+                Content = "Tallózás...",
+                Width = 100,
+                HorizontalAlignment = HorizontalAlignment.Left,
+                Margin = new Thickness(0, 0, 0, 10)
+            };
+            string? selectedFilePath = null;
+
+            btnBrowse.Click += (s, args) =>
+            {
+                var openFileDialog = new Microsoft.Win32.OpenFileDialog
+                {
+                    Title = "Válassz ki egy képet",
+                    Filter = "Képfájlok (*.png;*.jpg;*.jpeg;*.bmp;*.gif)|*.png;*.jpg;*.jpeg;*.bmp;*.gif|Minden fájl (*.*)|*.*"
+                };
+
+                if (openFileDialog.ShowDialog() == true)
+                {
+                    selectedFilePath = openFileDialog.FileName;
+                    txtImagePath.Text = openFileDialog.FileName;
+                }
+            };
+
             var btnOk = new Button { Content = "Hozzáadás", Width = 100 };
 
             stack.Children.Add(new TextBlock { Text = "Helyszín neve:" });
@@ -502,8 +532,9 @@ namespace QuestBook_AdminPanel_SzM
             stack.Children.Add(txtAdress);
             stack.Children.Add(new TextBlock { Text = "Leírás:" });
             stack.Children.Add(txtDescription);
-            stack.Children.Add(new TextBlock { Text = "Kép URL (opcionális):" });
-            stack.Children.Add(txtImage);
+            stack.Children.Add(new TextBlock { Text = "Kép (opcionális):" });
+            stack.Children.Add(txtImagePath);
+            stack.Children.Add(btnBrowse);
             stack.Children.Add(btnOk);
 
             btnOk.Click += (s, args) => { dialog.DialogResult = true; };
@@ -525,12 +556,30 @@ namespace QuestBook_AdminPanel_SzM
                     client.DefaultRequestHeaders.Authorization =
                         new AuthenticationHeaderValue("Bearer", accessToken);
 
+                    // Convert image file to Base64 data URI string
+                    string imageValue = "N/A";
+                    if (!string.IsNullOrWhiteSpace(selectedFilePath) && System.IO.File.Exists(selectedFilePath))
+                    {
+                        var fileBytes = await System.IO.File.ReadAllBytesAsync(selectedFilePath);
+                        var base64 = Convert.ToBase64String(fileBytes);
+                        var extension = System.IO.Path.GetExtension(selectedFilePath).TrimStart('.').ToLower();
+                        var mimeType = extension switch
+                        {
+                            "jpg" or "jpeg" => "image/jpeg",
+                            "png" => "image/png",
+                            "gif" => "image/gif",
+                            "bmp" => "image/bmp",
+                            _ => "application/octet-stream"
+                        };
+                        imageValue = $"data:{mimeType};base64,{base64}";
+                    }
+
                     var body = new
                     {
                         LocationName = txtName.Text,
                         Adress = txtAdress.Text,
                         Description = txtDescription.Text,
-                        Image = string.IsNullOrWhiteSpace(txtImage.Text) ? "N/A" : txtImage.Text
+                        Image = imageValue
                     };
 
                     var json = JsonConvert.SerializeObject(body);
