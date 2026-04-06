@@ -639,3 +639,4 @@ C:\Users\KomPhone\source\repos\asd\backendSzM\backendSzM\obj\Debug\net10.0\refin
 C:\Users\KomPhone\source\repos\asd\backendSzM\backendSzM\obj\Debug\net10.0\backendSzM.pdb
 C:\Users\KomPhone\source\repos\asd\backendSzM\backendSzM\obj\Debug\net10.0\backendSzM.genruntimeconfig.cache
 C:\Users\KomPhone\source\repos\asd\backendSzM\backendSzM\obj\Debug\net10.0\ref\backendSzM.dll
+C:\Users\KomPhone\source\repos\Vizsgaremek_SzakacsM_BarnaI\backendSzM\backendSzM\bin\Debug\net10.0\backendSzM.staticwebassets.runtime.json

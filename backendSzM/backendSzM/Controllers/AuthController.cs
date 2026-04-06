@@ -75,7 +75,7 @@ namespace backendSzM.Controllers
 
 
         
-        [HttpPost("login")]//működik
+        [HttpPost("login")]
         public async Task<IActionResult> Login(UserDataDTO request)
         {
             var banned = _context?.BannedUsers.FirstOrDefault(x => x.BannedGmail == request.Gmail);
@@ -234,7 +234,7 @@ namespace backendSzM.Controllers
 
         }
         [Authorize(Roles = "User,Admin")]
-        [HttpGet("CurrentUser")] // műlödik
+        [HttpGet("CurrentUser")] 
         public async Task<ActionResult<TokenDTO>> AuthenthicatedUser()
         {
            var check=await ValidateAccesToken();
@@ -273,7 +273,7 @@ namespace backendSzM.Controllers
             return Ok(resp);
         }
         [Authorize(Roles = "User,Admin")]
-        [HttpGet("Search for user(Id)")] // működik
+        [HttpGet("Search for user(Id)")]
         public async Task<ActionResult<TokenDTO>> SearchUserId(Guid id)
         {
             var check = await ValidateAccesToken();
@@ -289,7 +289,7 @@ namespace backendSzM.Controllers
 
         }
         [Authorize(Roles = "User,Admin")]
-        [HttpGet("Search for user(Name)")] // működik
+        [HttpGet("Search for user(Name)")] 
         public async Task<ActionResult<UserDataDTO>> SearchUserName([FromQuery]string name)
         {
             var check = await ValidateAccesToken();
@@ -331,7 +331,7 @@ namespace backendSzM.Controllers
             return Ok(lobbies);
         }
         [Authorize(Roles = "User,Admin")]
-        [HttpPatch("ChangeUserData")]// működik
+        [HttpPatch("ChangeUserData")]
         public async Task<ActionResult<TokenDTO>> ChangeUserData(ChangeDataDTO profile)
         {
             var check = await ValidateAccesToken();
@@ -395,7 +395,7 @@ namespace backendSzM.Controllers
         }
         
         [Authorize(Roles = "User,Admin")]
-        [HttpPost("AddLocation")]// működik
+        [HttpPost("AddLocation")]
         public async Task<ActionResult<CurrentUserDTO>> AddLocation(LocationDTO request)
         {
             var check = await ValidateAccesToken();
@@ -422,7 +422,7 @@ namespace backendSzM.Controllers
             return Ok(new());
         }
         
-        [HttpGet("GetLocations")]// működik
+        [HttpGet("GetLocations")]
         public async Task<ActionResult<List<LocationDTO>>> GetLocations()
         {
             
@@ -434,7 +434,7 @@ namespace backendSzM.Controllers
             return Ok(locations);
         }
         [Authorize(Roles = "User,Admin")]
-        [HttpGet("GetLocation")]// működik
+        [HttpGet("GetLocation")]
         public async Task<ActionResult<LocationDTO>> GetLocation(Guid Id)
         {
             var check = await ValidateAccesToken();
@@ -442,7 +442,7 @@ namespace backendSzM.Controllers
             {
                 return check;
             }
-            //var locationId = _context.Locations.FirstOrDefault(x => x.Id==Id);
+            
             var locations = _context.Locations.Select(x => new { x.LocationName, x.Adress, x.Description, x.Image,x.Id }).Where(x=>x.Id==Id);
             if (locations == null)
             {
@@ -451,7 +451,7 @@ namespace backendSzM.Controllers
             return Ok(locations);
         }
         [Authorize(Roles = "User,Admin")]
-        [HttpDelete("DeleteLocation/{Id}")] //müködik
+        [HttpDelete("DeleteLocation/{Id}")] 
         public async Task<ActionResult<CurrentUserDTO>> DeleteLocation(Guid Id)
         {
             var check = await ValidateAccesToken();
@@ -480,7 +480,7 @@ namespace backendSzM.Controllers
             return Ok();
         }
         [Authorize(Roles = "User,Admin")]
-        [HttpPost("CreateLobby")]// működik
+        [HttpPost("CreateLobby")]
         public async Task<ActionResult<CurrentUserDTO>> CreateLobby(LobbyDTO request, Guid Id)
         {
             var check = await ValidateAccesToken();
@@ -541,7 +541,7 @@ namespace backendSzM.Controllers
             return Ok(new());
         }
         [Authorize(Roles = "User,Admin")]
-        [HttpGet("GetAllLobbies")]//működik
+        [HttpGet("GetAllLobbies")]
         public async Task<ActionResult<List<LobbyDTO>>> GetAllLobbies()
         {
            
@@ -558,7 +558,7 @@ namespace backendSzM.Controllers
             return Ok(lobbies);
         }
         [Authorize(Roles = "User,Admin")]
-        [HttpGet("GetLobby")]//   - működik
+        [HttpGet("GetLobby")]
         public async Task<ActionResult<LocationDTO>> GetLobby(Guid Id)
         {
             var check = await ValidateAccesToken();
@@ -575,7 +575,7 @@ namespace backendSzM.Controllers
             return Ok(lobbies);
         }
         [Authorize(Roles = "User,Admin")]
-        [HttpDelete("DeleteLobby/{Id}")] //működik
+        [HttpDelete("DeleteLobby/{Id}")] 
         public async Task<ActionResult<CurrentUserDTO>> DeleteLobby(Guid Id)
         {
             var check = await ValidateAccesToken();
@@ -616,7 +616,7 @@ namespace backendSzM.Controllers
             return Ok();
         }
         [Authorize(Roles = "User,Admin")]
-        [HttpPost("AddPlayer")]//működik
+        [HttpPost("AddPlayer")]
         public async Task<IActionResult> AddPlayer(Guid Id)
         {
             var check = await ValidateAccesToken();
@@ -673,7 +673,7 @@ namespace backendSzM.Controllers
             return Ok(new());
         }
         [Authorize(Roles = "User,Admin")]
-        [HttpDelete("RemovePlayerFromLobby")] // működik
+        [HttpDelete("RemovePlayerFromLobby")] 
         public async Task<IActionResult> RemovePlayerFromLobby([FromQuery] Guid lobbyId, [FromQuery] Guid userId)
         {
             var check = await ValidateAccesToken();
@@ -717,7 +717,7 @@ namespace backendSzM.Controllers
             return Ok();
         }
         [Authorize(Roles = "User,Admin")]
-        [HttpDelete("LeaveLobby")]//tesztelendő
+        [HttpDelete("LeaveLobby")]
         public async Task<ActionResult<CurrentUserDTO>> LeaveLobby(Guid Id)
         {
             var check = await ValidateAccesToken();
@@ -756,7 +756,7 @@ namespace backendSzM.Controllers
             return Ok();
         }
         [Authorize(Roles = "User,Admin")]
-        [HttpPatch("AddRep")]// működik
+        [HttpPatch("AddRep")]
         public async Task<ActionResult<CurrentUserDTO>> AddRep(Guid id)
         {
 
@@ -810,7 +810,7 @@ namespace backendSzM.Controllers
             return Ok();
         }
         [Authorize(Roles = "User,Admin")]
-        [HttpPatch("RemoveRep")]// működik
+        [HttpPatch("RemoveRep")]
         public async Task<ActionResult<CurrentUserDTO>> RemoveRep(Guid id)
         {
 
@@ -864,7 +864,7 @@ namespace backendSzM.Controllers
             return Ok();
         }
         [Authorize(Roles = "User,Admin")]
-        [HttpPost("WriteComment")] // fogado accese lehet csak 
+        [HttpPost("WriteComment")] 
         public async Task<IActionResult> Comment(KommentDTO request,Guid Id)
         {
             var check = await ValidateAccesToken();
@@ -978,7 +978,7 @@ namespace backendSzM.Controllers
             return Ok("You are an admin!");
         }
         [Authorize(Roles = "Admin")]
-        [HttpPatch("SuspendUser")]// müködik
+        [HttpPatch("SuspendUser")]
         public async Task<IActionResult> SuspendUser([FromQuery]Guid Id)
         {
             var check = await ValidateAccesToken();
@@ -1006,7 +1006,7 @@ namespace backendSzM.Controllers
             return Ok();
         }
         [Authorize(Roles = "Admin")]
-        [HttpPatch("UnSuspendUser")]// müködik
+        [HttpPatch("UnSuspendUser")]
         public async Task<IActionResult> UnSuspendUser([FromQuery] Guid Id)
         {
             var check = await ValidateAccesToken();
@@ -1027,7 +1027,7 @@ namespace backendSzM.Controllers
             return Ok();
         }
         [Authorize(Roles = "Admin")]
-        [HttpPatch("GiveWarning")]// működik
+        [HttpPatch("GiveWarning")]
         public async Task<IActionResult> GiveWarning(Guid Id)
         {
             var check = await ValidateAccesToken();
@@ -1047,7 +1047,7 @@ namespace backendSzM.Controllers
             return Ok();
         }
         [Authorize(Roles = "Admin")]
-        [HttpDelete("BanUser/{Id}")]// működik
+        [HttpDelete("BanUser/{Id}")]
         public async Task<IActionResult> DeleteUser(Guid Id)
         {
             var check = await ValidateAccesToken();
@@ -1081,7 +1081,7 @@ namespace backendSzM.Controllers
             return Ok();
         }
         [Authorize(Roles = "Admin")]
-        [HttpPatch("ChangeToAdmin")]// müködik
+        [HttpPatch("ChangeToAdmin")]
         public async Task<ActionResult<CurrentUserDTO>> ChangeRoleAdmin(Guid Id)
         {
             var check = await ValidateAccesToken();
@@ -1128,7 +1128,7 @@ namespace backendSzM.Controllers
             return Ok();
         }
         [Authorize(Roles = "Admin")]
-        [HttpPatch("ChangeToUser")]// müködik
+        [HttpPatch("ChangeToUser")]
         public async Task<ActionResult<CurrentUserDTO>> ChangeRoleUser( Guid Id)
         {
             var check = await ValidateAccesToken();
@@ -1174,7 +1174,7 @@ namespace backendSzM.Controllers
             }
             return Ok();
         }
-        [HttpPatch("Change Role Rendszergazda")] // müködik
+        [HttpPatch("Change Role Rendszergazda")] 
         public async Task<ActionResult<CurrentUserDTO>> ChangeRoleNoAdmin(RoleNoAdminDTO role)
         {
             var changedUser = _context.Users.FirstOrDefault(x => x.Id == role.ChangedUserId);
@@ -1230,37 +1230,5 @@ namespace backendSzM.Controllers
             return Ok(users);
         }
     }
-    //Lehet nem kellenek már
-    /* lehet törölve lesz
-        [Authorize(Roles = "User,Admin")]
-        [HttpGet("GetUserName")]
-        public async Task<ActionResult> GetUserName(CurrentUserDTO req)
-        {
-            var jeloltek = _context.Users.FirstOrDefault(x => x.Id.ToString() == req.Id);
-            if (jeloltek == null)
-            {
-                return NotFound();
-            }
-            return Ok(jeloltek.Name);
-        }
     
-        [HttpGet("GetUserImage")]
-        public async Task<ActionResult<List<UserData>>> GetUserImage(Guid id)
-        {
-            var jeloltek = _context.Users.FirstOrDefault(x => x.Id == id);
-            if (jeloltek == null)
-            {
-                return NotFound();
-            }
-            return Ok(jeloltek.ProfileI);
-    
-        }
-      var authHeader = Request.Headers["Authorization"].FirstOrDefault();
-            if (!string.IsNullOrEmpty(authHeader) && authHeader.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
-            {
-                var presented = authHeader.Substring("Bearer ".Length).Trim();
-                if (!string.IsNullOrEmpty(tokenRow.AccesToken) && !string.Equals(tokenRow.AccesToken, presented, StringComparison.Ordinal))
-                    return Unauthorized("Token mismatch");
-            }
-    */
 }

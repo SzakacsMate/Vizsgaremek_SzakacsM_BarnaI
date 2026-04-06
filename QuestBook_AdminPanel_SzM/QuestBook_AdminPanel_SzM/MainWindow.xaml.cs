@@ -9,9 +9,7 @@ using System.Windows.Controls;
 
 namespace QuestBook_AdminPanel_SzM
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
+    
     public partial class MainWindow : Window
     {
         private readonly string url = "https://localhost:7231";
@@ -494,7 +492,6 @@ namespace QuestBook_AdminPanel_SzM
             var txtAdress = new TextBox { Margin = new Thickness(0, 0, 0, 5) };
             var txtDescription = new TextBox { Margin = new Thickness(0, 0, 0, 5) };
 
-            // Image file picker
             var txtImagePath = new TextBox
             {
                 Margin = new Thickness(0, 0, 0, 5),
@@ -556,7 +553,6 @@ namespace QuestBook_AdminPanel_SzM
                     client.DefaultRequestHeaders.Authorization =
                         new AuthenticationHeaderValue("Bearer", accessToken);
 
-                    // Convert image file to Base64 data URI string
                     string imageValue = "N/A";
                     if (!string.IsNullOrWhiteSpace(selectedFilePath) && System.IO.File.Exists(selectedFilePath))
                     {
