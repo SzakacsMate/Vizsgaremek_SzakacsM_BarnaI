@@ -2,7 +2,7 @@
   box-sizing: border-box;
 }
 
-button:not(.sidebar-profile-button):not(.sidebar-toggle),
+button:not(.sidebar-profile-button):not(.sidebar-toggle):not(.auth-switch-button),
 .location-card-button,
 .location-details-back-button,
 .location-details-reserve-button,
@@ -16,7 +16,7 @@ button:not(.sidebar-profile-button):not(.sidebar-toggle),
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-button:not(.sidebar-profile-button):not(.sidebar-toggle):hover,
+button:not(.sidebar-profile-button):not(.sidebar-toggle):not(.auth-switch-button):hover,
 .location-card-button:hover,
 .location-details-back-button:hover,
 .location-details-reserve-button:hover,
@@ -31,7 +31,7 @@ button:not(.sidebar-profile-button):not(.sidebar-toggle):hover,
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
 }
 
-button:not(.sidebar-profile-button):not(.sidebar-toggle):active,
+button:not(.sidebar-profile-button):not(.sidebar-toggle):not(.auth-switch-button):active,
 .location-card-button:active,
 .location-details-back-button:active,
 .location-details-reserve-button:active,

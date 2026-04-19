@@ -710,6 +710,14 @@ namespace backendSzM.Controllers
             if (lobby.PlayerCount > 0)
             {
                 lobby.PlayerCount--;
+                if (lobby.PlayerCount < lobby.PlayerMin)
+                {
+                    lobby.Status = "Pending";
+                }
+                else
+                {
+                    lobby.Status = "Confirmed";
+                }
                 _context.Lobbies.Update(lobby);
             }
 
@@ -743,11 +751,13 @@ namespace backendSzM.Controllers
                 return NotFound();
             }
             csokkentoLobby.PlayerCount--;
-            if( csokkentoLobby.PlayerCount!>=csokkentoLobby.PlayerMin)
+            if (csokkentoLobby.PlayerCount < csokkentoLobby.PlayerMin)
             {
                 csokkentoLobby.Status = "Pending";
-                _context.Lobbies.Update(csokkentoLobby);
-                await _context.SaveChangesAsync();
+            }
+            else
+            {
+                csokkentoLobby.Status = "Confirmed";
             }
             _context.Lobbies.Update(csokkentoLobby);
             _context.LobbyCons.Remove(torlendoLobbyCon);

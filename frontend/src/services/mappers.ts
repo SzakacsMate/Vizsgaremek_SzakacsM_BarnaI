@@ -145,9 +145,15 @@ export function mapProfileCommentsToUserComments(
     return [];
   }
 
-    return comments.map((comment, index) => ({
-      id: `${comment.kommentaloUserId}-${index}`,
+  return comments.map((comment, index) => {
+    const commentId =
+      comment.id ??  comment.kommentId ??
+      `${comment.kommentaloUserId}-${index}`;
+
+    return {
+      id: commentId,
       text: comment.kommentSzoveg,
       authorName: comment.kommentaloName,
-    }));
+    };
+  });
 }

@@ -10,6 +10,9 @@ export type SearchUserResponse = {
 };
 
 export type ProfileCommentResponse = {
+  id?: string;
+  
+  kommentId?: string;
   kommentSzoveg: string;
   kommentaloUserId: string;
   kommentaloName: string;
